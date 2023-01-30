@@ -6,7 +6,9 @@ import { api } from "../utils/api";
 
 const Home: NextPage = () => {
   const hello = api.example.hello.useQuery({ text: "from tRPC" });
-  const tweet = api.twitter.test.useQuery();
+  const randomTweet = api.twitter.getRandomTweet.useQuery();
+
+  console.log(randomTweet);
 
   return (
     <>
@@ -44,9 +46,6 @@ const Home: NextPage = () => {
               </div>
             </Link>
           </div>
-          <p className="text-2xl text-white">
-            {tweet.data ? tweet.data.data.text : "???"}
-          </p>
         </div>
       </main>
     </>

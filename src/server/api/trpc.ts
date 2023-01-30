@@ -33,7 +33,6 @@ type CreateContextOptions = Record<string, never>;
  */
 const createInnerTRPCContext = (_opts: CreateContextOptions) => {
   return {
-    twitter: new TwitterApi(process.env.TWITTER_TOKEN!).readOnly.v2,
     prisma,
   };
 };
@@ -55,8 +54,6 @@ export const createTRPCContext = (_opts: CreateNextContextOptions) => {
  */
 import { initTRPC } from "@trpc/server";
 import superjson from "superjson";
-import TwitterApiv2ReadOnly from "twitter-api-v2/dist/esm/v2/client.v2.read";
-import { TwitterApi } from "twitter-api-v2";
 
 const t = initTRPC.context<typeof createTRPCContext>().create({
   transformer: superjson,

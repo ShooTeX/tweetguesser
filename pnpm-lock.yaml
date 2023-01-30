@@ -25,7 +25,6 @@ specifiers:
   react-dom: 18.2.0
   superjson: 1.9.1
   tailwindcss: ^3.2.0
-  twitter-api-v2: ^1.14.1
   typescript: ^4.9.4
   zod: ^3.20.2
 
@@ -40,7 +39,6 @@ dependencies:
   react: 18.2.0
   react-dom: 18.2.0_react@18.2.0
   superjson: 1.9.1
-  twitter-api-v2: 1.14.1
   zod: 3.20.2
 
 devDependencies:
@@ -2659,10 +2657,6 @@ packages:
       tslib: 1.14.1
       typescript: 4.9.4
     dev: true
-
-  /twitter-api-v2/1.14.1:
-    resolution: {integrity: sha512-RTegtBS6FIjUW87gOgTAQG9zF9OvzY8ObkyUgW99tA45Scwro3ToJrdNd1Itn1SW4KIds5N5LQuy2JbUZdNbkA==}
-    dev: false
 
   /type-check/0.4.0:
     resolution: {integrity: sha512-XleUoc9uwGXqjWwXaUTZAmzMcFZ5858QA2vvx1Ur5xIcixXIP+8LnFDgRplU30us6teqdlskFfu+ae4K79Ooew==}
