@@ -6,9 +6,7 @@ import { api } from "../utils/api";
 
 const Home: NextPage = () => {
   const hello = api.example.hello.useQuery({ text: "from tRPC" });
-  const randomTweet = api.twitter.getRandomTweet.useQuery();
-
-  console.log(randomTweet);
+  const randomTweet = api.twitter.getNextRound.useQuery();
 
   return (
     <>

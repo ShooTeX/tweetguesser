@@ -19,7 +19,7 @@ const twitterUserList = [
 ] as const;
 
 export const twitterRouter = createTRPCRouter({
-  getNextRound: publicProcedure.query(async () => {
+  getNextRound: publicProcedure.query(async ({ ctx }) => {
     const randomUser =
       twitterUserList[Math.floor(Math.random() * twitterUserList.length)];
 
@@ -27,22 +27,30 @@ export const twitterRouter = createTRPCRouter({
       throw "Something went really wrong";
     }
 
-    const tweetsResult = await fetch(
-      `https://api.twitter.com/2/users/${randomUser.id}/tweets?exclude=retweets,replies`,
-      { headers: { authorization: `Bearer ${env.TWITTER_TOKEN}` } }
-    );
+    const { data: user } = await ctx.twitter.users.findUserById(randomUser.id, {
+      "user.fields": ["profile_image_url"],
+    });
 
-    const parsedTweets = z
-      .object({ data: z.array(tweetDataSchema) })
-      .parse(await tweetsResult.json()).data;
+    if (!user) {
+      throw "Something went really wrong";
+    }
+
+    const { data: tweets } = await ctx.twitter.tweets.usersIdTweets(user.id, {
+      exclude: ["replies", "retweets"],
+    });
 
     const randomTweet =
-      parsedTweets[Math.floor(Math.random() * twitterUserList.length)];
+      tweets?.[Math.floor(Math.random() * twitterUserList.length)];
 
     if (!randomTweet) {
       throw "Something went really wrong";
     }
 
-    return { text: randomTweet.text, user: randomUser };
+    return {
+      id: randomTweet.id,
+      text: randomTweet.text,
+      user,
+      possibleNames: randomUser.possibleNames,
+    };
   }),
 });
