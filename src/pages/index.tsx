@@ -6,7 +6,7 @@ import { api } from "../utils/api";
 
 const Home: NextPage = () => {
   const hello = api.example.hello.useQuery({ text: "from tRPC" });
-  const randomTweet = api.twitter.getNextRound.useQuery();
+  // const randomTweet = api.twitter.getNextRound.useQuery();
 
   return (
     <>
@@ -15,34 +15,44 @@ const Home: NextPage = () => {
         <meta name="description" content="Twitter Guessr" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
-        <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
-          <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
-            Create <span className="text-[hsl(280,100%,70%)]">T3</span> App
-          </h1>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
-            <Link
-              className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
-              href="https://create.t3.gg/en/usage/first-steps"
-              target="_blank"
-            >
-              <h3 className="text-2xl font-bold">First Steps →</h3>
-              <div className="text-lg">
-                Just the basics - Everything you need to know to set up your
-                database and authentication.
-              </div>
-            </Link>
-            <Link
-              className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
-              href="https://create.t3.gg/en/introduction"
-              target="_blank"
-            >
-              <h3 className="text-2xl font-bold">Documentation →</h3>
-              <div className="text-lg">
-                Learn more about Create T3 App, the libraries it uses, and how
-                to deploy it.
-              </div>
-            </Link>
+      <main className="flex min-h-screen flex-col items-center">
+        <div className="py-4">
+          <div className="stats shadow">
+            <div className="stat w-48 place-items-center bg-neutral">
+              <div className="stat-title">Points</div>
+              <div className="stat-value text-primary">0</div>
+            </div>
+            <div className="stat place-items-center bg-neutral">
+              <div className="stat-title">Round</div>
+              <div className="stat-value">1/10</div>
+            </div>
+          </div>
+        </div>
+        <ul className="steps">
+          <li data-content="✓" className="step-neutral step"></li>
+          <li data-content="✕" className="step-neutral step"></li>
+          <li data-content="" className="step-neutral step"></li>
+          <li data-content="" className="step-neutral step"></li>
+          <li data-content="" className="step-neutral step"></li>
+          <li data-content="" className="step-neutral step"></li>
+          <li data-content="" className="step-neutral step"></li>
+          <li data-content="" className="step-neutral step"></li>
+          <li data-content="" className="step-neutral step"></li>
+          <li data-content="" className="step-neutral step"></li>
+        </ul>
+        <div className="flex flex-grow flex-col justify-center">
+          <div className="h-8 h-80 w-[598px] bg-neutral"></div>
+        </div>
+        <div className="flex w-[598px] p-4">
+          <input
+            type="text"
+            placeholder="Your Guess"
+            className="input mt-4 mr-4 flex-1 bg-neutral"
+          />
+          <div>
+            <span>H</span>
+            <span>H</span>
+            <span>H</span>
           </div>
         </div>
       </main>
