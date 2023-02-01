@@ -5,6 +5,7 @@ export const gameConfigAtom = atomWithReset({
   maxLives: 3,
   timeLimit: 30000,
   maxRounds: 10,
+  similarityThreshold: 0.8,
 });
 
 const baseHighscoreAtom = atom(
@@ -35,7 +36,7 @@ export type Round = {
 
 export const currentRoundAtom = atomWithReset<Round>({
   status: "pending",
-  possibleAnswers: [],
+  possibleAnswers: ["test", "asdf"],
   tries: 0,
   score: 0,
 });

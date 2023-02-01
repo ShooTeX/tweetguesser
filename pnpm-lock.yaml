@@ -11,6 +11,7 @@ specifiers:
   '@types/prettier': ^2.7.2
   '@types/react': ^18.0.26
   '@types/react-dom': ^18.0.10
+  '@types/string-similarity': ^4.0.0
   '@typescript-eslint/eslint-plugin': ^5.47.1
   '@typescript-eslint/parser': ^5.47.1
   autoprefixer: ^10.4.7
@@ -28,6 +29,7 @@ specifiers:
   react: 18.2.0
   react-dom: 18.2.0
   react-icons: ^4.7.1
+  string-similarity: ^4.0.4
   superjson: 1.9.1
   tailwindcss: ^3.2.0
   twitter-api-sdk: ^1.2.1
@@ -41,6 +43,7 @@ dependencies:
   '@trpc/next': 10.9.0_o4vjr5433zf4lxe7zgyoyoztjm
   '@trpc/react-query': 10.9.0_22wgxldzdfxutowffn2dykkd3i
   '@trpc/server': 10.9.0
+  '@types/string-similarity': 4.0.0
   daisyui: 2.49.0_gbtt6ss3tbiz4yjtvdr6fbrj44
   immer: 9.0.19
   jotai: 2.0.0_react@18.2.0
@@ -49,6 +52,7 @@ dependencies:
   react: 18.2.0
   react-dom: 18.2.0_react@18.2.0
   react-icons: 4.7.1_react@18.2.0
+  string-similarity: 4.0.4
   superjson: 1.9.1
   twitter-api-sdk: 1.2.1
   zod: 3.20.2
@@ -417,6 +421,10 @@ packages:
   /@types/semver/7.3.13:
     resolution: {integrity: sha512-21cFJr9z3g5dW8B0CVI9g2O9beqaThGQ6ZFBqHfwhzLDKUxaqTIy3vnfah/UPkfOiF2pLq+tGz+W8RyCskuslw==}
     dev: true
+
+  /@types/string-similarity/4.0.0:
+    resolution: {integrity: sha512-dMS4S07fbtY1AILG/RhuwmptmzK1Ql8scmAebOTJ/8iBtK/KI17NwGwKzu1uipjj8Kk+3mfPxum56kKZE93mzQ==}
+    dev: false
 
   /@typescript-eslint/eslint-plugin/5.49.0_rsaczafy73x3xqauzesvzbsgzy:
     resolution: {integrity: sha512-IhxabIpcf++TBaBa1h7jtOWyon80SXPRLDq0dVz5SLFC/eW6tofkw/O7Ar3lkx5z5U6wzbKDrl2larprp5kk5Q==}
@@ -2546,6 +2554,10 @@ packages:
     dependencies:
       internal-slot: 1.0.4
     dev: true
+
+  /string-similarity/4.0.4:
+    resolution: {integrity: sha512-/q/8Q4Bl4ZKAPjj8WerIBJWALKkaPRfrvhfF8k/B23i4nzrlRj2/go1m90In7nG/3XDSbOo0+pu6RvCTM9RGMQ==}
+    dev: false
 
   /string.prototype.matchall/4.0.8:
     resolution: {integrity: sha512-6zOCOcJ+RJAQshcTvXPHoxoQGONa3e/Lqx90wUA+wEzX78sg5Bo+1tQo4N0pohS0erG9qtCqJDjNCQBjeWVxyg==}
