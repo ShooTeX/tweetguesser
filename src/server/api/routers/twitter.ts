@@ -1,6 +1,3 @@
-import { z } from "zod";
-import { env } from "../../../env/server.mjs";
-import { tweetDataSchema } from "../../../schemas/tweet-data";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 
 const twitterUserList = [
@@ -19,7 +16,7 @@ const twitterUserList = [
 ] as const;
 
 export const twitterRouter = createTRPCRouter({
-  getNextRound: publicProcedure.query(async ({ ctx }) => {
+  getNextTweet: publicProcedure.query(async ({ ctx }) => {
     const randomUser =
       twitterUserList[Math.floor(Math.random() * twitterUserList.length)];
 
