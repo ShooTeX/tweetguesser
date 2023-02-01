@@ -1,12 +1,15 @@
 import { type NextPage } from "next";
 import Head from "next/head";
-import Link from "next/link";
+import { FaHeart, FaHeartBroken } from "react-icons/fa";
+import { Tweet, TweetLoading } from "../components/Tweet";
 
 import { api } from "../utils/api";
 
 const Home: NextPage = () => {
-  const hello = api.example.hello.useQuery({ text: "from tRPC" });
-  // const randomTweet = api.twitter.getNextRound.useQuery();
+  const randomTweet = api.twitter.getNextRound.useQuery(undefined, {
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+  });
 
   return (
     <>
@@ -19,12 +22,16 @@ const Home: NextPage = () => {
         <div className="py-4">
           <div className="stats shadow">
             <div className="stat w-48 place-items-center bg-neutral">
-              <div className="stat-title">Points</div>
+              <div className="stat-title">Score</div>
               <div className="stat-value text-primary">0</div>
             </div>
             <div className="stat place-items-center bg-neutral">
               <div className="stat-title">Round</div>
               <div className="stat-value">1/10</div>
+            </div>
+            <div className="stat place-items-center bg-neutral">
+              <div className="stat-title">Highscore</div>
+              <div className="stat-value">0</div>
             </div>
           </div>
         </div>
@@ -41,18 +48,35 @@ const Home: NextPage = () => {
           <li data-content="" className="step-neutral step"></li>
         </ul>
         <div className="flex flex-grow flex-col justify-center">
-          <div className="h-8 h-80 w-[598px] bg-neutral"></div>
+          <progress
+            className="progress progress-secondary h-4 w-full"
+            value="20"
+            max="30"
+          ></progress>
+          <div className="stack mt-4 transition-all ease-in-out">
+            {randomTweet.data ? (
+              <Tweet
+                handle={randomTweet.data.user.username}
+                username={randomTweet.data.user.name}
+                avatar={randomTweet.data.user.profile_image_url}
+              >
+                {randomTweet.data.text}
+              </Tweet>
+            ) : (
+              <TweetLoading />
+            )}
+          </div>
         </div>
-        <div className="flex w-[598px] p-4">
+        <div className="flex w-[598px] items-center py-4">
           <input
             type="text"
             placeholder="Your Guess"
-            className="input mt-4 mr-4 flex-1 bg-neutral"
+            className="input mr-4 flex-1 bg-neutral"
           />
-          <div>
-            <span>H</span>
-            <span>H</span>
-            <span>H</span>
+          <div className="flex space-x-1 text-lg">
+            <FaHeartBroken className="text-error" />
+            <FaHeart className="text-success" />
+            <FaHeart className="text-success" />
           </div>
         </div>
       </main>
