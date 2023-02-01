@@ -1,12 +1,17 @@
+import { useAtom } from "jotai";
 import { type NextPage } from "next";
 import Head from "next/head";
 import { FaHeart, FaHeartBroken } from "react-icons/fa";
+import { currentRoundAtom } from "../atoms/game";
+import { Stats } from "../components/Stats";
 import { Timer } from "../components/Timer";
 import { Tweet, TweetLoading } from "../components/Tweet";
 
 import { api } from "../utils/api";
 
 const Home: NextPage = () => {
+  const [currentRound] = useAtom(currentRoundAtom);
+
   const randomTweet = api.twitter.getNextRound.useQuery(undefined, {
     refetchOnWindowFocus: false,
     refetchOnMount: false,
@@ -20,36 +25,9 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="flex min-h-screen flex-col items-center">
-        <div className="py-4">
-          <div className="stats shadow">
-            <div className="stat w-48 place-items-center bg-neutral">
-              <div className="stat-title">Score</div>
-              <div className="stat-value text-primary">0</div>
-            </div>
-            <div className="stat place-items-center bg-neutral">
-              <div className="stat-title">Round</div>
-              <div className="stat-value">1/10</div>
-            </div>
-            <div className="stat place-items-center bg-neutral">
-              <div className="stat-title">Highscore</div>
-              <div className="stat-value">0</div>
-            </div>
-          </div>
-        </div>
-        <ul className="steps">
-          <li data-content="✓" className="step-neutral step"></li>
-          <li data-content="✕" className="step-neutral step"></li>
-          <li data-content="" className="step-neutral step"></li>
-          <li data-content="" className="step-neutral step"></li>
-          <li data-content="" className="step-neutral step"></li>
-          <li data-content="" className="step-neutral step"></li>
-          <li data-content="" className="step-neutral step"></li>
-          <li data-content="" className="step-neutral step"></li>
-          <li data-content="" className="step-neutral step"></li>
-          <li data-content="" className="step-neutral step"></li>
-        </ul>
+        <Stats />
         <div className="flex flex-grow flex-col justify-center">
-          <Timer active />
+          <Timer active={currentRound.status === "playing"} />
           <div className="stack mt-4 transition-all ease-in-out">
             {randomTweet.data ? (
               <Tweet
