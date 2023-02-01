@@ -29,7 +29,11 @@ export const Timer = ({ active }: TimerProps) => {
 
   return (
     <progress
-      className="progress progress-secondary h-4 w-full"
+      className={`progress h-4 w-full ${
+        config.timeLimit - 5000 > timer
+          ? "progress-secondary"
+          : "progress-error animate-bounce"
+      }`}
       value={timer}
       max={config.timeLimit}
     ></progress>
