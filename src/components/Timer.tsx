@@ -1,13 +1,14 @@
 import { useAtom } from "jotai";
 import { useEffect, useState } from "react";
-import { gameConfigAtom } from "../atoms/game";
+import { currentRoundAtom, gameConfigAtom } from "../atoms/game";
 
 type TimerProps = {
-  active: boolean;
+  onTimesUp: () => void;
 };
 
-export const Timer = ({ active }: TimerProps) => {
+export const Timer = ({ onTimesUp }: TimerProps) => {
   const [timer, setTimer] = useState(0);
+  const [round] = useAtom(currentRoundAtom);
   const [config] = useAtom(gameConfigAtom);
 
   useEffect(() => {
@@ -17,15 +18,16 @@ export const Timer = ({ active }: TimerProps) => {
 
     if (timer === config.timeLimit) {
       clearInterval(interval);
+      onTimesUp();
     }
 
-    if (!active) {
+    if (round.status !== "playing") {
       clearInterval(interval);
       setTimer(0);
     }
 
     return () => clearInterval(interval);
-  }, [setTimer, config, timer, active]);
+  }, [setTimer, config, timer, onTimesUp, round]);
 
   return (
     <progress

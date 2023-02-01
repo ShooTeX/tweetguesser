@@ -24,7 +24,11 @@ export const Tweet = ({
   children,
 }: TweetProps) => (
   <TweetWrapper>
-    <div className={`${hidden ? "invisible" : ""} flex items-center`}>
+    <div
+      className={`${
+        hidden ? "invisible opacity-0" : "opacity-100"
+      } flex items-center transition-all ease-in-out`}
+    >
       <div className="avatar">
         <div className="w-12 rounded-full bg-neutral">
           {avatar && !hidden ? (

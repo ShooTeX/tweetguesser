@@ -28,6 +28,7 @@ export const GuessInput = () => {
   return (
     <div className="flex w-[598px] items-center py-4">
       <input
+        disabled={round.status !== "playing"}
         type="text"
         placeholder="Your Guess"
         className="input mr-4 flex-1 bg-neutral"

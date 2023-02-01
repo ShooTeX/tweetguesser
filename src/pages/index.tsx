@@ -20,17 +20,20 @@ const Home: NextPage = () => {
     RouterOutputs["twitter"]["getNextTweet"] | undefined
   >();
 
-  const { data, refetch } = api.twitter.getNextTweet.useQuery(undefined, {
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
-  });
+  const { data, refetch, isFetching } = api.twitter.getNextTweet.useQuery(
+    undefined,
+    {
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+    }
+  );
 
-  const initNewRound = async () => {
+  const initNewRound = () => {
     setRounds((draft) => {
       draft.push(currentRound);
     });
     setCurrentRound(RESET);
-    await refetch();
+    void refetch();
   };
 
   if (data && data !== currentTweet) {
@@ -42,6 +45,15 @@ const Home: NextPage = () => {
     }));
   }
 
+  const handleRoundEnd = () => {
+    setCurrentRound((round) => ({
+      ...round,
+      status: "done",
+    }));
+
+    setTimeout(initNewRound, 3000);
+  };
+
   return (
     <>
       <Head>
@@ -52,13 +64,14 @@ const Home: NextPage = () => {
       <main className="flex min-h-screen flex-col items-center">
         <Stats />
         <div className="flex flex-grow flex-col justify-center">
-          <Timer active={currentRound.status === "playing"} />
+          <Timer onTimesUp={handleRoundEnd} />
           <div className="stack mt-4 transition-all ease-in-out">
-            {currentTweet ? (
+            {currentTweet && !isFetching ? (
               <Tweet
                 handle={currentTweet.user.username}
                 username={currentTweet.user.name}
                 avatar={currentTweet.user.profile_image_url}
+                hidden={currentRound.status !== "done"}
               >
                 {currentTweet.text}
               </Tweet>
