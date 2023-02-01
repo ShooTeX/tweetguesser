@@ -15,7 +15,10 @@ export const GuessInput = () => {
       return;
     }
 
-    const { bestMatch } = findBestMatch(input, round.possibleAnswers);
+    const { bestMatch } = findBestMatch(
+      input.toLowerCase(),
+      round.possibleAnswers.map((value) => value.toLowerCase())
+    );
 
     if (bestMatch.rating >= config.similarityThreshold) {
       console.log("HIT!");
