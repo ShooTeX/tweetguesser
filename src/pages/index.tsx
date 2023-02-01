@@ -3,6 +3,7 @@ import { type NextPage } from "next";
 import Head from "next/head";
 import { FaHeart, FaHeartBroken } from "react-icons/fa";
 import { currentRoundAtom } from "../atoms/game";
+import { GuessInput } from "../components/GuessInputs";
 import { Stats } from "../components/Stats";
 import { Timer } from "../components/Timer";
 import { Tweet, TweetLoading } from "../components/Tweet";
@@ -42,18 +43,7 @@ const Home: NextPage = () => {
             )}
           </div>
         </div>
-        <div className="flex w-[598px] items-center py-4">
-          <input
-            type="text"
-            placeholder="Your Guess"
-            className="input mr-4 flex-1 bg-neutral"
-          />
-          <div className="flex space-x-1 text-lg">
-            <FaHeartBroken className="text-error" />
-            <FaHeart className="text-success" />
-            <FaHeart className="text-success" />
-          </div>
-        </div>
+        <GuessInput />
       </main>
     </>
   );
