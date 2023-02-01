@@ -3,11 +3,15 @@ import { atomWithReset } from "jotai/utils";
 
 export const gameConfigAtom = atomWithReset({
   maxLives: 3,
-  timeLimit: 30,
+  timeLimit: 30000,
   maxRounds: 10,
 });
 
-const baseHighscoreAtom = atom(Number(localStorage.getItem("highscore")) ?? 0);
+const baseHighscoreAtom = atom(
+  (typeof window !== "undefined" &&
+    Number(localStorage.getItem("highscore"))) ??
+    0
+);
 
 export const highScoreAtom = atom(
   (get) => get(baseHighscoreAtom),

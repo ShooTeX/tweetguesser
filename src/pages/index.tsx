@@ -1,6 +1,7 @@
 import { type NextPage } from "next";
 import Head from "next/head";
 import { FaHeart, FaHeartBroken } from "react-icons/fa";
+import { Timer } from "../components/Timer";
 import { Tweet, TweetLoading } from "../components/Tweet";
 
 import { api } from "../utils/api";
@@ -48,11 +49,7 @@ const Home: NextPage = () => {
           <li data-content="" className="step-neutral step"></li>
         </ul>
         <div className="flex flex-grow flex-col justify-center">
-          <progress
-            className="progress progress-secondary h-4 w-full"
-            value="20"
-            max="30"
-          ></progress>
+          <Timer active />
           <div className="stack mt-4 transition-all ease-in-out">
             {randomTweet.data ? (
               <Tweet
