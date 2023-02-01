@@ -1,6 +1,8 @@
 import { useAtom } from "jotai";
+import { RESET } from "jotai/utils";
 import { type NextPage } from "next";
 import Head from "next/head";
+import { useEffect } from "react";
 import { FaHeart, FaHeartBroken } from "react-icons/fa";
 import { currentRoundAtom } from "../atoms/game";
 import { GuessInput } from "../components/GuessInputs";
@@ -11,12 +13,22 @@ import { Tweet, TweetLoading } from "../components/Tweet";
 import { api } from "../utils/api";
 
 const Home: NextPage = () => {
-  const [currentRound] = useAtom(currentRoundAtom);
+  const [currentRound, setCurrentRound] = useAtom(currentRoundAtom);
 
-  const randomTweet = api.twitter.getNextRound.useQuery(undefined, {
+  const { data: randomTweet } = api.twitter.getNextRound.useQuery(undefined, {
     refetchOnWindowFocus: false,
     refetchOnMount: false,
   });
+
+  useEffect(() => {
+    if (randomTweet) {
+      setCurrentRound(RESET);
+      setCurrentRound((round) => ({
+        ...round,
+        possibleAnswers: [...randomTweet.possibleNames],
+      }));
+    }
+  }, [randomTweet, setCurrentRound]);
 
   return (
     <>
@@ -30,13 +42,13 @@ const Home: NextPage = () => {
         <div className="flex flex-grow flex-col justify-center">
           <Timer active={currentRound.status === "playing"} />
           <div className="stack mt-4 transition-all ease-in-out">
-            {randomTweet.data ? (
+            {randomTweet ? (
               <Tweet
-                handle={randomTweet.data.user.username}
-                username={randomTweet.data.user.name}
-                avatar={randomTweet.data.user.profile_image_url}
+                handle={randomTweet.user.username}
+                username={randomTweet.user.name}
+                avatar={randomTweet.user.profile_image_url}
               >
-                {randomTweet.data.text}
+                {randomTweet.text}
               </Tweet>
             ) : (
               <TweetLoading />
