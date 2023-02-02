@@ -66,6 +66,14 @@ const Home: NextPage = () => {
     }));
   };
 
+  const handleIncorrectGuess = () => {
+    if (currentRound.tries === config.maxLives - 1) {
+      endRound(true);
+      return;
+    }
+    setCurrentRound((round) => ({ ...round, tries: round.tries + 1 }));
+  };
+
   if (tweet && isFetchedAfterMount && currentRound.status === "pending") {
     console.log("init");
     setCurrentRound((round) => ({
@@ -107,11 +115,11 @@ const Home: NextPage = () => {
         <div className="flex w-[598px] items-center py-4">
           <GuessInput
             onCorrect={endRound}
-            onIncorrect={() => {}}
+            onIncorrect={handleIncorrectGuess}
             possibleAnswers={currentRound.possibleAnswers}
             disabled={currentRound.status !== "playing"}
           />
-          <Lives tries={1} />
+          <Lives tries={currentRound.tries} />
         </div>
       </main>
     </>
