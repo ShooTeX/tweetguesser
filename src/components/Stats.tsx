@@ -1,14 +1,13 @@
 import { useAtom } from "jotai";
-import {
-  currentRoundAtom,
-  gameConfigAtom,
-  highScoreAtom,
-  roundsAtom,
-} from "../atoms/game";
+import { gameConfigAtom } from "../atoms/game";
+import { Round } from "../types/round";
 
-export const Stats = () => {
-  const [highScore] = useAtom(highScoreAtom);
-  const [rounds] = useAtom(roundsAtom);
+type StatsProps = {
+  rounds: Round[];
+  highscore?: number;
+};
+
+export const Stats = ({ rounds, highscore = 0 }: StatsProps) => {
   const [config] = useAtom(gameConfigAtom);
   const score = rounds.reduce((prev, round) => prev + round.score, 0);
 
@@ -25,9 +24,7 @@ export const Stats = () => {
         </div>
         <div className="stat place-items-center bg-neutral">
           <div className="stat-title">Highscore</div>
-          <div className="stat-value">
-            {typeof window !== "undefined" ? highScore : 0}
-          </div>
+          <div className="stat-value">{highscore}</div>
         </div>
       </div>
       <ul className="steps mt-4">

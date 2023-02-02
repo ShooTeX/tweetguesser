@@ -1,55 +1,21 @@
-import { useAtom } from "jotai";
-import { RESET } from "jotai/utils";
 import { type NextPage } from "next";
 import Head from "next/head";
-import { useState } from "react";
-import { currentRoundAtom, roundsAtom } from "../atoms/game";
 import { GuessInput } from "../components/GuessInputs";
 import { Stats } from "../components/Stats";
 import { Timer } from "../components/Timer";
 import { Tweet, TweetLoading } from "../components/Tweet";
 
 import { api } from "../utils/api";
-import type { RouterOutputs } from "../utils/api";
-import { useImmerAtom } from "jotai-immer";
 import { Lives } from "../components/Lives";
 
 const Home: NextPage = () => {
-  const [currentRound, setCurrentRound] = useAtom(currentRoundAtom);
-  const [rounds, setRounds] = useImmerAtom(roundsAtom);
-  const [currentTweet, setCurrentTweet] = useState<
-    RouterOutputs["twitter"]["getNextTweet"] | undefined
-  >();
-
-  const { data, refetch, isFetching } = api.twitter.getNextTweet.useQuery(
+  const { data: tweet, isFetching } = api.twitter.getNextTweet.useQuery(
     undefined,
     {
       refetchOnWindowFocus: false,
       refetchOnMount: false,
     }
   );
-
-  const initNewRound = () => {
-    console.log(currentRound);
-    setRounds((draft) => {
-      draft.push(currentRound);
-    });
-    setCurrentRound(RESET);
-    void refetch();
-  };
-
-  if (data && data !== currentTweet) {
-    setCurrentTweet(data);
-    setCurrentRound((round) => ({
-      ...round,
-      status: "playing",
-      possibleAnswers: [...data.possibleNames],
-    }));
-  }
-
-  const handleRoundEnd = () => {
-    setTimeout(initNewRound, 3000);
-  };
 
   return (
     <>
@@ -59,18 +25,17 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="flex min-h-screen flex-col items-center">
-        <Stats />
+        <Stats rounds={[]} />
         <div className="flex flex-grow flex-col justify-center">
-          <Timer onTimesUp={handleRoundEnd} />
+          <Timer onTimesUp={() => {}} />
           <div className="stack mt-4 transition-all ease-in-out">
-            {currentTweet && !isFetching ? (
+            {tweet && !isFetching ? (
               <Tweet
-                handle={currentTweet.user.username}
-                username={currentTweet.user.name}
-                avatar={currentTweet.user.profile_image_url}
-                hidden={currentRound.status !== "done"}
+                handle={tweet.user.username}
+                username={tweet.user.name}
+                avatar={tweet.user.profile_image_url}
               >
-                {currentTweet.text}
+                {tweet.text}
               </Tweet>
             ) : (
               <TweetLoading />
