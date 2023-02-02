@@ -5,17 +5,66 @@ import { Stats } from "../components/Stats";
 import { Timer } from "../components/Timer";
 import { Tweet, TweetLoading } from "../components/Tweet";
 
-import { api } from "../utils/api";
+import { useState } from "react";
 import { Lives } from "../components/Lives";
+import type { Round } from "../types/round";
+import { api } from "../utils/api";
+
+const defaultRound: Readonly<Round> = {
+  status: "pending",
+  possibleAnswers: [],
+  tries: 0,
+  score: 0,
+};
+
+const wait = (amount = 0) =>
+  new Promise((resolve) => setTimeout(resolve, amount));
 
 const Home: NextPage = () => {
-  const { data: tweet, isFetching } = api.twitter.getNextTweet.useQuery(
-    undefined,
-    {
-      refetchOnWindowFocus: false,
-      refetchOnMount: false,
+  const {
+    data: tweet,
+    isFetching,
+    refetch,
+    isFetchedAfterMount,
+  } = api.twitter.getNextTweet.useQuery(undefined, {
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    retry: false,
+  });
+  const [currentRound, setCurrentRound] = useState<Round>(defaultRound);
+  const [rounds, setRounds] = useState<Round[]>([]);
+
+  const endRound = () => {
+    const updatedRound: Round = { ...currentRound, status: "done" };
+    setCurrentRound(updatedRound);
+    setRounds((rounds) => [...rounds, currentRound]);
+    setTimeout(() => {
+      void initNewRound();
+    }, 3000);
+  };
+
+  const initNewRound = async () => {
+    setCurrentRound(defaultRound);
+    const { data, error } = await refetch();
+    if (error || !data) {
+      throw error || "something went wrong";
     }
-  );
+
+    setCurrentRound((round) => ({
+      ...round,
+      status: "playing",
+      possibleAnswers: [...data.possibleNames],
+    }));
+  };
+
+  if (isFetchedAfterMount && currentRound.status === "pending") {
+    console.log("init");
+    setCurrentRound((round) => ({
+      ...round,
+      status: "playing",
+      possibleAnswers: round.possibleAnswers,
+    }));
+  }
 
   return (
     <>
@@ -25,15 +74,19 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="flex min-h-screen flex-col items-center">
-        <Stats rounds={[]} />
+        <Stats rounds={rounds} />
         <div className="flex flex-grow flex-col justify-center">
-          <Timer onTimesUp={() => {}} />
+          <Timer
+            onTimesUp={endRound}
+            active={currentRound.status === "playing"}
+          />
           <div className="stack mt-4 transition-all ease-in-out">
             {tweet && !isFetching ? (
               <Tweet
                 handle={tweet.user.username}
                 username={tweet.user.name}
                 avatar={tweet.user.profile_image_url}
+                hidden={currentRound.status !== "done"}
               >
                 {tweet.text}
               </Tweet>

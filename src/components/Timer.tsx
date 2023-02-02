@@ -11,13 +11,16 @@ export const Timer = ({ onTimesUp, active }: TimerProps) => {
   const [timer, setTimer] = useState(0);
   const [config] = useAtom(gameConfigAtom);
 
+  // FIXME: feels wrong
   useEffect(() => {
     const interval = setInterval(() => {
       setTimer((timer) => timer + 1000);
     }, 1000);
 
     if (timer === config.timeLimit) {
+      console.log("onTimesUp");
       clearInterval(interval);
+      setTimer(0);
       onTimesUp();
     }
 
