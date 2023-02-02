@@ -25,6 +25,12 @@ export const GuessInput = ({
       return;
     }
 
+    setInput("");
+
+    console.log(
+      input.toLowerCase(),
+      possibleAnswers.map((value) => value.toLowerCase())
+    );
     const { bestMatch } = findBestMatch(
       input.toLowerCase(),
       possibleAnswers.map((value) => value.toLowerCase())

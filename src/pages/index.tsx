@@ -66,12 +66,12 @@ const Home: NextPage = () => {
     }));
   };
 
-  if (isFetchedAfterMount && currentRound.status === "pending") {
+  if (tweet && isFetchedAfterMount && currentRound.status === "pending") {
     console.log("init");
     setCurrentRound((round) => ({
       ...round,
       status: "playing",
-      possibleAnswers: round.possibleAnswers,
+      possibleAnswers: [...tweet.possibleNames],
     }));
   }
 
@@ -86,7 +86,7 @@ const Home: NextPage = () => {
         <Stats rounds={rounds} />
         <div className="flex flex-grow flex-col justify-center">
           <Timer
-            onTimesUp={endRound}
+            onTimesUp={() => endRound(true)}
             active={currentRound.status === "playing"}
           />
           <div className="stack mt-4 transition-all ease-in-out">
@@ -108,7 +108,8 @@ const Home: NextPage = () => {
           <GuessInput
             onCorrect={endRound}
             onIncorrect={() => {}}
-            possibleAnswers={[]}
+            possibleAnswers={currentRound.possibleAnswers}
+            disabled={currentRound.status !== "playing"}
           />
           <Lives tries={1} />
         </div>
