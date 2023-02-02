@@ -13,6 +13,14 @@ const twitterUserList = [
     id: "1349149096909668363",
     possibleNames: ["potus", "president", "joe biden"],
   },
+  {
+    id: "2233154425",
+    possibleNames: ["stephen king"],
+  },
+  {
+    id: "44196397",
+    possibleNames: ["mr. tweet"],
+  },
 ];
 
 export const twitterRouter = createTRPCRouter({
@@ -21,7 +29,7 @@ export const twitterRouter = createTRPCRouter({
       twitterUserList[Math.floor(Math.random() * twitterUserList.length)];
 
     if (!randomUser) {
-      throw "Something went really wrong";
+      throw "missing random user";
     }
 
     const { data: user } = await ctx.twitter.users.findUserById(randomUser.id, {
@@ -29,18 +37,19 @@ export const twitterRouter = createTRPCRouter({
     });
 
     if (!user) {
-      throw "Something went really wrong";
+      throw "missing user";
     }
 
     const { data: tweets } = await ctx.twitter.tweets.usersIdTweets(user.id, {
       exclude: ["replies", "retweets"],
+      max_results: 100,
     });
 
     const randomTweet =
       tweets?.[Math.floor(Math.random() * twitterUserList.length)];
 
     if (!randomTweet) {
-      throw "Something went really wrong";
+      throw "missing tweets";
     }
 
     return {
