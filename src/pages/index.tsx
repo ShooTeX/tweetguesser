@@ -19,9 +19,6 @@ const defaultRound: Readonly<Round> = {
   score: 0,
 };
 
-const wait = (amount = 0) =>
-  new Promise((resolve) => setTimeout(resolve, amount));
-
 const Home: NextPage = () => {
   const {
     data: tweet,
@@ -36,6 +33,7 @@ const Home: NextPage = () => {
   const [currentRound, setCurrentRound] = useState<Round>(defaultRound);
   const [rounds, setRounds] = useState<Round[]>([]);
   const [config] = useAtom(gameConfigAtom);
+  const gameover = rounds.length === config.maxRounds;
 
   const endRound = (gameover = false) => {
     const updatedRound: Round = {
@@ -47,9 +45,12 @@ const Home: NextPage = () => {
     };
     setCurrentRound(updatedRound);
     setRounds((rounds) => [...rounds, updatedRound]);
-    setTimeout(() => {
-      void initNewRound();
-    }, 3000);
+
+    if (rounds.length + 1 !== config.maxRounds) {
+      setTimeout(() => {
+        void initNewRound();
+      }, 3000);
+    }
   };
 
   const initNewRound = async () => {
@@ -95,7 +96,7 @@ const Home: NextPage = () => {
         <div className="flex flex-grow flex-col justify-center">
           <Timer
             onTimesUp={() => endRound(true)}
-            active={currentRound.status === "playing"}
+            active={currentRound.status === "playing" && !gameover}
           />
           <div className="stack mt-4 transition-all ease-in-out">
             {tweet && !isFetching ? (
@@ -117,7 +118,7 @@ const Home: NextPage = () => {
             onCorrect={endRound}
             onIncorrect={handleIncorrectGuess}
             possibleAnswers={currentRound.possibleAnswers}
-            disabled={currentRound.status !== "playing"}
+            disabled={currentRound.status !== "playing" || gameover}
           />
           <Lives tries={currentRound.tries} />
         </div>
