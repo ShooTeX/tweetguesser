@@ -49,6 +49,7 @@ export const GuessInput = ({
       value={input}
       onChange={(v) => setInput(v.target.value)}
       onKeyDown={handleGuess}
+      autoFocus
     />
   );
 };

@@ -13,7 +13,7 @@ const twitterUserList = [
     id: "1349149096909668363",
     possibleNames: ["potus", "president", "joe biden"],
   },
-] as const;
+];
 
 export const twitterRouter = createTRPCRouter({
   getNextTweet: publicProcedure.query(async ({ ctx }) => {

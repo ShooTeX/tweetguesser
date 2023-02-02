@@ -63,7 +63,7 @@ const Home: NextPage = () => {
     setCurrentRound((round) => ({
       ...round,
       status: "playing",
-      possibleAnswers: [...data.possibleNames],
+      possibleAnswers: data.possibleNames,
     }));
   };
 
@@ -79,7 +79,7 @@ const Home: NextPage = () => {
     setCurrentRound((round) => ({
       ...round,
       status: "playing",
-      possibleAnswers: [...tweet.possibleNames],
+      possibleAnswers: tweet.possibleNames,
     }));
   }
 
