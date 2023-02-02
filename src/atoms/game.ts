@@ -41,29 +41,4 @@ export const currentRoundAtom = atomWithReset<Round>({
   score: 0,
 });
 
-export const roundsAtom = atom<Round[]>([
-  {
-    status: "done",
-    possibleAnswers: [],
-    tries: 2,
-    score: 5,
-  },
-  {
-    status: "done",
-    possibleAnswers: [],
-    tries: 3,
-    score: 0,
-  },
-  {
-    status: "done",
-    possibleAnswers: [],
-    tries: 1,
-    score: 10,
-  },
-  {
-    status: "done",
-    possibleAnswers: [],
-    tries: 1,
-    score: 10,
-  },
-]);
+export const roundsAtom = atom<Round[]>([]);

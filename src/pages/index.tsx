@@ -12,6 +12,7 @@ import { Tweet, TweetLoading } from "../components/Tweet";
 import { api } from "../utils/api";
 import type { RouterOutputs } from "../utils/api";
 import { useImmerAtom } from "jotai-immer";
+import { Lives } from "../components/Lives";
 
 const Home: NextPage = () => {
   const [currentRound, setCurrentRound] = useAtom(currentRoundAtom);
@@ -29,6 +30,7 @@ const Home: NextPage = () => {
   );
 
   const initNewRound = () => {
+    console.log(currentRound);
     setRounds((draft) => {
       draft.push(currentRound);
     });
@@ -46,11 +48,6 @@ const Home: NextPage = () => {
   }
 
   const handleRoundEnd = () => {
-    setCurrentRound((round) => ({
-      ...round,
-      status: "done",
-    }));
-
     setTimeout(initNewRound, 3000);
   };
 
@@ -80,7 +77,14 @@ const Home: NextPage = () => {
             )}
           </div>
         </div>
-        <GuessInput />
+        <div className="flex w-[598px] items-center py-4">
+          <GuessInput
+            onCorrect={() => {}}
+            onIncorrect={() => {}}
+            possibleAnswers={[]}
+          />
+          <Lives tries={1} />
+        </div>
       </main>
     </>
   );

@@ -1,13 +1,23 @@
-import { useAtom } from "jotai";
 import { useState } from "react";
 import type { KeyboardEventHandler } from "react";
-import { FaHeart, FaHeartBroken } from "react-icons/fa";
-import { currentRoundAtom, gameConfigAtom } from "../atoms/game";
 import { findBestMatch } from "string-similarity";
+import { gameConfigAtom } from "../atoms/game";
+import { useAtom } from "jotai";
 
-export const GuessInput = () => {
+type GuessInputProps = {
+  onCorrect: () => void;
+  onIncorrect: () => void;
+  possibleAnswers: string[];
+  disabled?: boolean;
+};
+
+export const GuessInput = ({
+  onCorrect,
+  onIncorrect,
+  possibleAnswers,
+  disabled,
+}: GuessInputProps) => {
   const [config] = useAtom(gameConfigAtom);
-  const [round] = useAtom(currentRoundAtom);
   const [input, setInput] = useState("");
 
   const handleGuess: KeyboardEventHandler<HTMLInputElement> = (event) => {
@@ -17,33 +27,26 @@ export const GuessInput = () => {
 
     const { bestMatch } = findBestMatch(
       input.toLowerCase(),
-      round.possibleAnswers.map((value) => value.toLowerCase())
+      possibleAnswers.map((value) => value.toLowerCase())
     );
 
     if (bestMatch.rating >= config.similarityThreshold) {
-      console.log("HIT!");
+      onCorrect();
+      return;
     }
+
+    onIncorrect();
   };
 
   return (
-    <div className="flex w-[598px] items-center py-4">
-      <input
-        disabled={round.status !== "playing"}
-        type="text"
-        placeholder="Your Guess"
-        className="input mr-4 flex-1 bg-neutral"
-        value={input}
-        onChange={(v) => setInput(v.target.value)}
-        onKeyDown={handleGuess}
-      />
-      <div className="flex space-x-1 text-lg">
-        {[...Array<undefined>(config.maxLives - round.tries)].map((_, i) => (
-          <FaHeart className="text-success" key={`heart-${i}`} />
-        ))}
-        {[...Array<undefined>(round.tries)].map((_, i) => (
-          <FaHeartBroken className="text-error" key={`fail-${i}`} />
-        ))}
-      </div>
-    </div>
+    <input
+      disabled={disabled}
+      type="text"
+      placeholder="Your Guess"
+      className="input mr-4 flex-1 bg-neutral"
+      value={input}
+      onChange={(v) => setInput(v.target.value)}
+      onKeyDown={handleGuess}
+    />
   );
 };
