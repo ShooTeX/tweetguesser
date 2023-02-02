@@ -76,7 +76,6 @@ const Home: NextPage = () => {
   };
 
   if (tweet && isFetchedAfterMount && currentRound.status === "pending") {
-    console.log("init");
     setCurrentRound((round) => ({
       ...round,
       status: "playing",

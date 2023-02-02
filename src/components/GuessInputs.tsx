@@ -27,10 +27,6 @@ export const GuessInput = ({
 
     setInput("");
 
-    console.log(
-      input.toLowerCase(),
-      possibleAnswers.map((value) => value.toLowerCase())
-    );
     const { bestMatch } = findBestMatch(
       input.toLowerCase(),
       possibleAnswers.map((value) => value.toLowerCase())

@@ -18,7 +18,6 @@ export const Timer = ({ onTimesUp, active }: TimerProps) => {
     }, 1000);
 
     if (timer === config.timeLimit) {
-      console.log("onTimesUp");
       clearInterval(interval);
       setTimer(0);
       onTimesUp();
