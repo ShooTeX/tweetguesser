@@ -9,6 +9,8 @@ import { useState } from "react";
 import { Lives } from "../components/Lives";
 import type { Round } from "../types/round";
 import { api } from "../utils/api";
+import { gameConfigAtom } from "../atoms/game";
+import { useAtom } from "jotai";
 
 const defaultRound: Readonly<Round> = {
   status: "pending",
@@ -33,11 +35,18 @@ const Home: NextPage = () => {
   });
   const [currentRound, setCurrentRound] = useState<Round>(defaultRound);
   const [rounds, setRounds] = useState<Round[]>([]);
+  const [config] = useAtom(gameConfigAtom);
 
-  const endRound = () => {
-    const updatedRound: Round = { ...currentRound, status: "done" };
+  const endRound = (gameover = false) => {
+    const updatedRound: Round = {
+      ...currentRound,
+      status: "done",
+      score: gameover
+        ? 0
+        : (config.maxLives - currentRound.tries) * config.pointsPerLive,
+    };
     setCurrentRound(updatedRound);
-    setRounds((rounds) => [...rounds, currentRound]);
+    setRounds((rounds) => [...rounds, updatedRound]);
     setTimeout(() => {
       void initNewRound();
     }, 3000);
@@ -97,7 +106,7 @@ const Home: NextPage = () => {
         </div>
         <div className="flex w-[598px] items-center py-4">
           <GuessInput
-            onCorrect={() => {}}
+            onCorrect={endRound}
             onIncorrect={() => {}}
             possibleAnswers={[]}
           />
