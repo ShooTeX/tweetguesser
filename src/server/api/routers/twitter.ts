@@ -47,7 +47,7 @@ export const twitterRouter = createTRPCRouter({
       id: randomTweet.id,
       text: randomTweet.text,
       user,
-      possibleNames: randomUser.possibleNames,
+      possibleNames: [...randomUser.possibleNames, user.name, user.username],
     };
   }),
 });
