@@ -21,6 +21,30 @@ const twitterUserList = [
     id: "44196397",
     possibleNames: ["mr. tweet"],
   },
+  {
+    id: "337337691",
+    possibleNames: ["ludwig"],
+  },
+  {
+    id: "1203880363",
+    possibleNames: ["pewdiepie"],
+  },
+  {
+    id: "2455740283",
+    possibleNames: ["boiwithtoomuchmoney"],
+  },
+  {
+    id: "291797158",
+    possibleNames: ["nvimgod"],
+  },
+  {
+    id: "786375418685165568",
+    possibleNames: ["theo"],
+  },
+  {
+    id: "62513246",
+    possibleNames: ["jk rowling"],
+  },
 ];
 
 export const twitterRouter = createTRPCRouter({
