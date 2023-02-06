@@ -5,12 +5,14 @@ import { Stats } from "../components/Stats";
 import { Timer } from "../components/Timer";
 import { Tweet, TweetLoading } from "../components/Tweet";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Lives } from "../components/Lives";
 import type { Round } from "../types/round";
 import { api } from "../utils/api";
 import { gameConfigAtom } from "../atoms/game";
 import { useAtom } from "jotai";
+import { createPortal } from "react-dom";
+import { Modal } from "../components/Modal";
 
 const defaultRound: Readonly<Round> = {
   status: "pending",
@@ -29,9 +31,11 @@ const Home: NextPage = () => {
     refetchOnWindowFocus: false,
     refetchOnMount: false,
     retry: false,
+    enabled: false,
   });
   const [currentRound, setCurrentRound] = useState<Round>(defaultRound);
   const [rounds, setRounds] = useState<Round[]>([]);
+  const [showStartScreen, setShowStartScreen] = useState(false);
   const [config] = useAtom(gameConfigAtom);
   const gameover = rounds.length === config.maxRounds;
 
@@ -83,6 +87,10 @@ const Home: NextPage = () => {
     }));
   }
 
+  useEffect(() => {
+    setShowStartScreen(true);
+  }, []);
+
   return (
     <>
       <Head>
@@ -90,6 +98,7 @@ const Home: NextPage = () => {
         <meta name="description" content="Twitter Guessr" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
+      {<Modal show={showStartScreen}>Hello!</Modal>}
       <main className="flex min-h-screen flex-col items-center">
         <Stats rounds={rounds} />
         <div className="flex flex-grow flex-col justify-center">
