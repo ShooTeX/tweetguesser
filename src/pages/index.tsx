@@ -11,7 +11,6 @@ import type { Round } from "../types/round";
 import { api } from "../utils/api";
 import { gameConfigAtom } from "../atoms/game";
 import { useAtom } from "jotai";
-import { createPortal } from "react-dom";
 import { Modal } from "../components/Modal";
 import { StartScreen } from "../components/StartScreen";
 
@@ -23,6 +22,13 @@ const defaultRound: Readonly<Round> = {
 };
 
 const Home: NextPage = () => {
+  const [gameStart, setGameStart] = useState(false);
+  const [showStartScreen, setShowStartScreen] = useState(false);
+  const [currentRound, setCurrentRound] = useState<Round>(defaultRound);
+  const [rounds, setRounds] = useState<Round[]>([]);
+  const [config] = useAtom(gameConfigAtom);
+  const gameover = rounds.length === config.maxRounds;
+
   const {
     data: tweet,
     isFetching,
@@ -32,13 +38,8 @@ const Home: NextPage = () => {
     refetchOnWindowFocus: false,
     refetchOnMount: false,
     retry: false,
-    enabled: false,
+    enabled: gameStart && !gameover,
   });
-  const [currentRound, setCurrentRound] = useState<Round>(defaultRound);
-  const [rounds, setRounds] = useState<Round[]>([]);
-  const [showStartScreen, setShowStartScreen] = useState(false);
-  const [config] = useAtom(gameConfigAtom);
-  const gameover = rounds.length === config.maxRounds;
 
   const endRound = (gameover = false) => {
     const updatedRound: Round = {
@@ -46,7 +47,9 @@ const Home: NextPage = () => {
       status: "done",
       score: gameover
         ? 0
-        : (config.maxLives - currentRound.tries) * config.pointsPerLive,
+        : !config.endless
+        ? (config.maxLives - currentRound.tries) * config.pointsPerLive
+        : 1,
     };
     setCurrentRound(updatedRound);
     setRounds((rounds) => [...rounds, updatedRound]);
@@ -101,16 +104,23 @@ const Home: NextPage = () => {
       </Head>
       {
         <Modal show={showStartScreen}>
-          <StartScreen />
+          <StartScreen
+            onPlay={() => {
+              setShowStartScreen(false);
+              setGameStart(true);
+            }}
+          />
         </Modal>
       }
       <main className="flex min-h-screen flex-col items-center">
         <Stats rounds={rounds} />
         <div className="flex flex-grow flex-col justify-center">
-          <Timer
-            onTimesUp={() => endRound(true)}
-            active={currentRound.status === "playing" && !gameover}
-          />
+          {!config.endless && (
+            <Timer
+              onTimesUp={() => endRound(true)}
+              active={currentRound.status === "playing" && !gameover}
+            />
+          )}
           <div className="stack mt-4 transition-all ease-in-out">
             {tweet && !isFetching ? (
               <Tweet
@@ -133,7 +143,17 @@ const Home: NextPage = () => {
             possibleAnswers={currentRound.possibleAnswers}
             disabled={currentRound.status !== "playing" || gameover}
           />
-          <Lives tries={currentRound.tries} />
+          {!config.endless ? (
+            <Lives tries={currentRound.tries} />
+          ) : (
+            <button
+              type="button"
+              className="btn-error btn text-error-content"
+              onClick={() => endRound(true)}
+            >
+              give up
+            </button>
+          )}
         </div>
       </main>
     </>

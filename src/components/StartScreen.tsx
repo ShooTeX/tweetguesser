@@ -1,19 +1,17 @@
 import { useAtom } from "jotai";
 import type { ChangeEventHandler } from "react";
-import { gameConfigAtom } from "../atoms/game";
+import { endlessModeAtom, gameConfigAtom } from "../atoms/game";
 
 type StartScreenProps = {
   onPlay: () => void;
 };
 
 export const StartScreen = ({ onPlay }: StartScreenProps) => {
-  const [config, setConfig] = useAtom(gameConfigAtom);
+  const [config] = useAtom(gameConfigAtom);
+  const [, setEndlessModeAtom] = useAtom(endlessModeAtom);
 
   const handleEndlessChange: ChangeEventHandler<HTMLInputElement> = (event) => {
-    setConfig((config) => ({
-      ...config,
-      endless: event.target.checked,
-    }));
+    setEndlessModeAtom(event.target.checked);
   };
 
   return (
