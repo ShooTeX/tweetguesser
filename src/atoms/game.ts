@@ -6,4 +6,5 @@ export const gameConfigAtom = atomWithReset({
   timeLimit: 30000,
   maxRounds: 10,
   similarityThreshold: 0.8,
+  endless: false,
 });

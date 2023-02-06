@@ -13,6 +13,7 @@ import { gameConfigAtom } from "../atoms/game";
 import { useAtom } from "jotai";
 import { createPortal } from "react-dom";
 import { Modal } from "../components/Modal";
+import { StartScreen } from "../components/StartScreen";
 
 const defaultRound: Readonly<Round> = {
   status: "pending",
@@ -98,7 +99,11 @@ const Home: NextPage = () => {
         <meta name="description" content="Twitter Guessr" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      {<Modal show={showStartScreen}>Hello!</Modal>}
+      {
+        <Modal show={showStartScreen}>
+          <StartScreen />
+        </Modal>
+      }
       <main className="flex min-h-screen flex-col items-center">
         <Stats rounds={rounds} />
         <div className="flex flex-grow flex-col justify-center">
