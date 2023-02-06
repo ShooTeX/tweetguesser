@@ -24,7 +24,10 @@ const defaultRound: Readonly<Round> = {
 const Home: NextPage = () => {
   const [gameStart, setGameStart] = useState(false);
   const [showStartScreen, setShowStartScreen] = useState(false);
-  const [currentRound, setCurrentRound] = useState<Round>(defaultRound);
+  const [currentRound, setCurrentRound] = useState<Round>({
+    ...defaultRound,
+    status: "init",
+  });
   const [rounds, setRounds] = useState<Round[]>([]);
   const [config] = useAtom(gameConfigAtom);
   const gameover = rounds.length === config.maxRounds;
@@ -33,7 +36,6 @@ const Home: NextPage = () => {
     data: tweet,
     isFetching,
     refetch,
-    isFetchedAfterMount,
   } = api.twitter.getNextTweet.useQuery(undefined, {
     refetchOnWindowFocus: false,
     refetchOnMount: false,
@@ -83,7 +85,7 @@ const Home: NextPage = () => {
     setCurrentRound((round) => ({ ...round, tries: round.tries + 1 }));
   };
 
-  if (tweet && isFetchedAfterMount && currentRound.status === "pending") {
+  if (tweet && currentRound.status === "init") {
     setCurrentRound((round) => ({
       ...round,
       status: "playing",
@@ -142,6 +144,7 @@ const Home: NextPage = () => {
             onIncorrect={handleIncorrectGuess}
             possibleAnswers={currentRound.possibleAnswers}
             disabled={currentRound.status !== "playing" || gameover}
+            key={currentRound.possibleAnswers.toString()}
           />
           {!config.endless ? (
             <Lives tries={currentRound.tries} />
@@ -150,6 +153,7 @@ const Home: NextPage = () => {
               type="button"
               className="btn-error btn text-error-content"
               onClick={() => endRound(true)}
+              disabled={currentRound.status !== "playing" || gameover}
             >
               give up
             </button>
