@@ -17,6 +17,7 @@
     "@trpc/react-query": "^10.9.0",
     "@trpc/server": "^10.9.0",
     "@types/string-similarity": "^4.0.0",
+    "array-shuffle": "^3.0.0",
     "daisyui": "^2.49.0",
     "immer": "^9.0.19",
     "jotai": "^2.0.0",

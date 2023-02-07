@@ -1,4 +1,6 @@
+import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "../trpc";
+import arrayShuffle from "array-shuffle";
 
 const twitterUserList = [
   {
@@ -47,7 +49,63 @@ const twitterUserList = [
   },
 ];
 
+const getTweetsInputSchema = z.array(z.string().min(1)).min(1).max(20);
+
+type GetTweetsResponse = {
+  id: string;
+  text: string;
+  profile_image_url?: string;
+  name: string;
+  username: string;
+}[];
+
 export const twitterRouter = createTRPCRouter({
+  getTweets: publicProcedure
+    .input(getTweetsInputSchema)
+    .query(async ({ ctx, input }) => {
+      const { data: users, errors } =
+        await ctx.twitter.users.findUsersByUsername({
+          usernames: input,
+          "user.fields": ["profile_image_url"],
+        });
+
+      if (errors) {
+        throw errors.at(0)?.title;
+      }
+
+      if (!users) {
+        throw "an unknown error occured";
+      }
+
+      const response: GetTweetsResponse = [];
+      for (const user of users) {
+        const tweets = await ctx.twitter.tweets.usersIdTweets(user.id, {
+          exclude: ["replies", "retweets"],
+          max_results: 20,
+        });
+
+        if (tweets.errors) {
+          throw tweets.errors.at(0)?.title;
+        }
+
+        if (!tweets.data) {
+          throw "an unknown error occured";
+        }
+
+        // TODO: add info about images, tweet url and user url
+        tweets.data.forEach((tweet) => {
+          response.push({
+            id: tweet.id,
+            text: tweet.text,
+            name: user.name,
+            username: user.username,
+            profile_image_url: user.profile_image_url,
+          });
+        });
+
+        return arrayShuffle(response);
+      }
+    }),
   getNextTweet: publicProcedure.query(async ({ ctx }) => {
     const randomUser =
       twitterUserList[Math.floor(Math.random() * twitterUserList.length)];
