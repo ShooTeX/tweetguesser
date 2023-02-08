@@ -7,7 +7,7 @@ const baseGameConfigAtom = atomWithReset({
   timeLimit: 30000,
   maxRounds: 10,
   similarityThreshold: 0.8,
-  endless: false,
+  endless: true,
 });
 
 export const gameConfigAtom = atom((get) => get(baseGameConfigAtom));

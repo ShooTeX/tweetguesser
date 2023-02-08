@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 import arrayShuffle from "array-shuffle";
+import { TRPCError } from "@trpc/server";
 
 const twitterUserList = [
   {
@@ -70,11 +71,17 @@ export const twitterRouter = createTRPCRouter({
         });
 
       if (errors) {
-        throw errors.at(0)?.title;
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: errors.at(0)?.title,
+        });
       }
 
       if (!users) {
-        throw "an unknown error occured";
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "No users were returned",
+        });
       }
 
       const response: GetTweetsResponse = [];
@@ -85,11 +92,17 @@ export const twitterRouter = createTRPCRouter({
         });
 
         if (tweets.errors) {
-          throw tweets.errors.at(0)?.title;
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: tweets.errors.at(0)?.title,
+          });
         }
 
         if (!tweets.data) {
-          throw "an unknown error occured";
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "No tweets were returned",
+          });
         }
 
         // TODO: add info about images, tweet url and user url
@@ -102,9 +115,8 @@ export const twitterRouter = createTRPCRouter({
             profile_image_url: user.profile_image_url,
           });
         });
-
-        return arrayShuffle(response);
       }
+      return arrayShuffle(response);
     }),
   getNextTweet: publicProcedure.query(async ({ ctx }) => {
     const randomUser =
