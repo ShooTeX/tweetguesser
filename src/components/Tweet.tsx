@@ -11,7 +11,7 @@ export type TweetProps = {
   hidden?: boolean;
 };
 
-const TweetWrapper = ({ children, ...rest }: PropsWithChildren) => {
+const TweetWrapper = ({ children }: PropsWithChildren) => {
   const [animationParent] = useAutoAnimate();
   return (
     <div

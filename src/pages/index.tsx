@@ -26,8 +26,8 @@ const Home: NextPage = () => {
     void router.push({ pathname: "/game", query: { usernames: usernamesArr } });
   }
 
-  const handlePlay = async () => {
-    await refetch();
+  const handlePlay = () => {
+    void refetch();
   };
 
   return (

@@ -1,4 +1,4 @@
-import { ChangeEventHandler, useState } from "react";
+import { type ChangeEventHandler, useState } from "react";
 import type { KeyboardEventHandler } from "react";
 import { findBestMatch } from "string-similarity";
 import { gameConfigAtom } from "../atoms/game";
