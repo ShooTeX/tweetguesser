@@ -42,9 +42,9 @@ const Game: NextPage = () => {
   const gameover = tweets?.length === currentRound;
 
   const reset = () => {
-    setReveal(false);
-    setTries(0);
     if (!gameover) {
+      setReveal(false);
+      setTries(0);
       setCurrentRound(currentRound + 1);
     }
   };
@@ -60,7 +60,7 @@ const Game: NextPage = () => {
 
     setTimeout(() => {
       reset();
-    }, 3000);
+    }, 1500);
   };
 
   const score = history.reduce((prev, round) => prev + round.score, 0);
