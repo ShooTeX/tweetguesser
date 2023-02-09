@@ -3,8 +3,10 @@ import Head from "next/head";
 import { useState } from "react";
 import { api } from "../utils/api";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
+import { useRouter } from "next/router";
 
 const Home: NextPage = () => {
+  const router = useRouter();
   const [animationParent] = useAutoAnimate();
   const [usernames, setUsernames] = useState<string>();
   const usernamesArr = usernames?.split("\n");
@@ -20,7 +22,9 @@ const Home: NextPage = () => {
     enabled: false,
   });
 
-  console.log(tweets, error);
+  if (tweets) {
+    void router.push({ pathname: "/game", query: { usernames: usernamesArr } });
+  }
 
   const handlePlay = async () => {
     await refetch();
