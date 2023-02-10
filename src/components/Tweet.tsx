@@ -2,6 +2,8 @@ import { useAutoAnimate } from "@formkit/auto-animate/react";
 import Image from "next/image";
 import type { PropsWithChildren } from "react";
 import { FaQuestion } from "react-icons/fa";
+import { type RouterOutputs } from "../utils/api";
+import { ImageGrid } from "./ImageGrid";
 
 export type TweetProps = {
   avatar?: string;
@@ -9,6 +11,7 @@ export type TweetProps = {
   handle: string;
   children: string;
   hidden?: boolean;
+  images: RouterOutputs["twitter"]["getTweets"][0]["images"];
 };
 
 const TweetWrapper = ({ children }: PropsWithChildren) => {
@@ -29,11 +32,12 @@ export const Tweet = ({
   handle,
   hidden = true,
   children,
+  images,
 }: TweetProps) => {
   return (
     <TweetWrapper>
       {!hidden && (
-        <div className="flex items-center">
+        <div className="flex items-center pb-4 ">
           <div className="avatar">
             <div className="w-12 rounded-full bg-neutral">
               {avatar ? (
@@ -56,9 +60,10 @@ export const Tweet = ({
           </div>
         </div>
       )}
-      <p className="mt-4 text-2xl" key={children}>
+      <p className="text-2xl" key={children}>
         {children}
       </p>
+      {images.length > 0 && <ImageGrid images={images} className="mt-4" />}
     </TweetWrapper>
   );
 };

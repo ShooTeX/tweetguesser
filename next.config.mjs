@@ -22,6 +22,12 @@ const config = {
         port: "",
         pathname: "/profile_images/**",
       },
+      {
+        protocol: "https",
+        hostname: "pbs.twimg.com",
+        port: "",
+        pathname: "/media/**",
+      },
     ],
   },
 };

@@ -78,6 +78,7 @@ const Game: NextPage = () => {
           <div className="stack mt-4 transition-all ease-in-out">
             {currentTweet ? (
               <Tweet
+                images={currentTweet.images}
                 handle={currentTweet.username}
                 username={currentTweet.name}
                 avatar={currentTweet.profile_image_url}
