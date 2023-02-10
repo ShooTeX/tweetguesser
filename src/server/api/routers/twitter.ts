@@ -87,6 +87,7 @@ export const twitterRouter = createTRPCRouter({
       const response: GetTweetsResponse = [];
       for (const user of users) {
         const tweets = await ctx.twitter.tweets.usersIdTweets(user.id, {
+          expansions: ["attachments.media_keys"],
           exclude: ["replies", "retweets"],
           max_results: 20,
         });
@@ -118,39 +119,4 @@ export const twitterRouter = createTRPCRouter({
       }
       return arrayShuffle(response);
     }),
-  getNextTweet: publicProcedure.query(async ({ ctx }) => {
-    const randomUser =
-      twitterUserList[Math.floor(Math.random() * twitterUserList.length)];
-
-    if (!randomUser) {
-      throw "missing random user";
-    }
-
-    const { data: user } = await ctx.twitter.users.findUserById(randomUser.id, {
-      "user.fields": ["profile_image_url"],
-    });
-
-    if (!user) {
-      throw "missing user";
-    }
-
-    const { data: tweets } = await ctx.twitter.tweets.usersIdTweets(user.id, {
-      exclude: ["replies", "retweets"],
-      max_results: 100,
-    });
-
-    const randomTweet =
-      tweets?.[Math.floor(Math.random() * twitterUserList.length)];
-
-    if (!randomTweet) {
-      throw "missing tweets";
-    }
-
-    return {
-      id: randomTweet.id,
-      text: randomTweet.text,
-      user,
-      possibleNames: [...randomUser.possibleNames, user.name, user.username],
-    };
-  }),
 });
