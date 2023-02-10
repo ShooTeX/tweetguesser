@@ -63,6 +63,19 @@ export const twitterRouter = createTRPCRouter({
         }
 
         tweets.data.forEach((tweet) => {
+          if (
+            tweet.attachments?.media_keys
+              ?.flatMap((mediaKey) =>
+                tweets.includes?.media?.find(
+                  (media) =>
+                    media.media_key === mediaKey && media.type !== "photo"
+                )
+              )
+              .filter(Boolean).length
+          ) {
+            return;
+          }
+
           const images =
             tweet.attachments?.media_keys
               ?.flatMap((mediaKey) =>
