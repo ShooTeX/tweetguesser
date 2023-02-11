@@ -24,6 +24,7 @@ const Home: NextPage = () => {
   } = api.twitter.getTweets.useQuery(usernamesArr ?? [], {
     refetchOnWindowFocus: false,
     refetchOnMount: false,
+    cacheTime: 0,
     retry: false,
     enabled: false,
   });
