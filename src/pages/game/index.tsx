@@ -1,5 +1,4 @@
 import { type NextPage } from "next";
-import Head from "next/head";
 import { GuessInput } from "../../components/GuessInputs";
 import { Stats } from "../../components/Stats";
 import { Tweet, TweetLoading } from "../../components/Tweet";

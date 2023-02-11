@@ -5,6 +5,7 @@ import { api } from "../utils/api";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useRouter } from "next/router";
 import { Logo } from "../components/Logo";
+import { FaHeart } from "react-icons/fa";
 
 const Home: NextPage = () => {
   const router = useRouter();
@@ -15,6 +16,7 @@ const Home: NextPage = () => {
   const {
     data: tweets,
     error,
+    isFetching,
     refetch,
   } = api.twitter.getTweets.useQuery(usernamesArr ?? [], {
     refetchOnWindowFocus: false,
@@ -66,8 +68,10 @@ roxcodes`}
               )}
               <div className="form-control mt-6">
                 <button
-                  className="btn-primary btn"
-                  disabled={!usernames}
+                  className={`btn btn-primary ${
+                    isFetching || !!tweets ? "loading" : ""
+                  }`}
+                  disabled={!usernames || isFetching || !!tweets}
                   onClick={handlePlay}
                 >
                   Play
@@ -76,7 +80,7 @@ roxcodes`}
             </div>
           </div>
           <span className="text-sm">
-            build by{" "}
+            <FaHeart className="inline" /> build by{" "}
             <a
               href="https://twitter.com/imshootex"
               target="_blank"
