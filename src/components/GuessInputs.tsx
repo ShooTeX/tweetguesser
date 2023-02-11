@@ -50,6 +50,7 @@ export const GuessInput = ({
     }
 
     if (event.key === "s" && event.ctrlKey) {
+      event.preventDefault();
       onSkip();
     }
   };
