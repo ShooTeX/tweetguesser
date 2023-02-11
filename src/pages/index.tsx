@@ -4,6 +4,7 @@ import { useState } from "react";
 import { api } from "../utils/api";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useRouter } from "next/router";
+import { Logo } from "../components/Logo";
 
 const Home: NextPage = () => {
   const router = useRouter();
@@ -39,12 +40,7 @@ const Home: NextPage = () => {
       </Head>
       <div className="hero min-h-screen bg-base-200">
         <div className="hero-content flex-col">
-          <h1 className="bg-gradient-to-r from-[#fad0c4] to-[#ffd1ff] bg-clip-text text-4xl font-medium text-transparent">
-            TWEET
-            <span className="bg-gradient-to-r from-[#fad0c4] to-[#ffd1ff] bg-clip-text font-extrabold text-transparent">
-              GUESSER
-            </span>
-          </h1>
+          <Logo />
           <div className="card w-96 flex-shrink-0 bg-base-100 shadow-xl">
             <div className="card-body" ref={animationParent}>
               <div className="form-control">

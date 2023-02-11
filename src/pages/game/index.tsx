@@ -8,6 +8,7 @@ import { useRouter } from "next/router";
 import { z } from "zod";
 import { useState } from "react";
 import type { Round } from "../../types/round";
+import { Logo } from "../../components/Logo";
 
 const Game: NextPage = () => {
   const router = useRouter();
@@ -68,7 +69,25 @@ const Game: NextPage = () => {
   return (
     <>
       <main className="flex min-h-screen flex-col items-center">
-        {history && <Stats score={score} round={currentRound + 1} />}
+        <div className="flex w-full flex-col items-center justify-center p-4">
+          <span>
+            <Logo />
+          </span>
+          <div className="mt-1">
+            {history && <Stats score={score} round={currentRound + 1} />}
+          </div>
+          <span className="mt-1 text-sm">
+            build by{" "}
+            <a
+              href="https://twitter.com/imshootex"
+              target="_blank"
+              rel="noreferrer"
+              className="link-hover link-info link font-bold"
+            >
+              @imShooTeX
+            </a>
+          </span>
+        </div>
         <div className="flex flex-grow flex-col justify-center">
           <div className="stack mt-4 transition-all ease-in-out">
             {currentTweet ? (

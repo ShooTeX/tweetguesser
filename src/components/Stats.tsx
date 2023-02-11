@@ -5,7 +5,7 @@ type StatsProps = {
 
 export const Stats = ({ round, score }: StatsProps) => {
   return (
-    <div className="flex flex-col items-center justify-center py-4">
+    <div className="flex flex-col items-center justify-center">
       <div className="stats shadow">
         <div className="stat w-48 place-items-center bg-neutral">
           <div className="stat-title">Score</div>
