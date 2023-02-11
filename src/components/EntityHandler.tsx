@@ -23,5 +23,5 @@ export const EntityHandler = ({ children, entities }: EntityHandlerProps) => {
     );
   });
 
-  return parse(formatted);
+  return <>{parse(formatted)}</>;
 };
