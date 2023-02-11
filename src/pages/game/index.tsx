@@ -42,6 +42,7 @@ const Game: NextPage = () => {
   const [reveal, setReveal] = useState(false);
   const [history, setHistory] = useState<Round[]>([]);
   const [gameTimeout, setGameTimeout] = useState(false);
+  const [showGiveUp, setShowGiveUp] = useState(false);
   const currentTweet = tweets && tweets[currentRound];
   const gameover = tweets?.length === currentRound || gameTimeout;
   const correctlyAnswered = history.filter((item) => item.score > 0);
@@ -54,8 +55,8 @@ const Game: NextPage = () => {
     }
   };
 
-  const endRound = (giveup = false) => {
-    if (giveup) {
+  const endRound = (skip = false) => {
+    if (skip) {
       setHistory([...history, { score: 0 }]);
     } else {
       setHistory([...history, { score: 2 - tries >= 0 ? (3 - tries) * 5 : 1 }]);
@@ -116,6 +117,33 @@ const Game: NextPage = () => {
           </div>
         </div>
       </Modal>
+      <Modal show={showGiveUp && !gameover}>
+        <div className="modal modal-open modal-bottom sm:modal-middle">
+          <div className="modal-box">
+            <h3 className="text-lg font-bold">Giveup</h3>
+            <p className="py-4">Are you sure you want to give up?</p>
+            <div className="modal-action">
+              <button
+                type="button"
+                className="btn-outline btn"
+                onClick={() => setShowGiveUp(false)}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="btn btn-error"
+                onClick={() => {
+                  setGameTimeout(true);
+                  setShowGiveUp(false);
+                }}
+              >
+                Give up
+              </button>
+            </div>
+          </div>
+        </div>
+      </Modal>
       <main className="flex min-h-screen flex-col items-center">
         <div className="flex w-full flex-col items-center justify-center p-4">
           <span>
@@ -160,24 +188,40 @@ const Game: NextPage = () => {
             )}
           </div>
         </div>
-        <div className="flex w-[598px] items-center py-4">
-          <GuessInput
-            onCorrect={() => endRound()}
-            onIncorrect={() => setTries(tries + 1)}
-            possibleAnswers={
-              currentTweet ? [currentTweet.username, currentTweet.name] : []
-            }
-            disabled={!currentTweet || reveal}
-            key={currentTweet?.id}
-          />
-          <button
-            type="button"
-            className="btn btn-error text-error-content"
-            onClick={() => endRound(true)}
-            disabled={!currentTweet || reveal}
-          >
-            give up
-          </button>
+        <div className="flex w-[598px] flex-col py-4">
+          <div className="flex w-full items-center">
+            <div className="mr-4 flex-1">
+              <GuessInput
+                onSkip={() => endRound(true)}
+                onCorrect={() => endRound()}
+                onIncorrect={() => setTries(tries + 1)}
+                possibleAnswers={
+                  currentTweet ? [currentTweet.username, currentTweet.name] : []
+                }
+                disabled={!currentTweet || reveal}
+                key={currentTweet?.id}
+              />
+            </div>
+            <button
+              type="button"
+              className="btn btn-error text-error-content"
+              onClick={() => setShowGiveUp(true)}
+              disabled={!currentTweet || reveal}
+            >
+              give up
+            </button>
+          </div>
+          <div className="mt-2 flex space-x-5">
+            <div>
+              <kbd className="kbd kbd-sm">⏎</kbd>
+              <span> guess</span>
+            </div>
+            <div>
+              <kbd className="kbd kbd-sm">ctrl</kbd> +{" "}
+              <kbd className="kbd kbd-sm">s</kbd>
+              <span> skip</span>
+            </div>
+          </div>
         </div>
       </main>
     </>

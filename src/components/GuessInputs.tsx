@@ -7,6 +7,7 @@ import { useAtom } from "jotai";
 type GuessInputProps = {
   onCorrect: () => void;
   onIncorrect: () => void;
+  onSkip: () => void;
   possibleAnswers: string[];
   disabled?: boolean;
 };
@@ -18,6 +19,7 @@ export const GuessInput = ({
   onIncorrect,
   possibleAnswers,
   disabled,
+  onSkip,
 }: GuessInputProps) => {
   const [config] = useAtom(gameConfigAtom);
   const [inputState, setInputState] = useState<InputState>("default");
@@ -28,26 +30,28 @@ export const GuessInput = ({
     setInput(event.target.value);
   };
 
-  const handleGuess: KeyboardEventHandler<HTMLInputElement> = (event) => {
-    if (event.key !== "Enter") {
-      return;
+  const handleKeyEvent: KeyboardEventHandler<HTMLInputElement> = (event) => {
+    if (event.key === "Enter") {
+      const { bestMatch } = findBestMatch(
+        input.toLowerCase(),
+        possibleAnswers.map((value) => value.toLowerCase())
+      );
+
+      if (bestMatch.rating >= config.similarityThreshold) {
+        setInputState("correct");
+        onCorrect();
+        return;
+      }
+
+      setInput("");
+
+      setInputState("error");
+      onIncorrect();
     }
 
-    const { bestMatch } = findBestMatch(
-      input.toLowerCase(),
-      possibleAnswers.map((value) => value.toLowerCase())
-    );
-
-    if (bestMatch.rating >= config.similarityThreshold) {
-      setInputState("correct");
-      onCorrect();
-      return;
+    if (event.key === "s" && event.ctrlKey) {
+      onSkip();
     }
-
-    setInput("");
-
-    setInputState("error");
-    onIncorrect();
   };
 
   return (
@@ -55,12 +59,12 @@ export const GuessInput = ({
       disabled={disabled}
       type="text"
       placeholder="Your Guess"
-      className={`input mr-4 flex-1 bg-neutral transition-all duration-100 ease-in-out ${
+      className={`input w-full bg-neutral transition-all duration-100 ease-in-out ${
         inputState === "error" ? "input-error animate-wiggle" : ""
       }`}
       value={input}
       onChange={handleChange}
-      onKeyDown={handleGuess}
+      onKeyDown={handleKeyEvent}
       autoFocus
     />
   );
