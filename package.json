@@ -18,6 +18,7 @@
     "@trpc/react-query": "^10.9.0",
     "@trpc/server": "^10.9.0",
     "@types/string-similarity": "^4.0.0",
+    "@vercel/analytics": "^0.1.8",
     "array-shuffle": "^3.0.0",
     "daisyui": "^2.49.0",
     "html-react-parser": "^3.0.8",
