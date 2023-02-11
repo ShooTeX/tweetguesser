@@ -16,7 +16,7 @@ import { gameConfigAtom } from "../../atoms/game";
 
 const Game: NextPage = () => {
   const router = useRouter();
-  const { usernames } = router.query;
+  const { usernames, endlessMode } = router.query;
 
   if (!usernames && router.isReady) {
     void router.replace("/");
@@ -39,7 +39,6 @@ const Game: NextPage = () => {
     void router.replace("/");
   }
 
-  const [config] = useAtom(gameConfigAtom);
   const [currentRound, setCurrentRound] = useState(0);
   const [tries, setTries] = useState(0);
   const [reveal, setReveal] = useState(false);
@@ -168,7 +167,7 @@ const Game: NextPage = () => {
           </span>
         </div>
         <div className="flex flex-grow flex-col justify-center">
-          {!config.endless && (
+          {!endlessMode && (
             <Timer
               onTimesUp={() => {
                 setGameTimeout(true);

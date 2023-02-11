@@ -6,14 +6,12 @@ import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useRouter } from "next/router";
 import { Logo } from "../components/Logo";
 import { FaHeart } from "react-icons/fa";
-import { useAtom } from "jotai";
-import { gameConfigAtom } from "../atoms/game";
 
 const Home: NextPage = () => {
   const router = useRouter();
   const [animationParent] = useAutoAnimate();
-  const [config, setConfig] = useAtom(gameConfigAtom);
   const [usernames, setUsernames] = useState<string>();
+  const [endlessMode, setEndlessMode] = useState(false);
   const usernamesArr = usernames
     ?.split("\n")
     .map((username) => username.trim())
@@ -33,7 +31,10 @@ const Home: NextPage = () => {
   });
 
   if (tweets) {
-    void router.push({ pathname: "/game", query: { usernames: usernamesArr } });
+    void router.push({
+      pathname: "/game",
+      query: { usernames: usernamesArr, endlessMode },
+    });
   }
 
   const handlePlay = () => {
@@ -79,12 +80,9 @@ roxcodes`}
                   <input
                     type="checkbox"
                     className="toggle-primary toggle"
-                    checked={config.endless}
+                    checked={endlessMode}
                     onChange={(event) => {
-                      setConfig((config) => ({
-                        ...config,
-                        endless: event.target.checked,
-                      }));
+                      setEndlessMode(event.target.checked);
                     }}
                   />
                 </label>
