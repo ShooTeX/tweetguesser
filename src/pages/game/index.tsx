@@ -221,7 +221,7 @@ const Game: NextPage = () => {
               <span> guess</span>
             </div>
             <div>
-              <kbd className="kbd kbd-sm">ctrl</kbd> +{" "}
+              <kbd className="kbd kbd-sm">Ctrl</kbd>{" "}
               <kbd className="kbd kbd-sm">s</kbd>
               <span> skip</span>
             </div>
