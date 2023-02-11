@@ -172,7 +172,7 @@ const Game: NextPage = () => {
           </span>
         </div>
         <div className="flex flex-grow flex-col justify-center">
-          {parsedEndlessMode && (
+          {!parsedEndlessMode && (
             <Timer
               onTimesUp={() => {
                 setGameTimeout(true);
