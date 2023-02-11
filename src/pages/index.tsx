@@ -33,15 +33,20 @@ const Home: NextPage = () => {
   return (
     <>
       <Head>
-        <title>Twitter Guessr</title>
-        <meta name="description" content="Twitter Guessr" />
+        <title>TWEETGUESSER</title>
+        <meta name="description" content="He tweeted what?!" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className="hero min-h-screen bg-base-200">
         <div className="hero-content flex-col">
+          <h1 className="bg-gradient-to-r from-[#fad0c4] to-[#ffd1ff] bg-clip-text text-4xl font-medium text-transparent">
+            TWEET
+            <span className="bg-gradient-to-r from-[#fad0c4] to-[#ffd1ff] bg-clip-text font-extrabold text-transparent">
+              GUESSER
+            </span>
+          </h1>
           <div className="card w-96 flex-shrink-0 bg-base-100 shadow-xl">
             <div className="card-body" ref={animationParent}>
-              <h1 className="card-title uppercase">Twitter Guesser</h1>
               <div className="form-control">
                 <label className="label">
                   <span className="label-text">Twitter usernames</span>
@@ -74,6 +79,17 @@ roxcodes`}
               </div>
             </div>
           </div>
+          <span className="text-sm">
+            build by{" "}
+            <a
+              href="https://twitter.com/imshootex"
+              target="_blank"
+              rel="noreferrer"
+              className="link-hover link-info link font-bold"
+            >
+              @imShooTeX
+            </a>
+          </span>
         </div>
       </div>
     </>

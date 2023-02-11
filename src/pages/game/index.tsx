@@ -67,11 +67,6 @@ const Game: NextPage = () => {
 
   return (
     <>
-      <Head>
-        <title>Twitter Guessr</title>
-        <meta name="description" content="Twitter Guessr" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
       <main className="flex min-h-screen flex-col items-center">
         {history && <Stats score={score} round={currentRound + 1} />}
         <div className="flex flex-grow flex-col justify-center">
