@@ -10,6 +10,8 @@ import { useState } from "react";
 import type { Round } from "../../types/round";
 import { Logo } from "../../components/Logo";
 import { Timer } from "../../components/Timer";
+import { Modal } from "../../components/Modal";
+import Link from "next/link";
 
 const Game: NextPage = () => {
   const router = useRouter();
@@ -43,6 +45,7 @@ const Game: NextPage = () => {
   const [gameTimeout, setGameTimeout] = useState(false);
   const currentTweet = tweets && tweets[currentRound];
   const gameover = tweets?.length === currentRound || gameTimeout;
+  const correctlyAnswered = history.filter((item) => item.score > 0);
 
   const reset = () => {
     if (!gameover) {
@@ -61,7 +64,7 @@ const Game: NextPage = () => {
 
     setReveal(true);
 
-    setGameTimeout(() => {
+    setTimeout(() => {
       reset();
     }, 1500);
   };
@@ -70,6 +73,50 @@ const Game: NextPage = () => {
 
   return (
     <>
+      <Modal show={gameover}>
+        <div className="modal modal-open">
+          <div className="modal-box w-auto">
+            <h2 className="text-center text-3xl font-bold uppercase text-error">
+              Gameover
+            </h2>
+            <div className="mt-8 flex items-center justify-center space-x-2">
+              <div
+                className="radial-progress bg-neutral font-bold text-success"
+                style={
+                  {
+                    "--value":
+                      (correctlyAnswered.length / (tweets?.length || 0)) * 100,
+                  } as React.CSSProperties
+                }
+              >
+                {correctlyAnswered.length}/{tweets?.length || 0}
+              </div>
+              <div className="stats">
+                <div className="stat w-48 place-items-center bg-neutral">
+                  <div className="stat-title">Score</div>
+                  <div className="stat-value font-mono text-primary">
+                    {score}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="mt-8 flex flex-col space-y-2">
+              <button
+                type="button"
+                onClick={() => {
+                  router.reload();
+                }}
+                className="btn btn-primary"
+              >
+                play again
+              </button>
+              <Link href="/" className="btn-outline btn">
+                change users
+              </Link>
+            </div>
+          </div>
+        </div>
+      </Modal>
       <main className="flex min-h-screen flex-col items-center">
         <div className="flex w-full flex-col items-center justify-center p-4">
           <span>
@@ -126,7 +173,7 @@ const Game: NextPage = () => {
           />
           <button
             type="button"
-            className="btn-error btn text-error-content"
+            className="btn btn-error text-error-content"
             onClick={() => endRound(true)}
             disabled={!currentTweet || reveal}
           >
