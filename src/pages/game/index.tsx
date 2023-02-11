@@ -11,6 +11,8 @@ import { Logo } from "../../components/Logo";
 import { Timer } from "../../components/Timer";
 import { Modal } from "../../components/Modal";
 import Link from "next/link";
+import { useAtom } from "jotai";
+import { gameConfigAtom } from "../../atoms/game";
 
 const Game: NextPage = () => {
   const router = useRouter();
@@ -37,6 +39,7 @@ const Game: NextPage = () => {
     void router.replace("/");
   }
 
+  const [config] = useAtom(gameConfigAtom);
   const [currentRound, setCurrentRound] = useState(0);
   const [tries, setTries] = useState(0);
   const [reveal, setReveal] = useState(false);
@@ -165,12 +168,14 @@ const Game: NextPage = () => {
           </span>
         </div>
         <div className="flex flex-grow flex-col justify-center">
-          <Timer
-            onTimesUp={() => {
-              setGameTimeout(true);
-            }}
-            active={!gameover}
-          />
+          {!config.endless && (
+            <Timer
+              onTimesUp={() => {
+                setGameTimeout(true);
+              }}
+              active={!gameover}
+            />
+          )}
           <div className="stack mt-4 transition-all ease-in-out">
             {currentTweet ? (
               <Tweet

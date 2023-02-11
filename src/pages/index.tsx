@@ -6,10 +6,13 @@ import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useRouter } from "next/router";
 import { Logo } from "../components/Logo";
 import { FaHeart } from "react-icons/fa";
+import { useAtom } from "jotai";
+import { gameConfigAtom } from "../atoms/game";
 
 const Home: NextPage = () => {
   const router = useRouter();
   const [animationParent] = useAutoAnimate();
+  const [config, setConfig] = useAtom(gameConfigAtom);
   const [usernames, setUsernames] = useState<string>();
   const usernamesArr = usernames
     ?.split("\n")
@@ -70,6 +73,22 @@ roxcodes`}
                   correct or try again later.
                 </span>
               )}
+              <div className="form-control w-52">
+                <label className="label cursor-pointer">
+                  <span className="label-text">Endless Mode</span>
+                  <input
+                    type="checkbox"
+                    className="toggle-primary toggle"
+                    checked={config.endless}
+                    onChange={(event) => {
+                      setConfig((config) => ({
+                        ...config,
+                        endless: event.target.checked,
+                      }));
+                    }}
+                  />
+                </label>
+              </div>
               <div className="form-control mt-6">
                 <button
                   className={`btn btn-primary ${
