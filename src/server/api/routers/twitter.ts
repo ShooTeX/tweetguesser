@@ -13,6 +13,7 @@ type GetTweetsResponse = {
   name: string;
   username: string;
   images: components["schemas"]["Photo"][];
+  entities?: components["schemas"]["FullTextEntities"];
 }[];
 
 export const twitterRouter = createTRPCRouter({
@@ -46,6 +47,7 @@ export const twitterRouter = createTRPCRouter({
           "media.fields": ["url", "width", "height", "alt_text"],
           exclude: ["replies", "retweets"],
           max_results: 20,
+          "tweet.fields": ["entities"],
         });
 
         if (tweets.errors) {
@@ -96,6 +98,7 @@ export const twitterRouter = createTRPCRouter({
             username: user.username,
             profile_image_url: user.profile_image_url,
             images,
+            entities: tweet.entities,
           });
         });
       }

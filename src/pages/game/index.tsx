@@ -83,6 +83,7 @@ const Game: NextPage = () => {
                 username={currentTweet.name}
                 avatar={currentTweet.profile_image_url}
                 hidden={!reveal}
+                entities={currentTweet.entities}
               >
                 {currentTweet.text}
               </Tweet>

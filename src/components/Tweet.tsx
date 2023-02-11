@@ -3,6 +3,7 @@ import Image from "next/image";
 import type { PropsWithChildren } from "react";
 import { FaQuestion } from "react-icons/fa";
 import { type RouterOutputs } from "../utils/api";
+import { EntityHandler } from "./EntityHandler";
 import { ImageGrid } from "./ImageGrid";
 
 export type TweetProps = {
@@ -12,6 +13,7 @@ export type TweetProps = {
   children: string;
   hidden?: boolean;
   images: RouterOutputs["twitter"]["getTweets"][0]["images"];
+  entities: RouterOutputs["twitter"]["getTweets"][0]["entities"];
 };
 
 const TweetWrapper = ({ children }: PropsWithChildren) => {
@@ -33,6 +35,7 @@ export const Tweet = ({
   hidden = true,
   children,
   images,
+  entities,
 }: TweetProps) => {
   return (
     <TweetWrapper>
@@ -61,7 +64,7 @@ export const Tweet = ({
         </div>
       )}
       <p className="text-2xl" key={children}>
-        {children}
+        <EntityHandler entities={entities}>{children}</EntityHandler>
       </p>
       {images.length > 0 && <ImageGrid images={images} className="mt-4" />}
     </TweetWrapper>
