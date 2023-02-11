@@ -75,12 +75,12 @@ const Game: NextPage = () => {
       <Modal show={gameover}>
         <div className="modal modal-open">
           <div className="modal-box w-auto">
-            <h2 className="text-center text-3xl font-bold uppercase text-error">
+            <h2 className="text-center text-3xl font-bold uppercase text-secondary">
               Gameover
             </h2>
             <div className="mt-8 flex items-center justify-center space-x-2">
               <div
-                className="radial-progress bg-neutral font-bold text-success"
+                className="radial-progress bg-neutral font-bold text-primary"
                 style={
                   {
                     "--value":
