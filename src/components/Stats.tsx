@@ -9,11 +9,11 @@ export const Stats = ({ round, score }: StatsProps) => {
       <div className="stats shadow">
         <div className="stat w-48 place-items-center bg-neutral">
           <div className="stat-title">Score</div>
-          <div className="stat-value text-primary">{score}</div>
+          <div className="stat-value font-mono text-primary">{score}</div>
         </div>
         <div className="stat w-32 place-items-center bg-neutral">
           <div className="stat-title">Round</div>
-          <div className="stat-value">{round}</div>
+          <div className="stat-value font-mono">{round}</div>
         </div>
       </div>
     </div>

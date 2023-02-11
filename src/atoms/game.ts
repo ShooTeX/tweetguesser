@@ -4,7 +4,7 @@ import { atomWithReset } from "jotai/utils";
 const baseGameConfigAtom = atomWithReset({
   maxLives: 3,
   pointsPerLive: 5,
-  timeLimit: 30000,
+  timeLimit: 120000,
   maxRounds: 10,
   similarityThreshold: 0.8,
   endless: true,

@@ -9,6 +9,7 @@ import { z } from "zod";
 import { useState } from "react";
 import type { Round } from "../../types/round";
 import { Logo } from "../../components/Logo";
+import { Timer } from "../../components/Timer";
 
 const Game: NextPage = () => {
   const router = useRouter();
@@ -39,8 +40,9 @@ const Game: NextPage = () => {
   const [tries, setTries] = useState(0);
   const [reveal, setReveal] = useState(false);
   const [history, setHistory] = useState<Round[]>([]);
+  const [gameTimeout, setGameTimeout] = useState(false);
   const currentTweet = tweets && tweets[currentRound];
-  const gameover = tweets?.length === currentRound;
+  const gameover = tweets?.length === currentRound || gameTimeout;
 
   const reset = () => {
     if (!gameover) {
@@ -59,7 +61,7 @@ const Game: NextPage = () => {
 
     setReveal(true);
 
-    setTimeout(() => {
+    setGameTimeout(() => {
       reset();
     }, 1500);
   };
@@ -89,6 +91,12 @@ const Game: NextPage = () => {
           </span>
         </div>
         <div className="flex flex-grow flex-col justify-center">
+          <Timer
+            onTimesUp={() => {
+              setGameTimeout(true);
+            }}
+            active={!gameover}
+          />
           <div className="stack mt-4 transition-all ease-in-out">
             {currentTweet ? (
               <Tweet
