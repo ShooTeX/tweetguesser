@@ -11,7 +11,10 @@ const Home: NextPage = () => {
   const router = useRouter();
   const [animationParent] = useAutoAnimate();
   const [usernames, setUsernames] = useState<string>();
-  const usernamesArr = usernames?.split("\n");
+  const usernamesArr = usernames
+    ?.split("\n")
+    .map((username) => username.trim())
+    .filter((username) => username !== "");
 
   const {
     data: tweets,
@@ -71,7 +74,12 @@ roxcodes`}
                   className={`btn btn-primary ${
                     isFetching || !!tweets ? "loading" : ""
                   }`}
-                  disabled={!usernames || isFetching || !!tweets}
+                  disabled={
+                    !usernamesArr ||
+                    usernamesArr.length < 2 ||
+                    isFetching ||
+                    !!tweets
+                  }
                   onClick={handlePlay}
                 >
                   Play
