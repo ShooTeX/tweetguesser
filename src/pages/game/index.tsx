@@ -11,8 +11,6 @@ import { Logo } from "../../components/Logo";
 import { Timer } from "../../components/Timer";
 import { Modal } from "../../components/Modal";
 import Link from "next/link";
-import { useAtom } from "jotai";
-import { gameConfigAtom } from "../../atoms/game";
 
 const Game: NextPage = () => {
   const router = useRouter();
@@ -24,6 +22,13 @@ const Game: NextPage = () => {
 
   const parsedUsernames =
     router.isReady && z.array(z.string()).parse(usernames);
+
+  const parsedEndlessMode =
+    router.isReady &&
+    z
+      .string()
+      .transform((v) => JSON.parse(v) as boolean)
+      .parse(endlessMode);
 
   const { data: tweets, error } = api.twitter.getTweets.useQuery(
     parsedUsernames || [],
@@ -167,7 +172,7 @@ const Game: NextPage = () => {
           </span>
         </div>
         <div className="flex flex-grow flex-col justify-center">
-          {!endlessMode && (
+          {parsedEndlessMode && (
             <Timer
               onTimesUp={() => {
                 setGameTimeout(true);
