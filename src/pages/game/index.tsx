@@ -113,7 +113,7 @@ const Game: NextPage = () => {
                 onClick={() => {
                   router.reload();
                 }}
-                className="btn btn-primary"
+                className="btn-primary btn"
               >
                 play again
               </button>
@@ -139,7 +139,7 @@ const Game: NextPage = () => {
               </button>
               <button
                 type="button"
-                className="btn btn-error"
+                className="btn-error btn"
                 onClick={() => {
                   setGameTimeout(true);
                   setShowGiveUp(false);
@@ -160,7 +160,7 @@ const Game: NextPage = () => {
             {history && <Stats score={score} round={currentRound + 1} />}
           </div>
           <span className="mt-1 text-sm">
-            build by{" "}
+            built by{" "}
             <a
               href="https://twitter.com/imshootex"
               target="_blank"
@@ -213,7 +213,7 @@ const Game: NextPage = () => {
             </div>
             <button
               type="button"
-              className="btn btn-error text-error-content"
+              className="btn-error btn text-error-content"
               onClick={() => setShowGiveUp(true)}
               disabled={!currentTweet || reveal}
             >
