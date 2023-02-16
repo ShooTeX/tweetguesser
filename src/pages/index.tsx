@@ -2,27 +2,32 @@ import { type NextPage } from "next";
 import Head from "next/head";
 import { useState } from "react";
 import { api } from "../utils/api";
-import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useRouter } from "next/router";
 import { Logo } from "../components/Logo";
 import { FaHeart } from "react-icons/fa";
+import { useForm } from "react-hook-form";
+import { UsernamesInput } from "../components/UsernamesInput";
+import { XCircle } from "lucide-react";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 
 const Home: NextPage = () => {
   const router = useRouter();
   const [animationParent] = useAutoAnimate();
-  const [usernames, setUsernames] = useState<string>();
+
+  const [usernames, setUsernames] = useState<string[]>([]);
+
+  // Remove vvv
   const [endlessMode, setEndlessMode] = useState(false);
-  const usernamesArr = usernames
-    ?.split("\n")
-    .map((username) => username.trim())
-    .filter((username) => username !== "");
+  // ---
+
+  const {} = useForm();
 
   const {
     data: tweets,
     error,
     isFetching,
     refetch,
-  } = api.twitter.getTweets.useQuery(usernamesArr ?? [], {
+  } = api.twitter.getTweets.useQuery(usernames ?? [], {
     refetchOnWindowFocus: false,
     refetchOnMount: false,
     cacheTime: 0,
@@ -33,7 +38,7 @@ const Home: NextPage = () => {
   if (tweets) {
     void router.push({
       pathname: "/game",
-      query: { usernames: usernamesArr, endlessMode },
+      query: { usernames: !!usernames.length, endlessMode },
     });
   }
 
@@ -53,27 +58,30 @@ const Home: NextPage = () => {
           <Logo />
           <div className="card w-96 flex-shrink-0 bg-base-100 shadow-xl">
             <div className="card-body" ref={animationParent}>
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text">Twitter usernames</span>
-                  <span className="label-text-alt">Separated by new line</span>
-                </label>
-                <textarea
-                  value={usernames}
-                  onChange={(event) => {
-                    setUsernames(event.target.value);
-                  }}
-                  className="textarea-bordered textarea-primary textarea h-44 uppercase"
-                  placeholder={`imShooTeX
-roxcodes`}
-                ></textarea>
-              </div>
-              {error && (
-                <span className="text-sm text-error">
-                  Something didn&apos;t work. Please check if the usernames are
-                  correct or try again later.
-                </span>
+              <UsernamesInput
+                onSubmit={(input) => {
+                  setUsernames((usernames) => [...usernames, input.handle]);
+                }}
+              />
+              {!!usernames?.length && (
+                <div
+                  className="flex flex-wrap gap-x-1 gap-y-1"
+                  ref={animationParent}
+                >
+                  {usernames.map((username) => (
+                    <div className="badge" key={username}>
+                      {username}
+                    </div>
+                  ))}
+                </div>
               )}
+              <div className="alert alert-error mt-4 shadow-lg">
+                <div>
+                  <XCircle></XCircle>
+                  <span>Error! Task failed successfully.</span>
+                </div>
+              </div>
+              <div className="divider">Settings</div>
               <div className="form-control w-52">
                 <label className="label cursor-pointer">
                   <span className="label-text">Endless Mode</span>
@@ -89,14 +97,11 @@ roxcodes`}
               </div>
               <div className="form-control mt-6">
                 <button
-                  className={`btn btn-primary ${
+                  className={`btn-primary btn ${
                     isFetching || !!tweets ? "loading" : ""
                   }`}
                   disabled={
-                    !usernamesArr ||
-                    usernamesArr.length < 2 ||
-                    isFetching ||
-                    !!tweets
+                    !usernames || usernames.length < 2 || isFetching || !!tweets
                   }
                   onClick={handlePlay}
                 >
