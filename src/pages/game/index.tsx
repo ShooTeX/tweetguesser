@@ -146,7 +146,7 @@ const Game: NextPage = () => {
             {history && <Stats score={score} round={currentRound + 1} />}
           </div>
           <span className="mt-1 text-sm">
-            build by{" "}
+            built by{" "}
             <a
               href="https://twitter.com/imshootex"
               target="_blank"

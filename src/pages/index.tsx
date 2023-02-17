@@ -156,7 +156,7 @@ const Home: NextPage = () => {
             </div>
           </div>
           <span className="text-sm">
-            <FaHeart className="inline" /> build by{" "}
+            <FaHeart className="inline" /> built by{" "}
             <a
               href="https://twitter.com/imshootex"
               target="_blank"
