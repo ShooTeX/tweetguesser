@@ -68,10 +68,7 @@ export const twitterRouter = createTRPCRouter({
         }
 
         if (!tweets.data) {
-          throw new TRPCError({
-            code: "INTERNAL_SERVER_ERROR",
-            message: "No tweets were returned",
-          });
+          continue;
         }
 
         tweets.data.forEach((tweet) => {
