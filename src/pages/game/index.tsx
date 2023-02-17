@@ -12,31 +12,38 @@ import { Timer } from "../../components/Timer";
 import { Modal } from "../../components/Modal";
 import Link from "next/link";
 
+const routerQuerySchema = z.object({
+  usernames: z.array(z.string()).min(2),
+  endlessMode: z
+    .string()
+    .transform((v) => JSON.parse(v) as unknown)
+    .pipe(z.boolean())
+    .optional(),
+});
+
+type RouterQuery = z.infer<typeof routerQuerySchema>;
+
 const Game: NextPage = () => {
   const router = useRouter();
-  const { usernames, endlessMode } = router.query;
+  const [routerQuery, setQuery] = useState<RouterQuery>();
 
-  if (!usernames && router.isReady) {
-    void router.replace("/");
+  // is there a cleaner way to do this?
+  if (router.isReady && !routerQuery) {
+    const parsedRouterQuery = routerQuerySchema.safeParse(router.query);
+    if (parsedRouterQuery.success) {
+      setQuery(parsedRouterQuery.data);
+    } else {
+      void router.replace("/");
+    }
   }
 
-  const parsedUsernames =
-    router.isReady && z.array(z.string()).parse(usernames);
-
-  const parsedEndlessMode =
-    router.isReady &&
-    z
-      .string()
-      .transform((v) => JSON.parse(v) as boolean)
-      .parse(endlessMode);
-
   const { data, error } = api.twitter.getTweets.useQuery(
-    parsedUsernames || [],
+    routerQuery?.usernames || [],
     {
       refetchOnWindowFocus: false,
       refetchOnMount: false,
       retry: false,
-      enabled: !!parsedUsernames,
+      enabled: !!routerQuery?.usernames,
     }
   );
 
@@ -174,7 +181,7 @@ const Game: NextPage = () => {
           </span>
         </div>
         <div className="flex flex-grow flex-col justify-center">
-          {!parsedEndlessMode && (
+          {!routerQuery?.endlessMode && !!data?.tweets.length && (
             <Timer
               onTimesUp={() => {
                 setGameTimeout(true);
