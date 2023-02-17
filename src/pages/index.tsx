@@ -25,13 +25,13 @@ const Home: NextPage = () => {
     {
       refetchOnWindowFocus: false,
       refetchOnMount: false,
-      cacheTime: 0,
+      cacheTime: 200,
       retry: false,
       enabled: false,
     }
   );
 
-  if (!data?.invalidUsernames?.length && data?.tweets) {
+  if (!data?.invalidUsernames?.length && data?.tweets.length) {
     void router.push({
       pathname: "/game",
       query: { usernames, endlessMode },
@@ -140,7 +140,7 @@ const Home: NextPage = () => {
               <div className="form-control mt-6">
                 <button
                   className={`btn-primary btn ${
-                    isFetching || !!data?.tweets ? "loading" : ""
+                    isFetching || !!data?.tweets.length ? "loading" : ""
                   }`}
                   disabled={
                     !usernames ||
