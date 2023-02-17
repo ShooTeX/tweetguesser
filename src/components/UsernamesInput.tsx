@@ -37,11 +37,14 @@ export const UsernamesInput = ({ onSubmit }: UsernamesInputProps) => {
   return (
     <form onSubmit={handleSubmit(clearAndSubmit)}>
       <div className="form-control w-full max-w-xs" ref={animationParent}>
+        <label className="label">
+          <span className="label-text">Twitter handle</span>
+        </label>
         <input
           {...register("handle")}
           type="text"
-          placeholder="SomeHandle"
           autoFocus
+          placeholder="imshootex"
           className="input-bordered input-primary input w-full max-w-xs flex-shrink-0"
         />
         {!!errors.handle && (
