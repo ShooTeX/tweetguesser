@@ -24,10 +24,7 @@ const Game: NextPage = () => {
     retry: false,
   });
 
-  if (
-    router.isReady &&
-    (!usernames.length || error || data?.invalidUsernames?.length)
-  ) {
+  if (router.isReady && (error || data?.invalidUsernames?.length)) {
     void router.replace("/");
   }
 
