@@ -19,18 +19,16 @@ const Home: NextPage = () => {
   const [invalidUsernames, setInvalidUsernames] = useState<string[]>([]);
   const [config, setConfig] = useAtom(gameConfigAtom);
 
-  const { data, error, isFetching, refetch } = api.twitter.getTweets.useQuery(
-    usernames ?? [],
-    {
+  const { data, error, isFetching, refetch, isStale } =
+    api.twitter.getTweets.useQuery(usernames ?? [], {
       refetchOnWindowFocus: false,
       refetchOnMount: false,
-      staleTime: 5000,
+      staleTime: 1000,
       retry: false,
       enabled: false,
-    }
-  );
+    });
 
-  if (!data?.invalidUsernames?.length && data?.tweets.length) {
+  if (!data?.invalidUsernames?.length && data?.tweets.length && !isStale) {
     void router.push({
       pathname: "/game",
     });
@@ -141,14 +139,16 @@ const Home: NextPage = () => {
               <div className="form-control mt-6">
                 <button
                   className={`btn-primary btn ${
-                    isFetching || !!data?.tweets.length ? "loading" : ""
+                    isFetching || (!!data?.tweets.length && !isStale)
+                      ? "loading"
+                      : ""
                   }`}
                   disabled={
                     !usernames ||
                     usernames.length < 2 ||
                     !usernamesAreValid ||
                     isFetching ||
-                    !!data?.tweets
+                    (!!data?.tweets && !isStale)
                   }
                   onClick={handlePlay}
                 >
