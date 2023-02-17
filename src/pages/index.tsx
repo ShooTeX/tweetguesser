@@ -27,6 +27,7 @@ const Home: NextPage = () => {
     error,
     isFetching,
     refetch,
+    errorUpdatedAt,
   } = api.twitter.getTweets.useQuery(usernames ?? [], {
     refetchOnWindowFocus: false,
     refetchOnMount: false,
@@ -75,12 +76,14 @@ const Home: NextPage = () => {
                   ))}
                 </div>
               )}
-              <div className="alert alert-error mt-4 shadow-lg">
-                <div>
-                  <XCircle></XCircle>
-                  <span>Error! Task failed successfully.</span>
+              {!!error && (
+                <div className="alert alert-error mt-4 shadow-lg">
+                  <div>
+                    <XCircle></XCircle>
+                    <span>An unknown error occured</span>
+                  </div>
                 </div>
-              </div>
+              )}
               <div className="divider">Settings</div>
               <div className="form-control w-52">
                 <label className="label cursor-pointer">
