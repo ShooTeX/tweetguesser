@@ -4,56 +4,30 @@ import { Stats } from "../../components/Stats";
 import { Tweet, TweetLoading } from "../../components/Tweet";
 import { api } from "../../utils/api";
 import { useRouter } from "next/router";
-import { z } from "zod";
 import { useState } from "react";
 import type { Round } from "../../types/round";
 import { Logo } from "../../components/Logo";
 import { Timer } from "../../components/Timer";
 import { Modal } from "../../components/Modal";
 import Link from "next/link";
-
-const routerQuerySchema = z.object({
-  usernames: z.array(z.string()).min(2),
-  endlessMode: z
-    .string()
-    // doesn't feel right :(
-    .transform((v) => {
-      if (v.toLowerCase() === "true") {
-        return true;
-      }
-      return false;
-    })
-    .pipe(z.boolean().catch(() => false))
-    .optional(),
-});
-
-type RouterQuery = z.infer<typeof routerQuerySchema>;
+import { useAtomValue } from "jotai";
+import { gameConfigAtom, usernamesAtom } from "../../atoms/game";
 
 const Game: NextPage = () => {
   const router = useRouter();
-  const [routerQuery, setQuery] = useState<RouterQuery>();
+  const usernames = useAtomValue(usernamesAtom);
+  const { endless } = useAtomValue(gameConfigAtom);
 
-  // is there a cleaner way to do this?
-  if (router.isReady && !routerQuery) {
-    const parsedRouterQuery = routerQuerySchema.safeParse(router.query);
-    if (parsedRouterQuery.success) {
-      setQuery(parsedRouterQuery.data);
-    } else {
-      void router.replace("/");
-    }
-  }
+  const { data, error } = api.twitter.getTweets.useQuery(usernames, {
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    retry: false,
+  });
 
-  const { data, error } = api.twitter.getTweets.useQuery(
-    routerQuery?.usernames || [],
-    {
-      refetchOnWindowFocus: false,
-      refetchOnMount: false,
-      retry: false,
-      enabled: !!routerQuery?.usernames,
-    }
-  );
-
-  if (router.isReady && (error || data?.invalidUsernames?.length)) {
+  if (
+    router.isReady &&
+    (!usernames.length || error || data?.invalidUsernames?.length)
+  ) {
     void router.replace("/");
   }
 
@@ -187,7 +161,7 @@ const Game: NextPage = () => {
           </span>
         </div>
         <div className="flex flex-grow flex-col justify-center">
-          {!routerQuery?.endlessMode && !!data?.tweets.length && (
+          {!endless && !!data?.tweets.length && (
             <Timer
               onTimesUp={() => {
                 setGameTimeout(true);

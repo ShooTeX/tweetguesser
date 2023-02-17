@@ -1,6 +1,9 @@
-import { atomWithReset } from "jotai/utils";
+import { atomWithReset, atomWithStorage } from "jotai/utils";
 
 export const gameConfigAtom = atomWithReset({
   timeLimit: 120000,
   similarityThreshold: 0.8,
+  endless: false,
 });
+
+export const usernamesAtom = atomWithStorage<string[]>("usernames", []);

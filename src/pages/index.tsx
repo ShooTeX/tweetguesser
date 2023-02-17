@@ -8,24 +8,23 @@ import { FaHeart } from "react-icons/fa";
 import { UsernamesInput } from "../components/UsernamesInput";
 import { XCircle } from "lucide-react";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
+import { gameConfigAtom, usernamesAtom } from "../atoms/game";
+import { useAtom } from "jotai";
 
 const Home: NextPage = () => {
   const router = useRouter();
   const [animationParent] = useAutoAnimate();
 
-  const [usernames, setUsernames] = useState<string[]>([]);
+  const [usernames, setUsernames] = useAtom(usernamesAtom);
   const [invalidUsernames, setInvalidUsernames] = useState<string[]>([]);
-
-  // Remove vvv
-  const [endlessMode, setEndlessMode] = useState(false);
-  // ---
+  const [config, setConfig] = useAtom(gameConfigAtom);
 
   const { data, error, isFetching, refetch } = api.twitter.getTweets.useQuery(
     usernames ?? [],
     {
       refetchOnWindowFocus: false,
       refetchOnMount: false,
-      cacheTime: 200,
+      staleTime: 5000,
       retry: false,
       enabled: false,
     }
@@ -34,7 +33,6 @@ const Home: NextPage = () => {
   if (!data?.invalidUsernames?.length && data?.tweets.length) {
     void router.push({
       pathname: "/game",
-      query: { usernames, endlessMode },
     });
   }
 
@@ -130,9 +128,12 @@ const Home: NextPage = () => {
                   <input
                     type="checkbox"
                     className="toggle-primary toggle"
-                    checked={endlessMode}
+                    checked={config.endless}
                     onChange={(event) => {
-                      setEndlessMode(event.target.checked);
+                      setConfig((config) => ({
+                        ...config,
+                        endless: event.target.checked,
+                      }));
                     }}
                   />
                 </label>
