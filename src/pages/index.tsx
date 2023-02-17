@@ -20,28 +20,26 @@ const Home: NextPage = () => {
   const [endlessMode, setEndlessMode] = useState(false);
   // ---
 
-  const {
-    data: tweets,
-    error,
-    isFetching,
-    refetch,
-  } = api.twitter.getTweets.useQuery(usernames ?? [], {
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
-    cacheTime: 0,
-    retry: false,
-    enabled: false,
-  });
+  const { data, error, isFetching, refetch } = api.twitter.getTweets.useQuery(
+    usernames ?? [],
+    {
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+      cacheTime: 0,
+      retry: false,
+      enabled: false,
+    }
+  );
 
-  if (!!tweets?.invalidUsernames?.length && tweets?.data) {
+  if (!data?.invalidUsernames?.length && data?.tweets) {
     void router.push({
       pathname: "/game",
       query: { usernames, endlessMode },
     });
   }
 
-  if (!!tweets?.invalidUsernames?.length) {
-    const newInvalidUsernames = tweets.invalidUsernames.filter(
+  if (!!data?.invalidUsernames?.length) {
+    const newInvalidUsernames = data.invalidUsernames.filter(
       (username) => !invalidUsernames.includes(username)
     );
 
@@ -142,14 +140,14 @@ const Home: NextPage = () => {
               <div className="form-control mt-6">
                 <button
                   className={`btn-primary btn ${
-                    isFetching || !!tweets?.data ? "loading" : ""
+                    isFetching || !!data?.tweets ? "loading" : ""
                   }`}
                   disabled={
                     !usernames ||
                     usernames.length < 2 ||
                     !usernamesAreValid ||
                     isFetching ||
-                    !!tweets?.data
+                    !!data?.tweets
                   }
                   onClick={handlePlay}
                 >

@@ -30,7 +30,7 @@ const Game: NextPage = () => {
       .transform((v) => JSON.parse(v) as boolean)
       .parse(endlessMode);
 
-  const { data: tweets, error } = api.twitter.getTweets.useQuery(
+  const { data, error } = api.twitter.getTweets.useQuery(
     parsedUsernames || [],
     {
       refetchOnWindowFocus: false,
@@ -40,9 +40,11 @@ const Game: NextPage = () => {
     }
   );
 
-  if (router.isReady && error) {
+  if (router.isReady && (error || data?.invalidUsernames?.length)) {
     void router.replace("/");
   }
+
+  const tweets = data?.tweets;
 
   const [currentRound, setCurrentRound] = useState(0);
   const [tries, setTries] = useState(0);
