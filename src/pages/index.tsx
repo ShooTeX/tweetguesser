@@ -5,7 +5,6 @@ import { api } from "../utils/api";
 import { useRouter } from "next/router";
 import { Logo } from "../components/Logo";
 import { FaHeart } from "react-icons/fa";
-import { useForm } from "react-hook-form";
 import { UsernamesInput } from "../components/UsernamesInput";
 import { XCircle } from "lucide-react";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
@@ -15,12 +14,11 @@ const Home: NextPage = () => {
   const [animationParent] = useAutoAnimate();
 
   const [usernames, setUsernames] = useState<string[]>([]);
+  const [invalidUsernames, setInvalidUsernames] = useState<string[]>([]);
 
   // Remove vvv
   const [endlessMode, setEndlessMode] = useState(false);
   // ---
-
-  const {} = useForm();
 
   const {
     data: tweets,
@@ -35,12 +33,31 @@ const Home: NextPage = () => {
     enabled: false,
   });
 
-  if (tweets) {
+  if (!!tweets?.invalidUsernames?.length && tweets?.data) {
     void router.push({
       pathname: "/game",
       query: { usernames, endlessMode },
     });
   }
+
+  if (!!tweets?.invalidUsernames?.length) {
+    const newInvalidUsernames = tweets.invalidUsernames.filter(
+      (username) => !invalidUsernames.includes(username)
+    );
+
+    if (!!newInvalidUsernames.length) {
+      setInvalidUsernames((usernames) => [
+        ...usernames,
+        ...newInvalidUsernames,
+      ]);
+    }
+  }
+
+  const usernamesAreValid = usernames.every(
+    (username) => !invalidUsernames.includes(username)
+  );
+
+  console.log(usernamesAreValid);
 
   const handlePlay = () => {
     void refetch();
@@ -84,7 +101,9 @@ const Home: NextPage = () => {
                 >
                   {usernames.map((username) => (
                     <div
-                      className="badge cursor-pointer"
+                      className={`badge cursor-pointer ${
+                        invalidUsernames.includes(username) ? "badge-error" : ""
+                      }`}
                       key={username}
                       onClick={() => handleUsernameClick(username)}
                     >
@@ -93,14 +112,19 @@ const Home: NextPage = () => {
                   ))}
                 </div>
               )}
-              {!!error && (
-                <div className="alert alert-error mt-4 shadow-lg">
-                  <div>
-                    <XCircle></XCircle>
-                    <span>An unknown error occured</span>
+              {!!error ||
+                (!usernamesAreValid && (
+                  <div className="alert alert-error mt-4 shadow-lg">
+                    <div>
+                      <XCircle></XCircle>
+                      <span>
+                        {!!error
+                          ? "An unknown error occured"
+                          : "One or more usernames are invalid"}
+                      </span>
+                    </div>
                   </div>
-                </div>
-              )}
+                ))}
               <div className="divider">Settings</div>
               <div className="form-control w-52">
                 <label className="label cursor-pointer">
@@ -118,10 +142,14 @@ const Home: NextPage = () => {
               <div className="form-control mt-6">
                 <button
                   className={`btn-primary btn ${
-                    isFetching || !!tweets ? "loading" : ""
+                    isFetching || !!tweets?.data ? "loading" : ""
                   }`}
                   disabled={
-                    !usernames || usernames.length < 2 || isFetching || !!tweets
+                    !usernames ||
+                    usernames.length < 2 ||
+                    !usernamesAreValid ||
+                    isFetching ||
+                    !!tweets?.data
                   }
                   onClick={handlePlay}
                 >

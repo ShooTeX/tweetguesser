@@ -27,10 +27,20 @@ export const twitterRouter = createTRPCRouter({
         });
 
       if (errors) {
-        throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: errors.at(0)?.title,
-        });
+        const invalidUsernames = errors
+          .map(({ detail }) =>
+            detail?.substring(detail.indexOf("[") + 1, detail.indexOf("]"))
+          )
+          .filter(Boolean) as string[];
+
+        if (!invalidUsernames.length) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: errors.at(0)?.detail,
+          });
+        }
+
+        return { invalidUsernames, data: undefined };
       }
 
       if (!users) {
@@ -102,6 +112,6 @@ export const twitterRouter = createTRPCRouter({
           });
         });
       }
-      return arrayShuffle(response);
+      return { data: arrayShuffle(response) };
     }),
 });
