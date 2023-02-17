@@ -27,7 +27,6 @@ const Home: NextPage = () => {
     error,
     isFetching,
     refetch,
-    errorUpdatedAt,
   } = api.twitter.getTweets.useQuery(usernames ?? [], {
     refetchOnWindowFocus: false,
     refetchOnMount: false,
@@ -47,6 +46,14 @@ const Home: NextPage = () => {
     void refetch();
   };
 
+  const handleUsernamesInput = (username: string) => {
+    if (usernames.includes(username)) {
+      return;
+    }
+
+    setUsernames((usernames) => [...usernames, username]);
+  };
+
   return (
     <>
       <Head>
@@ -60,8 +67,8 @@ const Home: NextPage = () => {
           <div className="card w-96 flex-shrink-0 bg-base-100 shadow-xl">
             <div className="card-body" ref={animationParent}>
               <UsernamesInput
-                onSubmit={(input) => {
-                  setUsernames((usernames) => [...usernames, input.handle]);
+                onSubmit={({ handle }) => {
+                  handleUsernamesInput(handle);
                 }}
               />
               {!!usernames?.length && (
