@@ -44,8 +44,7 @@ export const UsernamesInput = ({ onSubmit }: UsernamesInputProps) => {
           {...register("handle")}
           type="text"
           autoFocus
-          placeholder="imshootex"
-          className="input-bordered input-primary input w-full max-w-xs flex-shrink-0"
+          className="input-bordered input-primary  input w-full max-w-xs flex-shrink-0"
         />
         {!!errors.handle && (
           <label className="label flex-shrink-0">
