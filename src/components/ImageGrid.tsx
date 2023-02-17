@@ -2,7 +2,7 @@ import Image from "next/image";
 import { type RouterOutputs } from "../utils/api";
 
 type ImageGridProps = {
-  images: RouterOutputs["twitter"]["getTweets"][0]["images"];
+  images: RouterOutputs["twitter"]["getTweets"]["tweets"][0]["images"];
   className?: string;
 };
 
