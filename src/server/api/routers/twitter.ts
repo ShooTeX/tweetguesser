@@ -40,7 +40,7 @@ export const twitterRouter = createTRPCRouter({
           });
         }
 
-        return { invalidUsernames, tweets: undefined };
+        return { invalidUsernames, tweets: [] };
       }
 
       if (!users) {

@@ -12,8 +12,8 @@ export type TweetProps = {
   handle: string;
   children: string;
   hidden?: boolean;
-  images: RouterOutputs["twitter"]["getTweets"][0]["images"];
-  entities: RouterOutputs["twitter"]["getTweets"][0]["entities"];
+  images: RouterOutputs["twitter"]["getTweets"]["tweets"][0]["images"];
+  entities: RouterOutputs["twitter"]["getTweets"]["tweets"][0]["entities"];
 };
 
 const TweetWrapper = ({ children }: PropsWithChildren) => {
