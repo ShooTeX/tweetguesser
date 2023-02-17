@@ -38,7 +38,7 @@ const Home: NextPage = () => {
   if (tweets) {
     void router.push({
       pathname: "/game",
-      query: { usernames: !!usernames.length, endlessMode },
+      query: { usernames, endlessMode },
     });
   }
 
