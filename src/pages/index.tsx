@@ -46,12 +46,18 @@ const Home: NextPage = () => {
     void refetch();
   };
 
-  const handleUsernamesInput = (username: string) => {
-    if (usernames.includes(username)) {
+  const handleUsernamesInput = (input: string) => {
+    if (usernames.includes(input)) {
       return;
     }
 
-    setUsernames((usernames) => [...usernames, username]);
+    setUsernames((usernames) => [...usernames, input]);
+  };
+
+  const handleUsernameClick = (input: string) => {
+    setUsernames((usernames) =>
+      usernames.filter((username) => username !== input)
+    );
   };
 
   return (
@@ -77,7 +83,11 @@ const Home: NextPage = () => {
                   ref={animationParent}
                 >
                   {usernames.map((username) => (
-                    <div className="badge" key={username}>
+                    <div
+                      className="badge cursor-pointer"
+                      key={username}
+                      onClick={() => handleUsernameClick(username)}
+                    >
                       {username}
                     </div>
                   ))}
