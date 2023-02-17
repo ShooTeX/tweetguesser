@@ -16,8 +16,14 @@ const routerQuerySchema = z.object({
   usernames: z.array(z.string()).min(2),
   endlessMode: z
     .string()
-    .transform((v) => JSON.parse(v) as unknown)
-    .pipe(z.boolean())
+    // doesn't feel right :(
+    .transform((v) => {
+      if (v.toLowerCase() === "true") {
+        return true;
+      }
+      return false;
+    })
+    .pipe(z.boolean().catch(() => false))
     .optional(),
 });
 
