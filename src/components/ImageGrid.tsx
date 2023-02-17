@@ -16,7 +16,6 @@ const getDynamicRowColSpan = (length: number, i: number) => {
   }
 
   if (length > 1 && length < 4 && i === 0) {
-    console.log(length);
     return "row-span-2 col-span-1";
   }
 
