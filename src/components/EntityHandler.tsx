@@ -3,7 +3,7 @@ import parse from "html-react-parser";
 
 type EntityHandlerProps = {
   children: string;
-  entities: RouterOutputs["twitter"]["getTweets"][0]["entities"];
+  entities: RouterOutputs["twitter"]["getTweets"]["tweets"][0]["entities"];
 };
 export const EntityHandler = ({ children, entities }: EntityHandlerProps) => {
   if (!entities) {
