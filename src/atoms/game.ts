@@ -1,6 +1,6 @@
-import { atomWithReset, atomWithStorage } from "jotai/utils";
+import { atomWithStorage } from "jotai/utils";
 
-export const gameConfigAtom = atomWithReset({
+export const gameConfigAtom = atomWithStorage("game_config", {
   timeLimit: 120000,
   similarityThreshold: 0.8,
   endless: false,
