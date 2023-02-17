@@ -51,8 +51,6 @@ const Home: NextPage = () => {
     (username) => !invalidUsernames.includes(username)
   );
 
-  console.log(usernamesAreValid);
-
   const handlePlay = () => {
     void refetch();
   };
