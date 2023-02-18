@@ -71,11 +71,6 @@ const Home: NextPage = () => {
 
   return (
     <>
-      <Head>
-        <title>TWEETGUESSER</title>
-        <meta name="description" content="He tweeted what?!" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
       <div className="hero min-h-screen bg-base-200">
         <div className="hero-content flex-col">
           <Logo />
