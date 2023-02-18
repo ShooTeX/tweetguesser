@@ -1,5 +1,5 @@
 import { useAutoAnimate } from "@formkit/auto-animate/react";
-import { ImageOffIcon } from "lucide-react";
+import { ImageOff } from "lucide-react";
 import Image from "next/image";
 import type { PropsWithChildren } from "react";
 import { type RouterOutputs } from "../utils/api";
@@ -52,7 +52,7 @@ export const Tweet = ({
                 />
               ) : (
                 <div className="flex h-full w-full items-center justify-center bg-secondary text-xl text-secondary-content">
-                  <ImageOffIcon />
+                  <ImageOff />
                 </div>
               )}
             </div>

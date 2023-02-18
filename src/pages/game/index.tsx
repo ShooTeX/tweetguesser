@@ -12,7 +12,7 @@ import { Modal } from "../../components/Modal";
 import Link from "next/link";
 import { useAtomValue } from "jotai";
 import { gameConfigAtom, usernamesAtom } from "../../atoms/game";
-import { HeartIcon } from "lucide-react";
+import { Heart } from "lucide-react";
 
 const Game: NextPage = () => {
   const router = useRouter();
@@ -100,7 +100,7 @@ const Game: NextPage = () => {
                 onClick={() => {
                   router.reload();
                 }}
-                className="btn-primary btn"
+                className="btn btn-primary"
               >
                 play again
               </button>
@@ -126,7 +126,7 @@ const Game: NextPage = () => {
               </button>
               <button
                 type="button"
-                className="btn-error btn"
+                className="btn btn-error"
                 onClick={() => {
                   setGameTimeout(true);
                   setShowGiveUp(false);
@@ -147,7 +147,7 @@ const Game: NextPage = () => {
             {history && <Stats score={score} round={currentRound + 1} />}
           </div>
           <span className="mt-1 text-sm">
-            <HeartIcon className="inline" /> built by{" "}
+            <Heart className="inline" /> built by{" "}
             <a
               href="https://twitter.com/imshootex"
               target="_blank"
@@ -200,7 +200,7 @@ const Game: NextPage = () => {
             </div>
             <button
               type="button"
-              className="btn-error btn text-error-content"
+              className="btn btn-error text-error-content"
               onClick={() => setShowGiveUp(true)}
               disabled={!currentTweet || reveal}
             >
