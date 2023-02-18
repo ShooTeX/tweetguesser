@@ -56,11 +56,11 @@ const Home: NextPage = () => {
   };
 
   const handleUsernamesInput = (input: string) => {
-    if (usernames.includes(input)) {
+    if (usernames.includes(input.toLowerCase())) {
       return;
     }
 
-    setUsernames((usernames) => [...usernames, input]);
+    setUsernames((usernames) => [...usernames, input.toLowerCase()]);
   };
 
   const handleUsernameClick = (input: string) => {
