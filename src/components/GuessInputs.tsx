@@ -135,7 +135,7 @@ export const GuessInput = ({
   };
 
   return (
-    <div className="relative">
+    <div className="relative" ref={animationParent}>
       {!disabled &&
         !!suggestions?.length &&
         input.length > 1 &&
