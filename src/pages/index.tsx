@@ -1,12 +1,10 @@
 import { type NextPage } from "next";
-import Head from "next/head";
 import { useState } from "react";
 import { api } from "../utils/api";
 import { useRouter } from "next/router";
 import { Logo } from "../components/Logo";
-import { FaHeart } from "react-icons/fa";
 import { UsernamesInput } from "../components/UsernamesInput";
-import { XCircle } from "lucide-react";
+import { HeartIcon, XCircle } from "lucide-react";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { gameConfigAtom, usernamesAtom } from "../atoms/game";
 import { useAtom } from "jotai";
@@ -151,7 +149,7 @@ const Home: NextPage = () => {
             </div>
           </div>
           <span className="text-sm">
-            <FaHeart className="inline" /> built by{" "}
+            <HeartIcon className="inline" /> built by{" "}
             <a
               href="https://twitter.com/imshootex"
               target="_blank"
