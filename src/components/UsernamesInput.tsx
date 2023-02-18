@@ -36,7 +36,7 @@ export const UsernamesInput = ({ onSubmit }: UsernamesInputProps) => {
 
   return (
     <form onSubmit={handleSubmit(clearAndSubmit)}>
-      <div className="form-control w-full max-w-xs" ref={animationParent}>
+      <div className="form-control w-full" ref={animationParent}>
         <label className="label">
           <span className="label-text">Twitter handle</span>
         </label>
@@ -45,7 +45,7 @@ export const UsernamesInput = ({ onSubmit }: UsernamesInputProps) => {
             {...register("handle")}
             type="text"
             autoFocus
-            className="input-bordered input-primary input w-full max-w-xs flex-shrink-0"
+            className="input-bordered input-primary input w-full flex-shrink-0"
           />
           <div className="absolute inset-y-0 right-4 flex flex-col justify-center">
             <kbd className="kbd">⏎</kbd>
