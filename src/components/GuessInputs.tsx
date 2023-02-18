@@ -3,8 +3,7 @@ import {
   useState,
   type FocusEventHandler,
   createRef,
-  MouseEvent,
-  MouseEventHandler,
+  type MouseEvent,
 } from "react";
 import type { KeyboardEventHandler } from "react";
 import { findBestMatch } from "string-similarity";
@@ -92,7 +91,7 @@ export const GuessInput = ({
       onSkip();
     }
 
-    if (event.key === "Tab" && !event.shiftKey) {
+    if ((event.key === "Tab" && !event.shiftKey) || event.key === "ArrowUp") {
       event.preventDefault();
       setShowSuggestions(true);
       setSelectedSuggestion((index) => {
@@ -108,7 +107,7 @@ export const GuessInput = ({
       });
     }
 
-    if (event.key === "Tab" && event.shiftKey) {
+    if ((event.key === "Tab" && event.shiftKey) || event.key === "ArrowDown") {
       event.preventDefault();
       setShowSuggestions(true);
       setSelectedSuggestion((index) => {
