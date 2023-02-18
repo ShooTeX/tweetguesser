@@ -33,7 +33,7 @@ export const GuessInput = ({
   const [selectedSuggestion, setSelectedSuggestion] = useState<number>();
   const suggestions =
     input && usernames
-      ? findBestMatch(input, usernames)
+      ? findBestMatch(previousInput || input, usernames)
           .ratings.sort((a, b) => b.rating - a.rating)
           .filter((suggestion) => suggestion.rating !== 0)
       : undefined;
@@ -44,13 +44,16 @@ export const GuessInput = ({
     suggestions?.at(selectedSuggestion)?.target.toLowerCase() !==
       input.toLowerCase()
   ) {
-    setPreviousInput(input);
+    if (!previousInput) {
+      setPreviousInput(input);
+    }
     setInput(suggestions?.at(selectedSuggestion)?.target ?? "");
   }
 
   const handleChange: ChangeEventHandler<HTMLInputElement> = (event) => {
     setShowSuggestions(true);
     setSelectedSuggestion(undefined);
+    setPreviousInput(undefined);
     setInputState("default");
     setInput(event.target.value);
   };
@@ -81,7 +84,7 @@ export const GuessInput = ({
       onSkip();
     }
 
-    if (event.key === "Tab") {
+    if (event.key === "Tab" && !event.shiftKey) {
       event.preventDefault();
       setShowSuggestions(true);
       setSelectedSuggestion((index) => {
@@ -89,7 +92,7 @@ export const GuessInput = ({
           return undefined;
         }
 
-        if (!index || !suggestions.at(index + 1)) {
+        if (index === undefined || !suggestions.at(index + 1)) {
           return 0;
         }
 
@@ -105,7 +108,7 @@ export const GuessInput = ({
           return undefined;
         }
 
-        if (!index || !suggestions?.at(index - 1)) {
+        if (index === undefined || index <= 0 || !suggestions?.at(index - 1)) {
           return suggestions.length - 1;
         }
 
@@ -138,7 +141,7 @@ export const GuessInput = ({
         input.length > 1 &&
         showSuggestions && (
           <ul
-            className="absolute bottom-full z-10 mb-2 max-h-52 w-full overflow-y-auto rounded-md bg-neutral px-2 py-2"
+            className="absolute bottom-full z-10 mb-2 max-h-52 w-full overflow-y-auto overflow-x-hidden rounded-md bg-neutral px-2 py-2"
             ref={animationParent}
           >
             {suggestions.map((suggestion, i) => (
