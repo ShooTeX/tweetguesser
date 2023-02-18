@@ -4,7 +4,7 @@ import { api } from "../utils/api";
 import { useRouter } from "next/router";
 import { Logo } from "../components/Logo";
 import { UsernamesInput } from "../components/UsernamesInput";
-import { HeartIcon, XCircle } from "lucide-react";
+import { Heart, HeartIcon, XCircle } from "lucide-react";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { gameConfigAtom, usernamesAtom } from "../atoms/game";
 import { useAtom } from "jotai";
@@ -129,7 +129,7 @@ const Home: NextPage = () => {
               </div>
               <div className="form-control mt-6">
                 <button
-                  className={`btn-primary btn ${
+                  className={`btn btn-primary ${
                     isFetching || (!!data?.tweets.length && !isStale)
                       ? "loading"
                       : ""
@@ -149,7 +149,7 @@ const Home: NextPage = () => {
             </div>
           </div>
           <span className="text-sm">
-            <HeartIcon className="inline" /> built by{" "}
+            <Heart className="inline" /> built by{" "}
             <a
               href="https://twitter.com/imshootex"
               target="_blank"
