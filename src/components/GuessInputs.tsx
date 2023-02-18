@@ -1,4 +1,11 @@
-import { type ChangeEventHandler, useState, FocusEventHandler } from "react";
+import {
+  type ChangeEventHandler,
+  useState,
+  type FocusEventHandler,
+  createRef,
+  MouseEvent,
+  MouseEventHandler,
+} from "react";
 import type { KeyboardEventHandler } from "react";
 import { findBestMatch } from "string-similarity";
 import { gameConfigAtom, usernamesAtom } from "../atoms/game";
@@ -37,6 +44,7 @@ export const GuessInput = ({
           .ratings.sort((a, b) => b.rating - a.rating)
           .filter((suggestion) => suggestion.rating !== 0)
       : undefined;
+  const inputField = createRef<HTMLInputElement>();
 
   if (
     showSuggestions &&
@@ -134,8 +142,18 @@ export const GuessInput = ({
     setShowSuggestions(true);
   };
 
+  const handleSuggestionClick = (
+    event: MouseEvent<HTMLLIElement, globalThis.MouseEvent>,
+    index: number
+  ) => {
+    event.preventDefault();
+    inputField.current?.focus();
+    setSelectedSuggestion(undefined);
+    setInput(suggestions?.at(index)?.target ?? "");
+  };
+
   return (
-    <div className="relative" ref={animationParent}>
+    <div className="relative">
       {!disabled &&
         !!suggestions?.length &&
         input.length > 1 &&
@@ -151,6 +169,7 @@ export const GuessInput = ({
                   i === selectedSuggestion && "bg-primary text-primary-content"
                 )}
                 key={suggestion.target}
+                onPointerDown={(event) => handleSuggestionClick(event, i)}
               >
                 {suggestion.target}
               </li>
@@ -158,6 +177,7 @@ export const GuessInput = ({
           </ul>
         )}
       <input
+        ref={inputField}
         disabled={disabled}
         type="text"
         placeholder="Your Guess"

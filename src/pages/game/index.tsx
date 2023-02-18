@@ -216,6 +216,10 @@ const Game: NextPage = () => {
               <kbd className="kbd kbd-sm">s</kbd>
               <span> skip</span>
             </div>
+            <div>
+              <kbd className="kbd kbd-sm">Tab</kbd>
+              <span> cycle suggestions</span>
+            </div>
           </div>
         </div>
       </main>
