@@ -12,6 +12,7 @@ import { Modal } from "../../components/Modal";
 import Link from "next/link";
 import { useAtomValue } from "jotai";
 import { gameConfigAtom, usernamesAtom } from "../../atoms/game";
+import { HeartIcon } from "lucide-react";
 
 const Game: NextPage = () => {
   const router = useRouter();
@@ -146,7 +147,7 @@ const Game: NextPage = () => {
             {history && <Stats score={score} round={currentRound + 1} />}
           </div>
           <span className="mt-1 text-sm">
-            built by{" "}
+            <HeartIcon className="inline" /> built by{" "}
             <a
               href="https://twitter.com/imshootex"
               target="_blank"

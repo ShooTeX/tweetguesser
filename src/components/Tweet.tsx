@@ -1,7 +1,7 @@
 import { useAutoAnimate } from "@formkit/auto-animate/react";
+import { ImageOffIcon } from "lucide-react";
 import Image from "next/image";
 import type { PropsWithChildren } from "react";
-import { FaQuestion } from "react-icons/fa";
 import { type RouterOutputs } from "../utils/api";
 import { EntityHandler } from "./EntityHandler";
 import { ImageGrid } from "./ImageGrid";
@@ -52,7 +52,7 @@ export const Tweet = ({
                 />
               ) : (
                 <div className="flex h-full w-full items-center justify-center bg-secondary text-xl text-secondary-content">
-                  <FaQuestion />
+                  <ImageOffIcon />
                 </div>
               )}
             </div>
