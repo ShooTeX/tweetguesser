@@ -6,10 +6,22 @@ import "../styles/globals.css";
 import { Provider } from "jotai";
 import { Analytics } from "@vercel/analytics/react";
 import Head from "next/head";
+import { Inter, Noto_Sans_Mono } from "@next/font/google";
+
+const inter = Inter({ subsets: ["latin"] });
+const notoSansMono = Noto_Sans_Mono({ subsets: ["latin"] });
 
 const MyApp: AppType = ({ Component, pageProps }) => {
   return (
     <>
+      <style jsx global>
+        {`
+          :root {
+            --inter-font: ${inter.style.fontFamily};
+            --noto-sans-mono-font: ${notoSansMono.style.fontFamily};
+          }
+        `}
+      </style>
       <Head>
         <title>TWEETGUESSER</title>
         <meta name="description" content="Test your twitter skills!" />

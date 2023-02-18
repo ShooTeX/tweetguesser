@@ -3,6 +3,7 @@ lockfileVersion: 5.4
 specifiers:
   '@formkit/auto-animate': 1.0.0-beta.6
   '@hookform/resolvers': ^2.9.11
+  '@next/font': ^13.1.6
   '@prisma/client': ^4.9.0
   '@tanstack/react-query': ^4.20.0
   '@trpc/client': ^10.9.0
@@ -49,6 +50,7 @@ specifiers:
 dependencies:
   '@formkit/auto-animate': 1.0.0-beta.6
   '@hookform/resolvers': 2.9.11_react-hook-form@7.43.1
+  '@next/font': 13.1.6
   '@prisma/client': 4.9.0_prisma@4.9.0
   '@tanstack/react-query': 4.23.0_biqbaboplfbrettd7655fr4n2y
   '@trpc/client': 10.9.0_@trpc+server@10.9.0
@@ -161,6 +163,10 @@ packages:
     dependencies:
       glob: 7.1.7
     dev: true
+
+  /@next/font/13.1.6:
+    resolution: {integrity: sha512-AITjmeb1RgX1HKMCiA39ztx2mxeAyxl4ljv2UoSBUGAbFFMg8MO7YAvjHCgFhD39hL7YTbFjol04e/BPBH5RzQ==}
+    dev: false
 
   /@next/swc-android-arm-eabi/13.1.6:
     resolution: {integrity: sha512-F3/6Z8LH/pGlPzR1AcjPFxx35mPqjE5xZcf+IL+KgbW9tMkp7CYi1y7qKrEWU7W4AumxX/8OINnDQWLiwLasLQ==}
