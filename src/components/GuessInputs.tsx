@@ -162,11 +162,12 @@ export const GuessInput = ({
             className="absolute bottom-full z-10 mb-2 max-h-52 w-full overflow-y-auto overflow-x-hidden rounded-md bg-neutral px-2 py-2"
             ref={animationParent}
           >
-            {suggestions.map((suggestion, i) => (
+            {suggestions.reverse().map((suggestion, i) => (
               <li
                 className={clsx(
                   "cursor-pointer rounded py-2 px-2 hover:bg-primary-focus hover:text-primary-content",
-                  i === selectedSuggestion && "bg-primary text-primary-content"
+                  suggestions.length - 1 - i === selectedSuggestion &&
+                    "bg-primary text-primary-content"
                 )}
                 key={suggestion.target}
                 onPointerDown={(event) => handleSuggestionClick(event, i)}
