@@ -4,10 +4,11 @@ import { api } from "../utils/api";
 import { useRouter } from "next/router";
 import { Logo } from "../components/Logo";
 import { UsernamesInput } from "../components/UsernamesInput";
-import { Heart, HeartIcon, XCircle } from "lucide-react";
+import { Heart, XCircle } from "lucide-react";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { gameConfigAtom, usernamesAtom } from "../atoms/game";
 import { useAtom } from "jotai";
+import { Settings } from "../components/Settings";
 
 const Home: NextPage = () => {
   const router = useRouter();
@@ -72,7 +73,7 @@ const Home: NextPage = () => {
       <div className="hero min-h-screen bg-base-200">
         <div className="hero-content flex-col">
           <Logo />
-          <div className="card w-96 flex-shrink-0 bg-base-100 shadow-xl">
+          <div className="min-w-96 card flex-shrink-0 bg-base-100 shadow-xl">
             <div className="card-body" ref={animationParent}>
               <UsernamesInput
                 onSubmit={({ handle }) => {
@@ -111,25 +112,10 @@ const Home: NextPage = () => {
                   </div>
                 ))}
               <div className="divider">Settings</div>
-              <div className="form-control w-52">
-                <label className="label cursor-pointer">
-                  <span className="label-text">Endless Mode</span>
-                  <input
-                    type="checkbox"
-                    className="toggle-primary toggle"
-                    checked={config.endless}
-                    onChange={(event) => {
-                      setConfig((config) => ({
-                        ...config,
-                        endless: event.target.checked,
-                      }));
-                    }}
-                  />
-                </label>
-              </div>
+              <Settings />
               <div className="form-control mt-6">
                 <button
-                  className={`btn btn-primary ${
+                  className={`btn btn-primary btn-lg ${
                     isFetching || (!!data?.tweets.length && !isStale)
                       ? "loading"
                       : ""
