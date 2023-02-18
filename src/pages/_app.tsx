@@ -29,11 +29,11 @@ const MyApp: AppType = ({ Component, pageProps }) => {
           <>
             <meta
               name="twitter:image"
-              content={`${process.env.VERCEL_URL}/images/og-image.jpeg`}
+              content={`https://${process.env.VERCEL_URL}/images/og-image.jpeg`}
             />
             <meta
               property="og:image"
-              content={`${process.env.VERCEL_URL}/images/og-image.jpeg`}
+              content={`https://${process.env.VERCEL_URL}/images/og-image.jpeg`}
             />
           </>
         )}
