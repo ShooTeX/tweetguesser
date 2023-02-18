@@ -6,7 +6,7 @@ import { Logo } from "../components/Logo";
 import { UsernamesInput } from "../components/UsernamesInput";
 import { Heart, XCircle } from "lucide-react";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
-import { gameConfigAtom, usernamesAtom } from "../atoms/game";
+import { usernamesAtom } from "../atoms/game";
 import { useAtom } from "jotai";
 import { Settings } from "../components/Settings";
 
@@ -16,7 +16,6 @@ const Home: NextPage = () => {
 
   const [usernames, setUsernames] = useAtom(usernamesAtom);
   const [invalidUsernames, setInvalidUsernames] = useState<string[]>([]);
-  const [config, setConfig] = useAtom(gameConfigAtom);
 
   const { data, error, isFetching, refetch, isStale } =
     api.twitter.getTweets.useQuery(usernames ?? [], {
@@ -115,7 +114,7 @@ const Home: NextPage = () => {
               <Settings />
               <div className="form-control mt-6">
                 <button
-                  className={`btn btn-primary btn-lg ${
+                  className={`btn-primary btn-lg btn ${
                     isFetching || (!!data?.tweets.length && !isStale)
                       ? "loading"
                       : ""
