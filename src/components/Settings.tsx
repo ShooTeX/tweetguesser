@@ -1,30 +1,23 @@
 import { useAtom } from "jotai";
-import { useForm } from "react-hook-form";
-import { gameConfigAtom, type GameConfig } from "../atoms/game";
-import { equals } from "remeda";
+import { gameConfigAtom, type EndTime, endTimeSchema } from "../atoms/game";
+import { type ChangeEventHandler } from "react";
 
 export const Settings = () => {
   const [config, setConfig] = useAtom(gameConfigAtom);
-  const {
-    register,
-    watch,
-    reset,
-    formState: { defaultValues, touchedFields },
-  } = useForm<GameConfig>({
-    defaultValues: config,
-  });
 
-  const isTouched = !!Object.keys(touchedFields).length;
+  const handleEndTimeChange: ChangeEventHandler<HTMLInputElement> = (event) => {
+    setConfig((config) => ({
+      ...config,
+      endTime: event.target.value as EndTime,
+    }));
+  };
 
-  const formData = watch();
-
-  if (!equals(config, defaultValues) && !isTouched) {
-    reset(config);
-  }
-
-  if (!equals(config, formData) && isTouched) {
-    setConfig(formData);
-  }
+  const handleEndlessChange: ChangeEventHandler<HTMLInputElement> = (event) => {
+    setConfig((config) => ({
+      ...config,
+      endless: event.target.checked,
+    }));
+  };
 
   return (
     <form>
@@ -34,7 +27,8 @@ export const Settings = () => {
           <input
             type="checkbox"
             className="toggle-primary toggle"
-            {...register("endless")}
+            checked={config.endless}
+            onChange={handleEndlessChange}
           />
         </label>
       </div>
@@ -43,34 +37,17 @@ export const Settings = () => {
           <span className="label-text">Tweets starting from</span>
         </label>
         <div className="btn-group">
-          <input
-            type="radio"
-            value={"today"}
-            data-title="Today"
-            className="btn"
-            {...register("startTime")}
-          />
-          <input
-            type="radio"
-            value={"1_month_ago"}
-            data-title="1 month ago"
-            className="btn"
-            {...register("startTime")}
-          />
-          <input
-            type="radio"
-            value={"1_year_ago"}
-            data-title="1 year ago"
-            className="btn"
-            {...register("startTime")}
-          />
-          <input
-            type="radio"
-            value={"3_years_ago"}
-            data-title="3 years ago"
-            className="btn"
-            {...register("startTime")}
-          />
+          {endTimeSchema.options.map((endTime) => (
+            <input
+              key={endTime}
+              type="radio"
+              value={endTime}
+              data-title={endTime.replaceAll("_", " ")}
+              className="btn"
+              checked={config.endTime === endTime}
+              onChange={handleEndTimeChange}
+            />
+          ))}
         </div>
       </div>
     </form>

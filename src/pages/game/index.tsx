@@ -13,17 +13,21 @@ import Link from "next/link";
 import { useAtomValue } from "jotai";
 import { gameConfigAtom, usernamesAtom } from "../../atoms/game";
 import { Heart } from "lucide-react";
+import { getEndTime } from "../../utils/getEndTime";
 
 const Game: NextPage = () => {
   const router = useRouter();
   const usernames = useAtomValue(usernamesAtom);
-  const { endless } = useAtomValue(gameConfigAtom);
+  const { endless, endTime } = useAtomValue(gameConfigAtom);
 
-  const { data, error } = api.twitter.getTweets.useQuery(usernames, {
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
-    retry: false,
-  });
+  const { data, error } = api.twitter.getTweets.useQuery(
+    { usernames, endTime: getEndTime(endTime) },
+    {
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+      retry: false,
+    }
+  );
 
   if (router.isReady && (error || data?.invalidUsernames?.length)) {
     void router.replace("/");
@@ -100,7 +104,7 @@ const Game: NextPage = () => {
                 onClick={() => {
                   router.reload();
                 }}
-                className="btn btn-primary"
+                className="btn-primary btn"
               >
                 play again
               </button>
@@ -126,7 +130,7 @@ const Game: NextPage = () => {
               </button>
               <button
                 type="button"
-                className="btn btn-error"
+                className="btn-error btn"
                 onClick={() => {
                   setGameTimeout(true);
                   setShowGiveUp(false);
@@ -200,7 +204,7 @@ const Game: NextPage = () => {
             </div>
             <button
               type="button"
-              className="btn btn-error text-error-content"
+              className="btn-error btn text-error-content"
               onClick={() => setShowGiveUp(true)}
               disabled={!currentTweet || reveal}
             >
