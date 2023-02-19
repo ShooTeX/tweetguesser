@@ -6,25 +6,30 @@ import { Logo } from "../components/Logo";
 import { UsernamesInput } from "../components/UsernamesInput";
 import { Heart, XCircle } from "lucide-react";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
-import { usernamesAtom } from "../atoms/game";
-import { useAtom } from "jotai";
+import { gameConfigAtom, usernamesAtom } from "../atoms/game";
+import { useAtom, useAtomValue } from "jotai";
 import { Settings } from "../components/Settings";
+import { getEndTime } from "../utils/getEndTime";
 
 const Home: NextPage = () => {
   const router = useRouter();
   const [animationParent] = useAutoAnimate();
+  const { endTime } = useAtomValue(gameConfigAtom);
 
   const [usernames, setUsernames] = useAtom(usernamesAtom);
   const [invalidUsernames, setInvalidUsernames] = useState<string[]>([]);
 
   const { data, error, isFetching, refetch, isStale } =
-    api.twitter.getTweets.useQuery(usernames ?? [], {
-      refetchOnWindowFocus: false,
-      refetchOnMount: false,
-      staleTime: 1000,
-      retry: false,
-      enabled: false,
-    });
+    api.twitter.getTweets.useQuery(
+      { usernames: usernames, endTime: getEndTime(endTime) },
+      {
+        refetchOnWindowFocus: false,
+        refetchOnMount: false,
+        staleTime: 1000,
+        retry: false,
+        enabled: false,
+      }
+    );
 
   if (!data?.invalidUsernames?.length && data?.tweets.length && !isStale) {
     void router.push({

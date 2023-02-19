@@ -3,8 +3,12 @@ import { createTRPCRouter, publicProcedure } from "../trpc";
 import arrayShuffle from "array-shuffle";
 import { TRPCError } from "@trpc/server";
 import type { components } from "twitter-api-sdk/dist/types";
+import { formatISO } from "date-fns";
 
-const getTweetsInputSchema = z.array(z.string().min(1)).min(1).max(20);
+const getTweetsInputSchema = z.object({
+  usernames: z.array(z.string().min(1)).min(1).max(20),
+  endTime: z.coerce.date().optional(),
+});
 
 type GetTweetsResponse = {
   id: string;
@@ -19,10 +23,10 @@ type GetTweetsResponse = {
 export const twitterRouter = createTRPCRouter({
   getTweets: publicProcedure
     .input(getTweetsInputSchema)
-    .query(async ({ ctx, input }) => {
+    .query(async ({ ctx, input: { usernames, endTime } }) => {
       const { data: users, errors } =
         await ctx.twitter.users.findUsersByUsername({
-          usernames: input,
+          usernames,
           "user.fields": ["profile_image_url"],
         });
 
@@ -56,6 +60,7 @@ export const twitterRouter = createTRPCRouter({
           expansions: ["attachments.media_keys"],
           "media.fields": ["url", "width", "height", "alt_text"],
           exclude: ["replies", "retweets"],
+          end_time: endTime ? formatISO(endTime) : undefined,
           max_results: 20,
           "tweet.fields": ["entities"],
         });
