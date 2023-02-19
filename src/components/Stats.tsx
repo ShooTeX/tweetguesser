@@ -1,9 +1,9 @@
-type StatsProps = {
+type StatsProperties = {
   round: number;
   score: number;
 };
 
-export const Stats = ({ round, score }: StatsProps) => {
+export const Stats = ({ round, score }: StatsProperties) => {
   return (
     <div className="flex flex-col items-center justify-center">
       <div className="stats shadow">

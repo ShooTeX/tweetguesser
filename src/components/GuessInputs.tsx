@@ -12,7 +12,7 @@ import { useAtomValue } from "jotai";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import clsx from "clsx";
 
-type GuessInputProps = {
+type GuessInputProperties = {
   onCorrect: () => void;
   onIncorrect: () => void;
   onSkip: () => void;
@@ -28,7 +28,7 @@ export const GuessInput = ({
   possibleAnswers,
   disabled,
   onSkip,
-}: GuessInputProps) => {
+}: GuessInputProperties) => {
   const [animationParent] = useAutoAnimate();
   const config = useAtomValue(gameConfigAtom);
   const usernames = useAtomValue(usernamesAtom);
@@ -59,8 +59,8 @@ export const GuessInput = ({
 
   const handleChange: ChangeEventHandler<HTMLInputElement> = (event) => {
     setShowSuggestions(true);
-    setSelectedSuggestion(undefined);
-    setPreviousInput(undefined);
+    setSelectedSuggestion();
+    setPreviousInput();
     setInputState("default");
     setInput(event.target.value);
   };
@@ -80,7 +80,7 @@ export const GuessInput = ({
 
       setInput("");
       setShowSuggestions(false);
-      setSelectedSuggestion(undefined);
+      setSelectedSuggestion();
 
       setInputState("error");
       onIncorrect();
@@ -96,7 +96,7 @@ export const GuessInput = ({
       setShowSuggestions(true);
       setSelectedSuggestion((index) => {
         if (!suggestions?.length) {
-          return undefined;
+          return;
         }
 
         if (index === undefined || !suggestions.at(index + 1)) {
@@ -112,7 +112,7 @@ export const GuessInput = ({
       setShowSuggestions(true);
       setSelectedSuggestion((index) => {
         if (!suggestions?.length) {
-          return undefined;
+          return;
         }
 
         if (index === undefined || index <= 0 || !suggestions?.at(index - 1)) {
@@ -125,7 +125,7 @@ export const GuessInput = ({
 
     if (event.key === "Escape") {
       if (selectedSuggestion !== undefined) {
-        setSelectedSuggestion(undefined);
+        setSelectedSuggestion();
         setInput(previousInput ?? "");
         return;
       }
@@ -147,7 +147,7 @@ export const GuessInput = ({
   ) => {
     event.preventDefault();
     inputField.current?.focus();
-    setSelectedSuggestion(undefined);
+    setSelectedSuggestion();
     setInput(suggestions?.at(index)?.target ?? "");
   };
 
@@ -161,15 +161,15 @@ export const GuessInput = ({
             className="absolute bottom-full z-10 mb-2 max-h-52 w-full overflow-y-auto overflow-x-hidden rounded-md bg-neutral px-2 py-2"
             ref={animationParent}
           >
-            {suggestions.reverse().map((suggestion, i) => (
+            {suggestions.reverse().map((suggestion, index) => (
               <li
                 className={clsx(
                   "cursor-pointer rounded py-2 px-2 hover:bg-primary-focus hover:text-primary-content",
-                  suggestions.length - 1 - i === selectedSuggestion &&
+                  suggestions.length - 1 - index === selectedSuggestion &&
                     "bg-primary text-primary-content"
                 )}
                 key={suggestion.target}
-                onPointerDown={(event) => handleSuggestionClick(event, i)}
+                onPointerDown={(event) => handleSuggestionClick(event, index)}
               >
                 {suggestion.target}
               </li>

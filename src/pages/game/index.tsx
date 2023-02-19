@@ -67,7 +67,7 @@ const Game: NextPage = () => {
     }, 1500);
   };
 
-  const score = history.reduce((prev, round) => prev + round.score, 0);
+  const score = history.reduce((previous, round) => previous + round.score, 0);
 
   return (
     <>

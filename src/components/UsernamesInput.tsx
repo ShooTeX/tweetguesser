@@ -12,11 +12,11 @@ const schema = z.object({
 });
 type FormData = z.infer<typeof schema>;
 
-type UsernamesInputProps = {
+type UsernamesInputProperties = {
   onSubmit: (data: FormData) => void;
 };
 
-export const UsernamesInput = ({ onSubmit }: UsernamesInputProps) => {
+export const UsernamesInput = ({ onSubmit }: UsernamesInputProperties) => {
   const [animationParent] = useAutoAnimate();
   const {
     register,

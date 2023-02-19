@@ -19,7 +19,7 @@
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 
 import { prisma } from "../db";
-import { env } from "../../env/server.mjs";
+import { env as environment } from "../../env/server.mjs";
 import { Client } from "twitter-api-sdk";
 
 type CreateContextOptions = Record<string, never>;
@@ -33,9 +33,9 @@ type CreateContextOptions = Record<string, never>;
  * - trpc's `createSSGHelpers` where we don't have req/res
  * @see https://create.t3.gg/en/usage/trpc#-servertrpccontextts
  */
-const createInnerTRPCContext = (_opts: CreateContextOptions) => {
+const createInnerTRPCContext = (_options: CreateContextOptions) => {
   return {
-    twitter: new Client(env.TWITTER_TOKEN),
+    twitter: new Client(environment.TWITTER_TOKEN),
     prisma,
   };
 };
@@ -45,7 +45,7 @@ const createInnerTRPCContext = (_opts: CreateContextOptions) => {
  * process every request that goes through your tRPC endpoint
  * @link https://trpc.io/docs/context
  */
-export const createTRPCContext = (_opts: CreateNextContextOptions) => {
+export const createTRPCContext = (_options: CreateNextContextOptions) => {
   return createInnerTRPCContext({});
 };
 

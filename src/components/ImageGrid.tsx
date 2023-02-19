@@ -1,12 +1,12 @@
 import Image from "next/image";
 import { type RouterOutputs } from "../utils/api";
 
-type ImageGridProps = {
+type ImageGridProperties = {
   images: RouterOutputs["twitter"]["getTweets"]["tweets"][0]["images"];
   className?: string;
 };
 
-const getDynamicRowColSpan = (length: number, i: number) => {
+const getDynamicRowColSpan = (length: number, index: number) => {
   if (length === 1) {
     return "row-span-2 col-span-2";
   }
@@ -15,27 +15,27 @@ const getDynamicRowColSpan = (length: number, i: number) => {
     return "row-span-2 col-span-1";
   }
 
-  if (length > 1 && length < 4 && i === 0) {
+  if (length > 1 && length < 4 && index === 0) {
     return "row-span-2 col-span-1";
   }
 
   return "row-span-1 col-span-1";
 };
 
-export const ImageGrid = ({ images, className }: ImageGridProps) => (
+export const ImageGrid = ({ images, className }: ImageGridProperties) => (
   <div
     className={`grid h-80 w-full grid-cols-2 grid-rows-2 gap-2 ${
       className ?? ""
     } overflow-hidden`}
   >
     {images.map(
-      (image, i) =>
+      (image, index) =>
         image.url && (
           <figure
             key={image.media_key}
             className={`relative ${getDynamicRowColSpan(
               images.length,
-              i
+              index
             )} overflow-hidden rounded-md`}
           >
             <Image

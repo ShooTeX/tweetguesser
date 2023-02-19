@@ -37,7 +37,7 @@ export const twitterRouter = createTRPCRouter({
           )
           .filter(Boolean) as string[];
 
-        if (!invalidUsernames.length) {
+        if (invalidUsernames.length === 0) {
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",
             message: errors.at(0)?.detail,
@@ -76,7 +76,7 @@ export const twitterRouter = createTRPCRouter({
           continue;
         }
 
-        tweets.data.forEach((tweet) => {
+        for (const tweet of tweets.data) {
           if (
             tweet.attachments?.media_keys
               ?.flatMap((mediaKey) =>
@@ -87,7 +87,7 @@ export const twitterRouter = createTRPCRouter({
               )
               .filter(Boolean).length
           ) {
-            return;
+            continue;
           }
 
           const images =
@@ -112,7 +112,7 @@ export const twitterRouter = createTRPCRouter({
             images,
             entities: tweet.entities,
           });
-        });
+        }
       }
       return { tweets: arrayShuffle(response) };
     }),

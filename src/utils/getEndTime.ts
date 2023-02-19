@@ -5,7 +5,7 @@ export const getEndTime = (endTime: EndTime) => {
   const [amount, unit] = endTime.split("_");
 
   if (!amount || !unit) {
-    return undefined;
+    return;
   }
 
   const duration = { [Number(amount) > 1 ? unit : `${unit}s`]: amount };

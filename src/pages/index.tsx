@@ -42,7 +42,7 @@ const Home: NextPage = () => {
       (username) => !invalidUsernames.includes(username)
     );
 
-    if (newInvalidUsernames.length) {
+    if (newInvalidUsernames.length > 0) {
       setInvalidUsernames((usernames) => [
         ...usernames,
         ...newInvalidUsernames,

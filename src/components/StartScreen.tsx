@@ -1,10 +1,10 @@
 import { useState } from "react";
 
-type StartScreenProps = {
+type StartScreenProperties = {
   onPlay: () => void;
 };
 
-export const StartScreen = ({ onPlay }: StartScreenProps) => {
+export const StartScreen = ({ onPlay }: StartScreenProperties) => {
   const [usernames, setUsernames] = useState<string>();
 
   console.log(usernames?.split("\n"));

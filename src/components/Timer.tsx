@@ -2,12 +2,12 @@ import { useAtom } from "jotai";
 import { useEffect, useState } from "react";
 import { gameConfigAtom } from "../atoms/game";
 
-type TimerProps = {
+type TimerProperties = {
   onTimesUp: () => void;
   active?: boolean;
 };
 
-export const Timer = ({ onTimesUp, active }: TimerProps) => {
+export const Timer = ({ onTimesUp, active }: TimerProperties) => {
   const [timer, setTimer] = useState(0);
   const [config] = useAtom(gameConfigAtom);
 
