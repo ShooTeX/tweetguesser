@@ -158,13 +158,13 @@ export const GuessInput = ({
         input.length > 1 &&
         showSuggestions && (
           <ul
-            className="absolute bottom-full z-10 mb-2 max-h-52 w-full overflow-y-auto overflow-x-hidden rounded-md bg-neutral px-2 py-2"
+            className="bg-neutral absolute bottom-full z-10 mb-2 max-h-52 w-full overflow-y-auto overflow-x-hidden rounded-md p-2"
             ref={animationParent}
           >
             {suggestions.reverse().map((suggestion, index) => (
               <li
                 className={clsx(
-                  "cursor-pointer rounded py-2 px-2 hover:bg-primary-focus hover:text-primary-content",
+                  "hover:bg-primary-focus hover:text-primary-content cursor-pointer rounded p-2",
                   suggestions.length - 1 - index === selectedSuggestion &&
                     "bg-primary text-primary-content"
                 )}
@@ -181,7 +181,7 @@ export const GuessInput = ({
         disabled={disabled}
         type="text"
         placeholder="Your Guess"
-        className={`input w-full bg-neutral transition-all duration-100 ease-in-out ${
+        className={`input bg-neutral w-full transition-all duration-100 ease-in-out ${
           inputState === "error" ? "input-error animate-wiggle" : ""
         }`}
         value={input}

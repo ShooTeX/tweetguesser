@@ -21,7 +21,7 @@ const TweetWrapper = ({ children }: PropsWithChildren) => {
   return (
     <div
       ref={animationParent}
-      className="w-[598px] rounded-xl border border-secondary bg-neutral p-4 text-neutral-content shadow-xl"
+      className="border-secondary bg-neutral text-neutral-content w-[598px] rounded-xl border p-4 shadow-xl"
     >
       {children}
     </div>
@@ -42,7 +42,7 @@ export const Tweet = ({
       {!hidden && (
         <div className="flex items-center pb-4 ">
           <div className="avatar">
-            <div className="w-12 rounded-full bg-neutral">
+            <div className="bg-neutral w-12 rounded-full">
               {avatar ? (
                 <Image
                   src={avatar}
@@ -51,7 +51,7 @@ export const Tweet = ({
                   height="48"
                 />
               ) : (
-                <div className="flex h-full w-full items-center justify-center bg-secondary text-xl text-secondary-content">
+                <div className="bg-secondary text-secondary-content flex h-full w-full items-center justify-center text-xl">
                   <ImageOff />
                 </div>
               )}

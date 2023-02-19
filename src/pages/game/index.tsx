@@ -74,12 +74,12 @@ const Game: NextPage = () => {
       <Modal show={gameover}>
         <div className="modal modal-open">
           <div className="modal-box w-auto">
-            <h2 className="text-center text-3xl font-bold uppercase text-secondary">
+            <h2 className="text-secondary text-center text-3xl font-bold uppercase">
               Gameover
             </h2>
             <div className="mt-8 flex items-center justify-center space-x-2">
               <div
-                className="radial-progress bg-neutral font-bold text-primary"
+                className="radial-progress bg-neutral text-primary font-bold"
                 style={
                   {
                     "--value":
@@ -90,9 +90,9 @@ const Game: NextPage = () => {
                 {correctlyAnswered.length}/{tweets?.length || 0}
               </div>
               <div className="stats">
-                <div className="stat w-48 place-items-center bg-neutral">
+                <div className="stat bg-neutral w-48 place-items-center">
                   <div className="stat-title">Score</div>
-                  <div className="stat-value font-mono text-primary">
+                  <div className="stat-value text-primary font-mono">
                     {score}
                   </div>
                 </div>
@@ -162,7 +162,7 @@ const Game: NextPage = () => {
             </a>
           </span>
         </div>
-        <div className="flex flex-grow flex-col justify-center">
+        <div className="flex grow flex-col justify-center">
           {!endless && !!data?.tweets.length && (
             <Timer
               onTimesUp={() => {

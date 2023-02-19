@@ -74,10 +74,10 @@ const Home: NextPage = () => {
 
   return (
     <>
-      <div className="hero min-h-screen bg-base-200">
+      <div className="hero bg-base-200 min-h-screen ">
         <div className="hero-content flex-col">
           <Logo />
-          <div className="min-w-96 card flex-shrink-0 bg-base-100 shadow-xl">
+          <div className="card bg-base-100 shrink-0 shadow-xl">
             <div className="card-body" ref={animationParent}>
               <UsernamesInput
                 onSubmit={({ handle }) => {
@@ -86,7 +86,7 @@ const Home: NextPage = () => {
               />
               {!!usernames?.length && (
                 <div
-                  className="flex max-w-sm flex-grow-0 flex-wrap gap-x-1 gap-y-1"
+                  className="flex max-w-sm grow-0 flex-wrap gap-1"
                   ref={animationParent}
                 >
                   {usernames.map((username) => (

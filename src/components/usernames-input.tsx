@@ -45,14 +45,14 @@ export const UsernamesInput = ({ onSubmit }: UsernamesInputProperties) => {
             {...register("handle")}
             type="text"
             autoFocus
-            className="input-bordered input-primary input w-full flex-shrink-0"
+            className="input-bordered input-primary input w-full shrink-0"
           />
           <div className="absolute inset-y-0 right-4 flex flex-col justify-center">
             <kbd className="kbd">⏎</kbd>
           </div>
         </div>
         {!!errors.handle && (
-          <label className="label flex-shrink-0">
+          <label className="label shrink-0">
             <span className="label-text-alt text-error">
               {errors.handle.message}
             </span>
