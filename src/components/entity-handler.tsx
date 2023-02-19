@@ -26,5 +26,12 @@ export const EntityHandler = ({
     );
   });
 
+  entities.mentions?.map((entity) => {
+    formatted = formatted.replace(
+      `@${entity.username}`,
+      `<span className="text-secondary">@${entity.username}</span>`
+    );
+  });
+
   return <>{parse(formatted)}</>;
 };
