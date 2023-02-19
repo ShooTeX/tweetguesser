@@ -16,6 +16,7 @@ export const serverSchema = z.object({
  * middleware, so you have to do it manually here.
  * @type {{ [k in keyof z.input<typeof serverSchema>]: string | undefined }}
  */
+// eslint-disable-next-line unicorn/prevent-abbreviations
 export const serverEnv = {
   TWITTER_TOKEN: process.env.TWITTER_TOKEN,
   DATABASE_URL: process.env.DATABASE_URL,
@@ -37,6 +38,7 @@ export const clientSchema = z.object({
  * and only used environment variables are included in the build.
  * @type {{ [k in keyof z.input<typeof clientSchema>]: string | undefined }}
  */
+// eslint-disable-next-line unicorn/prevent-abbreviations
 export const clientEnv = {
   // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
 };

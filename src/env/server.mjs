@@ -24,4 +24,5 @@ for (let key of Object.keys(_serverEnvironment.data)) {
   }
 }
 
+// eslint-disable-next-line unicorn/prevent-abbreviations
 export const env = { ..._serverEnvironment.data, ...clientEnvironment };
