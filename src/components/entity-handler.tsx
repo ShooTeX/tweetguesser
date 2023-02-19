@@ -20,9 +20,9 @@ export const EntityHandler = ({
       entity.url,
       entity.display_url?.startsWith("pic")
         ? ""
-        : `<a className="link link-hover link-secondary">${
-            entity.display_url || entity.url
-          }</a>`
+        : `<a className="link link-hover link-secondary" target="_blank" rel="noreferrer" href="${
+            entity.url ?? ""
+          }">${entity.display_url || entity.url}</a>`
     );
   });
 
