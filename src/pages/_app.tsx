@@ -8,8 +8,8 @@ import { Analytics } from "@vercel/analytics/react";
 import Head from "next/head";
 import { Inter, Noto_Sans_Mono } from "@next/font/google";
 
-const inter = Inter({ subsets: ["latin"] });
-const notoSansMono = Noto_Sans_Mono({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin"], display: "swap" });
+const notoSansMono = Noto_Sans_Mono({ subsets: ["latin"], display: "swap" });
 
 const MyApp: AppType = ({ Component, pageProps }) => {
   return (
