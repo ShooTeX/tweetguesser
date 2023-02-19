@@ -33,7 +33,7 @@ export const twitterRouter = createTRPCRouter({
       if (errors) {
         const invalidUsernames = errors
           .map(({ detail }) =>
-            detail?.substring(detail.indexOf("[") + 1, detail.indexOf("]"))
+            detail?.slice(detail.indexOf("[") + 1, detail.indexOf("]"))
           )
           .filter(Boolean) as string[];
 
