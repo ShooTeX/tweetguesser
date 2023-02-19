@@ -1,19 +1,19 @@
 import { type NextPage } from "next";
-import { GuessInput } from "../../components/GuessInputs";
-import { Stats } from "../../components/Stats";
-import { Tweet, TweetLoading } from "../../components/Tweet";
+import { GuessInput } from "../../components/guess-inputs";
+import { Stats } from "../../components/stats";
+import { Tweet, TweetLoading } from "../../components/tweet";
 import { api } from "../../utils/api";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import type { Round } from "../../types/round";
-import { Logo } from "../../components/Logo";
-import { Timer } from "../../components/Timer";
-import { Modal } from "../../components/Modal";
+import { Logo } from "../../components/logo";
+import { Timer } from "../../components/timer";
+import { Modal } from "../../components/modal";
 import Link from "next/link";
 import { useAtomValue } from "jotai";
 import { gameConfigAtom, usernamesAtom } from "../../atoms/game";
 import { Heart } from "lucide-react";
-import { getEndTime } from "../../utils/getEndTime";
+import { getEndTime } from "../../utils/get-end-time";
 
 const Game: NextPage = () => {
   const router = useRouter();
@@ -104,7 +104,7 @@ const Game: NextPage = () => {
                 onClick={() => {
                   router.reload();
                 }}
-                className="btn-primary btn"
+                className="btn btn-primary"
               >
                 play again
               </button>
@@ -130,7 +130,7 @@ const Game: NextPage = () => {
               </button>
               <button
                 type="button"
-                className="btn-error btn"
+                className="btn btn-error"
                 onClick={() => {
                   setGameTimeout(true);
                   setShowGiveUp(false);
@@ -204,7 +204,7 @@ const Game: NextPage = () => {
             </div>
             <button
               type="button"
-              className="btn-error btn text-error-content"
+              className="btn btn-error text-error-content"
               onClick={() => setShowGiveUp(true)}
               disabled={!currentTweet || reveal}
             >

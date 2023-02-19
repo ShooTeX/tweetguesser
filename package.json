@@ -38,6 +38,7 @@
     "remeda": "^1.6.2",
     "string-similarity": "^4.0.4",
     "superjson": "1.9.1",
+    "tweetguesser": "link:",
     "twitter-api-sdk": "^1.2.1",
     "validator": "^13.9.0",
     "zod": "^3.20.2"

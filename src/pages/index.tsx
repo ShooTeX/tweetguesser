@@ -2,14 +2,14 @@ import { type NextPage } from "next";
 import { useState } from "react";
 import { api } from "../utils/api";
 import { useRouter } from "next/router";
-import { Logo } from "../components/Logo";
-import { UsernamesInput } from "../components/UsernamesInput";
+import { Logo } from "../components/logo";
+import { UsernamesInput } from "../components/usernames-input";
 import { Heart, XCircle } from "lucide-react";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { gameConfigAtom, usernamesAtom } from "../atoms/game";
 import { useAtom, useAtomValue } from "jotai";
-import { Settings } from "../components/Settings";
-import { getEndTime } from "../utils/getEndTime";
+import { Settings } from "../components/settings";
+import { getEndTime } from "../utils/get-end-time";
 
 const Home: NextPage = () => {
   const router = useRouter();
@@ -119,7 +119,7 @@ const Home: NextPage = () => {
               <Settings />
               <div className="form-control mt-6">
                 <button
-                  className={`btn-primary btn-lg btn ${
+                  className={`btn btn-primary btn-lg ${
                     isFetching || (!!data?.tweets.length && !isStale)
                       ? "loading"
                       : ""

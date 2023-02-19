@@ -3,10 +3,10 @@ import { ImageOff } from "lucide-react";
 import Image from "next/image";
 import type { PropsWithChildren } from "react";
 import { type RouterOutputs } from "../utils/api";
-import { EntityHandler } from "./EntityHandler";
-import { ImageGrid } from "./ImageGrid";
+import { EntityHandler } from "./entity-handler";
+import { ImageGrid } from "./image-grid";
 
-export type TweetProps = {
+export type TweetProperties = {
   avatar?: string;
   username: string;
   handle: string;
@@ -36,7 +36,7 @@ export const Tweet = ({
   children,
   images,
   entities,
-}: TweetProps) => {
+}: TweetProperties) => {
   return (
     <TweetWrapper>
       {!hidden && (

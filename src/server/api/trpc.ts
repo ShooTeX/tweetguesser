@@ -18,7 +18,7 @@
  */
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 
-import { prisma } from "../db";
+import { prisma } from "../database";
 import { env as environment } from "../../env/server.mjs";
 import { Client } from "twitter-api-sdk";
 
