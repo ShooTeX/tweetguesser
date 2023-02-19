@@ -180,6 +180,7 @@ const Game: NextPage = () => {
                 avatar={currentTweet.profile_image_url}
                 hidden={!reveal}
                 entities={currentTweet.entities}
+                referencedTweet={currentTweet.referenced_tweet_id}
               >
                 {currentTweet.text}
               </Tweet>

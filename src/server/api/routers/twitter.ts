@@ -10,6 +10,10 @@ const getTweetsInputSchema = z.object({
   endTime: z.coerce.date().optional(),
 });
 
+const getTweetInputsSchema = z.object({
+  id: z.string(),
+});
+
 type GetTweetsResponse = {
   id: string;
   text: string;
@@ -18,6 +22,7 @@ type GetTweetsResponse = {
   username: string;
   images: components["schemas"]["Photo"][];
   entities?: components["schemas"]["FullTextEntities"];
+  referenced_tweet_id?: string;
 }[];
 
 export const twitterRouter = createTRPCRouter({
@@ -62,7 +67,7 @@ export const twitterRouter = createTRPCRouter({
           exclude: ["replies", "retweets"],
           end_time: endTime ? formatISO(endTime) : undefined,
           max_results: 20,
-          "tweet.fields": ["entities"],
+          "tweet.fields": ["entities", "referenced_tweets"],
         });
 
         if (tweets.errors) {
@@ -103,6 +108,8 @@ export const twitterRouter = createTRPCRouter({
                 (image): image is GetTweetsResponse[0]["images"][0] => !!image
               ) || [];
 
+          const referenced_tweet_id = tweet.referenced_tweets?.[0]?.id;
+
           response.push({
             id: tweet.id,
             text: tweet.text,
@@ -111,9 +118,20 @@ export const twitterRouter = createTRPCRouter({
             profile_image_url: user.profile_image_url,
             images,
             entities: tweet.entities,
+            referenced_tweet_id,
           });
         }
       }
       return { tweets: arrayShuffle(response) };
+    }),
+  getTweet: publicProcedure
+    .input(getTweetInputsSchema)
+    .query(async ({ ctx, input }) => {
+      return ctx.twitter.tweets.findTweetById(input.id, {
+        expansions: ["attachments.media_keys", "author_id"],
+        "user.fields": ["username", "name", "profile_image_url"],
+        "media.fields": ["url", "width", "height", "alt_text"],
+        "tweet.fields": ["entities"],
+      });
     }),
 });
