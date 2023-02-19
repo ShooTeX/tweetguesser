@@ -119,7 +119,7 @@ const Home: NextPage = () => {
               <Settings />
               <div className="form-control mt-6">
                 <button
-                  className={`btn btn-primary btn-lg ${
+                  className={`btn-primary btn-lg btn ${
                     isFetching || (!!data?.tweets.length && !isStale)
                       ? "loading"
                       : ""
