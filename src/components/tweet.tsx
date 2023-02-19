@@ -1,8 +1,9 @@
 import { useAutoAnimate } from "@formkit/auto-animate/react";
+import clsx from "clsx";
 import { ImageOff } from "lucide-react";
 import Image from "next/image";
 import type { PropsWithChildren } from "react";
-import { type RouterOutputs } from "../utils/api";
+import { api, type RouterOutputs } from "../utils/api";
 import { EntityHandler } from "./entity-handler";
 import { ImageGrid } from "./image-grid";
 
@@ -14,14 +15,25 @@ export type TweetProperties = {
   hidden?: boolean;
   images: RouterOutputs["twitter"]["getTweets"]["tweets"][0]["images"];
   entities: RouterOutputs["twitter"]["getTweets"]["tweets"][0]["entities"];
+  referencedTweet?: string;
+  isQuoteTweet?: boolean;
 };
 
-const TweetWrapper = ({ children }: PropsWithChildren) => {
+type TweetWrapperProperties = PropsWithChildren & {
+  isQuoteTweet?: boolean;
+};
+
+const TweetWrapper = ({ isQuoteTweet, children }: TweetWrapperProperties) => {
   const [animationParent] = useAutoAnimate();
   return (
     <div
       ref={animationParent}
-      className="border-secondary bg-neutral text-neutral-content w-[598px] rounded-xl border p-4 shadow-xl"
+      className={clsx([
+        "bg-neutral text-neutral-content rounded-xl border p-4 shadow-xl",
+        isQuoteTweet
+          ? "w-full border-neutral-700 text-base"
+          : "border-secondary w-[598px] text-2xl ",
+      ])}
     >
       {children}
     </div>
@@ -36,9 +48,17 @@ export const Tweet = ({
   children,
   images,
   entities,
+  isQuoteTweet,
+  referencedTweet,
 }: TweetProperties) => {
+  const { data: referencedTweetData, error } = api.twitter.getTweet.useQuery(
+    {
+      id: referencedTweet ?? "",
+    },
+    { enabled: !!referencedTweet }
+  );
   return (
-    <TweetWrapper>
+    <TweetWrapper isQuoteTweet={isQuoteTweet}>
       {!hidden && (
         <div className="flex items-center pb-4 ">
           <div className="avatar">
@@ -57,15 +77,36 @@ export const Tweet = ({
               )}
             </div>
           </div>
-          <div className="ml-4 flex flex-col">
+          <div className="ml-4 flex flex-col text-base">
             <span className="font-bold">{username}</span>
             <span className="text-secondary">@{handle}</span>
           </div>
         </div>
       )}
-      <p className="text-2xl" key={children}>
+      <p className="" key={children}>
         <EntityHandler entities={entities}>{children}</EntityHandler>
       </p>
+      {referencedTweetData && !error && (
+        <div className="mt-4">
+          <Tweet
+            entities={referencedTweetData.data?.entities}
+            avatar={
+              referencedTweetData.includes?.users?.[0]?.profile_image_url ?? ""
+            }
+            username={referencedTweetData.includes?.users?.[0]?.name ?? ""}
+            handle={referencedTweetData.includes?.users?.[0]?.username ?? ""}
+            images={[]}
+            key={referencedTweetData.data?.id}
+            isQuoteTweet
+            hidden={
+              referencedTweetData.includes?.users?.[0]?.username === handle &&
+              hidden
+            }
+          >
+            {referencedTweetData.data?.text ?? ""}
+          </Tweet>
+        </div>
+      )}
       {images.length > 0 && <ImageGrid images={images} className="mt-4" />}
     </TweetWrapper>
   );
