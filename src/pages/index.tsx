@@ -86,7 +86,7 @@ const Home: NextPage = () => {
               />
               {!!usernames?.length && (
                 <div
-                  className="flex flex-wrap gap-x-1 gap-y-1"
+                  className="flex max-w-sm flex-grow-0 flex-wrap gap-x-1 gap-y-1"
                   ref={animationParent}
                 >
                   {usernames.map((username) => (
