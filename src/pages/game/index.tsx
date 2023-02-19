@@ -1,6 +1,6 @@
 import { type NextPage } from "next";
 import { GuessInput } from "../../components/guess-inputs";
-import { Stats } from "../../components/stats";
+import { Stats } from "../../components/stats-test";
 import { Tweet, TweetLoading } from "../../components/tweet";
 import { api } from "../../utils/api";
 import { useRouter } from "next/router";
