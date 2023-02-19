@@ -37,12 +37,12 @@ const Home: NextPage = () => {
     });
   }
 
-  if (!!data?.invalidUsernames?.length) {
+  if (data?.invalidUsernames?.length) {
     const newInvalidUsernames = data.invalidUsernames.filter(
       (username) => !invalidUsernames.includes(username)
     );
 
-    if (!!newInvalidUsernames.length) {
+    if (newInvalidUsernames.length) {
       setInvalidUsernames((usernames) => [
         ...usernames,
         ...newInvalidUsernames,
@@ -108,7 +108,7 @@ const Home: NextPage = () => {
                     <div>
                       <XCircle></XCircle>
                       <span>
-                        {!!error
+                        {error
                           ? "An unknown error occured"
                           : "One or more usernames are invalid"}
                       </span>

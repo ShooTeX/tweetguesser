@@ -2,11 +2,11 @@
 // import { FaHeart, FaHeartBroken } from "react-icons/fa";
 // import { gameConfigAtom } from "../atoms/game";
 
-type LivesProps = {
-  tries: number;
-};
+// type LivesProps = {
+//   tries: number;
+// };
 
-export const Lives = ({}: LivesProps) => {
+export const Lives = () => {
   // const [config] = useAtom(gameConfigAtom);
 
   return (
