@@ -20,6 +20,8 @@ const Game: NextPage = () => {
   const usernames = useAtomValue(usernamesAtom);
   const { endless, endTime } = useAtomValue(gameConfigAtom);
 
+  const test = "test";
+
   const { data, error } = api.twitter.getTweets.useQuery(
     { usernames, endTime: getEndTime(endTime) },
     {
