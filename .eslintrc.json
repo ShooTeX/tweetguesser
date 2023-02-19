@@ -30,6 +30,12 @@
     "plugin:prettier/recommended"
   ],
   "rules": {
+    "unicorn/no-useless-undefined": [
+      "error",
+      {
+        "checkArguments": false
+      }
+    ],
     "tailwindcss/no-custom-classname": [
       "warn",
       {

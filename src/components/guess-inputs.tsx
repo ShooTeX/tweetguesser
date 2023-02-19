@@ -59,8 +59,8 @@ export const GuessInput = ({
 
   const handleChange: ChangeEventHandler<HTMLInputElement> = (event) => {
     setShowSuggestions(true);
-    setSelectedSuggestion();
-    setPreviousInput();
+    setSelectedSuggestion(undefined);
+    setPreviousInput(undefined);
     setInputState("default");
     setInput(event.target.value);
   };
@@ -80,7 +80,7 @@ export const GuessInput = ({
 
       setInput("");
       setShowSuggestions(false);
-      setSelectedSuggestion();
+      setSelectedSuggestion(undefined);
 
       setInputState("error");
       onIncorrect();
@@ -125,7 +125,7 @@ export const GuessInput = ({
 
     if (event.key === "Escape") {
       if (selectedSuggestion !== undefined) {
-        setSelectedSuggestion();
+        setSelectedSuggestion(undefined);
         setInput(previousInput ?? "");
         return;
       }
@@ -147,7 +147,7 @@ export const GuessInput = ({
   ) => {
     event.preventDefault();
     inputField.current?.focus();
-    setSelectedSuggestion();
+    setSelectedSuggestion(undefined);
     setInput(suggestions?.at(index)?.target ?? "");
   };
 
