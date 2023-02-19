@@ -83,7 +83,7 @@ export const Tweet = ({
           </div>
         </div>
       )}
-      <p className="" key={children}>
+      <p className="whitespace-pre-wrap" key={children}>
         <EntityHandler entities={entities}>{children}</EntityHandler>
       </p>
       {referencedTweetData && !error && (
