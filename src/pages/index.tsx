@@ -20,14 +20,15 @@ const Home: NextPage = () => {
   const [usernames, setUsernames] = useAtom(usernamesAtom);
   const [invalidUsernames, setInvalidUsernames] = useState<string[]>([]);
 
-  const { data, error, isFetching, refetch } = api.twitter.getTweets.useQuery(
-    { usernames: usernames, endTime: getEndTime(endTime) },
-    {
-      refetchOnWindowFocus: false,
-      refetchOnMount: false,
-      enabled: false,
-    }
-  );
+  const { data, error, isFetching, refetch, isInitialLoading } =
+    api.twitter.getTweets.useQuery(
+      { usernames: usernames, endTime: getEndTime(endTime) },
+      {
+        refetchOnWindowFocus: false,
+        refetchOnMount: false,
+        enabled: false,
+      }
+    );
 
   if (data?.invalidUsernames?.length) {
     const newInvalidUsernames = data.invalidUsernames.filter(
@@ -47,9 +48,13 @@ const Home: NextPage = () => {
   );
 
   const handlePlay = async () => {
-    const { data } = await refetch();
-
     if (!data?.invalidUsernames?.length && data?.tweets.length) {
+      void router.push("/game");
+    }
+
+    const { data: refetchData } = await refetch();
+
+    if (!refetchData?.invalidUsernames?.length && refetchData?.tweets.length) {
       void router.push("/game");
     }
   };
@@ -117,7 +122,7 @@ const Home: NextPage = () => {
                 <button
                   className={clsx([
                     "btn-primary btn-lg btn",
-                    (isFetching || !router.isReady) && "loading",
+                    isFetching && "loading",
                   ])}
                   disabled={
                     !usernames ||

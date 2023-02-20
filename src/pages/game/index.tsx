@@ -4,7 +4,7 @@ import { Stats } from "../../components/stats";
 import { Tweet, TweetLoading } from "../../components/tweet";
 import { api } from "../../utils/api";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import type { Round } from "../../types/round";
 import { Logo } from "../../components/logo";
 import { Timer } from "../../components/timer";
@@ -14,6 +14,7 @@ import { useAtomValue } from "jotai";
 import { gameConfigAtom, usernamesAtom } from "../../atoms/game";
 import { Heart } from "lucide-react";
 import { getEndTime } from "../../utils/get-end-time";
+import arrayShuffle from "array-shuffle";
 
 const Game: NextPage = () => {
   const router = useRouter();
@@ -26,6 +27,7 @@ const Game: NextPage = () => {
       refetchOnWindowFocus: false,
       refetchOnMount: false,
       retry: false,
+      enabled: usernames.length > 0,
     }
   );
 
@@ -33,7 +35,10 @@ const Game: NextPage = () => {
     void router.replace("/");
   }
 
-  const tweets = data?.tweets;
+  const tweets = useMemo(
+    () => (data?.tweets.length ? arrayShuffle(data.tweets) : undefined),
+    [data?.tweets]
+  );
 
   const [currentRound, setCurrentRound] = useState(0);
   const [tries, setTries] = useState(0);

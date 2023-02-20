@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "../trpc";
-import arrayShuffle from "array-shuffle";
 import { TRPCError } from "@trpc/server";
 import type { components } from "twitter-api-sdk/dist/types";
 import { formatISO } from "date-fns";
@@ -122,7 +121,7 @@ export const twitterRouter = createTRPCRouter({
           });
         }
       }
-      return { tweets: arrayShuffle(response) };
+      return { tweets: response };
     }),
   getTweet: publicProcedure
     .input(getTweetInputsSchema)
