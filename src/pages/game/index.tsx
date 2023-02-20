@@ -9,12 +9,12 @@ import type { Round } from "../../types/round";
 import { Logo } from "../../components/logo";
 import { Timer } from "../../components/timer";
 import { Modal } from "../../components/modal";
-import Link from "next/link";
 import { useAtomValue } from "jotai";
 import { gameConfigAtom, usernamesAtom } from "../../atoms/game";
-import { Heart } from "lucide-react";
+import { Heart, Twitter } from "lucide-react";
 import { getEndTime } from "../../utils/get-end-time";
 import arrayShuffle from "array-shuffle";
+import Link from "next/link";
 
 const Game: NextPage = () => {
   const router = useRouter();
@@ -103,19 +103,25 @@ const Game: NextPage = () => {
                 </div>
               </div>
             </div>
-            <div className="mt-8 flex flex-col space-y-2">
-              <button
-                type="button"
-                onClick={() => {
-                  router.reload();
-                }}
-                className="btn-primary btn"
-              >
+            <div className="mt-8 flex space-x-1">
+              <Link type="button" href={"/"} className="btn-primary btn flex-1">
                 play again
-              </button>
-              <Link href="/" className="btn-outline btn">
-                change users
               </Link>
+              <a
+                type="button"
+                target="_blank"
+                href={`https://twitter.com/intent/tweet?text=${encodeURI(
+                  `I just got ${score} points in TweetGuesser 🥳
+
+Guessing tweets from ${usernames.map((username) => `@${username}`).join(" ")}
+
+`
+                )}&url=https://www.tweetguesser.com&via=tweetguesser&hashtags=tweetguesser,tweetguessr`}
+                className="btn-secondary btn-outline btn-square btn"
+                rel="noreferrer"
+              >
+                <Twitter className="h-6 w-6" />
+              </a>
             </div>
           </div>
         </div>
