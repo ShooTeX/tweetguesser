@@ -10,6 +10,7 @@ import { gameConfigAtom, usernamesAtom } from "../atoms/game";
 import { useAtom, useAtomValue } from "jotai";
 import { Settings } from "../components/settings";
 import { getEndTime } from "../utils/get-end-time";
+import clsx from "clsx";
 
 const Home: NextPage = () => {
   const router = useRouter();
@@ -19,23 +20,14 @@ const Home: NextPage = () => {
   const [usernames, setUsernames] = useAtom(usernamesAtom);
   const [invalidUsernames, setInvalidUsernames] = useState<string[]>([]);
 
-  const { data, error, isFetching, refetch, isStale } =
-    api.twitter.getTweets.useQuery(
-      { usernames: usernames, endTime: getEndTime(endTime) },
-      {
-        refetchOnWindowFocus: false,
-        refetchOnMount: false,
-        staleTime: 1000,
-        retry: false,
-        enabled: false,
-      }
-    );
-
-  if (!data?.invalidUsernames?.length && data?.tweets.length && !isStale) {
-    void router.push({
-      pathname: "/game",
-    });
-  }
+  const { data, error, isFetching, refetch } = api.twitter.getTweets.useQuery(
+    { usernames: usernames, endTime: getEndTime(endTime) },
+    {
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+      enabled: false,
+    }
+  );
 
   if (data?.invalidUsernames?.length) {
     const newInvalidUsernames = data.invalidUsernames.filter(
@@ -54,8 +46,12 @@ const Home: NextPage = () => {
     (username) => !invalidUsernames.includes(username)
   );
 
-  const handlePlay = () => {
-    void refetch();
+  const handlePlay = async () => {
+    const { data } = await refetch();
+
+    if (!data?.invalidUsernames?.length && data?.tweets.length) {
+      void router.push("/game");
+    }
   };
 
   const handleUsernamesInput = (input: string) => {
@@ -119,17 +115,15 @@ const Home: NextPage = () => {
               <Settings />
               <div className="form-control mt-6">
                 <button
-                  className={`btn-primary btn-lg btn ${
-                    isFetching || (!!data?.tweets.length && !isStale)
-                      ? "loading"
-                      : ""
-                  }`}
+                  className={clsx([
+                    "btn-primary btn-lg btn",
+                    (isFetching || !router.isReady) && "loading",
+                  ])}
                   disabled={
                     !usernames ||
                     usernames.length < 2 ||
                     !usernamesAreValid ||
-                    isFetching ||
-                    (!!data?.tweets && !isStale)
+                    isFetching
                   }
                   onClick={handlePlay}
                 >
