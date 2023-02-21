@@ -12,7 +12,6 @@ import { useAtom, useAtomValue } from "jotai";
 import { Settings } from "../components/settings";
 import { getEndTime } from "../utils/get-end-time";
 import clsx from "clsx";
-import { Modal } from "../components/modal";
 import { clamp, equals } from "remeda";
 import arrayShuffle from "array-shuffle";
 
@@ -101,20 +100,6 @@ const Home: NextPage = () => {
 
   return (
     <>
-      <Modal show={false}>
-        <div className="modal modal-open">
-          <div className="modal-box">
-            <div className="text-lg font-bold">Overwrite</div>
-            <p className="mt-4">
-              You already have set some usernames, do you want to overwrite?
-            </p>
-            <div className="modal-action">
-              <button className="btn btn-outline">Cancel</button>
-              <button className="btn btn-primary">Ok</button>
-            </div>
-          </div>
-        </div>
-      </Modal>
       <div className="hero bg-base-200 min-h-screen ">
         <div className="hero-content flex-col">
           <Logo />
