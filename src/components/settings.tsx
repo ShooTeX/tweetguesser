@@ -20,18 +20,7 @@ export const Settings = () => {
   };
 
   return (
-    <form>
-      <div className="form-control w-full max-w-[13rem]">
-        <label className="label cursor-pointer">
-          <span className="label-text">Endless Mode</span>
-          <input
-            type="checkbox"
-            className="toggle-primary toggle"
-            checked={config.endless}
-            onChange={handleEndlessChange}
-          />
-        </label>
-      </div>
+    <form className="space-y-4">
       <div className="form-control">
         <label className="label">
           <span className="label-text">Tweets starting from</span>
@@ -49,6 +38,17 @@ export const Settings = () => {
             />
           ))}
         </div>
+      </div>
+      <div className="form-control w-full max-w-[13rem]">
+        <label className="label cursor-pointer">
+          <span className="label-text">Endless Mode</span>
+          <input
+            type="checkbox"
+            className="toggle-primary toggle"
+            checked={config.endless}
+            onChange={handleEndlessChange}
+          />
+        </label>
       </div>
     </form>
   );
