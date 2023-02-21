@@ -1,7 +1,12 @@
 import { atomWithStorage } from "jotai/utils";
 import { z } from "zod";
 
-const endTime = ["today", "1_month_ago", "1_year_ago", "3_years_ago"] as const;
+const endTime = [
+  "today",
+  "1_month_ago",
+  "3_months_ago",
+  "6_months_ago",
+] as const;
 
 export const endTimeSchema = z.enum(endTime);
 
