@@ -3,14 +3,18 @@ import { useState } from "react";
 import { api } from "../utils/api";
 import { useRouter } from "next/router";
 import { Logo } from "../components/logo";
+import type { UsernamesInputData } from "../components/usernames-input";
 import { UsernamesInput } from "../components/usernames-input";
-import { Heart, XCircle } from "lucide-react";
+import { Bomb, Heart, XCircle } from "lucide-react";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { gameConfigAtom, usernamesAtom } from "../atoms/game";
 import { useAtom, useAtomValue } from "jotai";
 import { Settings } from "../components/settings";
 import { getEndTime } from "../utils/get-end-time";
 import clsx from "clsx";
+import { Modal } from "../components/modal";
+import { clamp, equals } from "remeda";
+import arrayShuffle from "array-shuffle";
 
 const Home: NextPage = () => {
   const router = useRouter();
@@ -18,17 +22,34 @@ const Home: NextPage = () => {
   const { endTime } = useAtomValue(gameConfigAtom);
 
   const [usernames, setUsernames] = useAtom(usernamesAtom);
+  const [getFollowing, setGetFollowing] = useState<string>();
   const [invalidUsernames, setInvalidUsernames] = useState<string[]>([]);
 
-  const { data, error, isFetching, refetch, isInitialLoading } =
-    api.twitter.getTweets.useQuery(
-      { usernames: usernames, endTime: getEndTime(endTime) },
+  const { data, error, isFetching, refetch } = api.twitter.getTweets.useQuery(
+    { usernames: usernames, endTime: getEndTime(endTime) },
+    {
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+      enabled: false,
+    }
+  );
+
+  const { data: following, isFetching: isFollowingFetching } =
+    api.twitter.getRandomFollowing.useQuery(
+      { username: getFollowing || "" },
       {
         refetchOnWindowFocus: false,
         refetchOnMount: false,
-        enabled: false,
+        enabled: !!getFollowing,
       }
     );
+
+  if (getFollowing && following?.length && !equals(usernames, following)) {
+    const randomFollowing = [...arrayShuffle(following)];
+    randomFollowing.length = clamp(randomFollowing.length, { max: 20 });
+    setGetFollowing(undefined);
+    setUsernames(randomFollowing);
+  }
 
   if (data?.invalidUsernames?.length) {
     const newInvalidUsernames = data.invalidUsernames.filter(
@@ -59,12 +80,17 @@ const Home: NextPage = () => {
     }
   };
 
-  const handleUsernamesInput = (input: string) => {
-    if (usernames.includes(input.toLowerCase())) {
+  const handleUsernamesInput = ({ handle, mode }: UsernamesInputData) => {
+    if (mode === "following") {
+      setGetFollowing(handle);
       return;
     }
 
-    setUsernames((usernames) => [...usernames, input.toLowerCase()]);
+    if (usernames.includes(handle.toLowerCase())) {
+      return;
+    }
+
+    setUsernames((usernames) => [...usernames, handle.toLowerCase()]);
   };
 
   const handleUsernameClick = (input: string) => {
@@ -75,14 +101,30 @@ const Home: NextPage = () => {
 
   return (
     <>
+      <Modal show={false}>
+        <div className="modal modal-open">
+          <div className="modal-box">
+            <div className="text-lg font-bold">Overwrite</div>
+            <p className="mt-4">
+              You already have set some usernames, do you want to overwrite?
+            </p>
+            <div className="modal-action">
+              <button className="btn btn-outline">Cancel</button>
+              <button className="btn btn-primary">Ok</button>
+            </div>
+          </div>
+        </div>
+      </Modal>
       <div className="hero bg-base-200 min-h-screen ">
         <div className="hero-content flex-col">
           <Logo />
           <div className="card bg-base-100 shrink-0 shadow-xl">
             <div className="card-body" ref={animationParent}>
               <UsernamesInput
-                onSubmit={({ handle }) => {
-                  handleUsernamesInput(handle);
+                loading={isFollowingFetching}
+                disabled={usernames.length >= 20}
+                onSubmit={(data) => {
+                  handleUsernamesInput(data);
                 }}
               />
               {!!usernames?.length && (
@@ -101,6 +143,12 @@ const Home: NextPage = () => {
                       {username}
                     </div>
                   ))}
+                  <button
+                    className="badge badge-outline badge-error cursor-pointer"
+                    onClick={() => setUsernames([])}
+                  >
+                    <Bomb size={14} className="mr-1" /> remove all
+                  </button>
                 </div>
               )}
               {!!error ||
