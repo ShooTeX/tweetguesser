@@ -104,7 +104,7 @@ const Home: NextPage = () => {
         <div className="hero-content flex-col">
           <Logo />
           <div className="card bg-base-100 shrink-0 shadow-xl">
-            <div className="card-body" ref={animationParent}>
+            <div className="card-body min-w-[30rem]" ref={animationParent}>
               <UsernamesInput
                 loading={isFollowingFetching}
                 disabled={usernames.length >= 20}
@@ -149,25 +149,69 @@ const Home: NextPage = () => {
                     </div>
                   </div>
                 ))}
-              <div className="divider">Settings</div>
-              <Settings />
-              <div className="form-control mt-6">
-                <button
-                  className={clsx([
-                    "btn-primary btn-lg btn",
-                    isFetching && "loading",
-                  ])}
-                  disabled={
-                    !usernames ||
-                    usernames.length < 2 ||
-                    !usernamesAreValid ||
-                    isFetching
-                  }
-                  onClick={handlePlay}
-                >
-                  Play
-                </button>
-              </div>
+              {usernames.length > 1 ? (
+                <>
+                  <div className="divider">Settings</div>
+                  <Settings />
+                  <div className="form-control mt-6">
+                    <button
+                      className={clsx([
+                        "btn-primary btn-lg btn",
+                        isFetching && "loading",
+                      ])}
+                      disabled={
+                        !usernames ||
+                        usernames.length < 2 ||
+                        !usernamesAreValid ||
+                        isFetching
+                      }
+                      onClick={handlePlay}
+                    >
+                      Play
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="divider">Or try a list</div>
+                  <div
+                    className={clsx(
+                      "card card-compact card-bordered",
+                      "border-primary text-neutral-content bg-neutral w-full",
+                      "cursor-pointer transition-all ease-in-out hover:shadow-xl"
+                    )}
+                  >
+                    <div className="card-body">
+                      <h2 className="card-title">Tech-Nerds</h2>
+                      <p>If a dog chews shoes whose shoes does he choose?</p>
+                    </div>
+                  </div>
+                  <div
+                    className={clsx(
+                      "card card-compact card-bordered",
+                      "border-primary text-neutral-content bg-neutral w-full",
+                      "cursor-pointer transition-all ease-in-out hover:shadow-xl"
+                    )}
+                  >
+                    <div className="card-body">
+                      <h2 className="card-title">Tech-Nerds</h2>
+                      <p>If a dog chews shoes whose shoes does he choose?</p>
+                    </div>
+                  </div>
+                  <div
+                    className={clsx(
+                      "card card-compact card-bordered",
+                      "border-primary text-neutral-content bg-neutral w-full",
+                      "cursor-pointer transition-all ease-in-out hover:shadow-xl"
+                    )}
+                  >
+                    <div className="card-body">
+                      <h2 className="card-title">Tech-Nerds</h2>
+                      <p>If a dog chews shoes whose shoes does he choose?</p>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           </div>
           <span className="text-sm">

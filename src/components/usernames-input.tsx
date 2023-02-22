@@ -11,7 +11,7 @@ const schema = z.object({
     .string()
     .max(15)
     .refine((value) => isAlphanumeric(value, undefined, { ignore: "_" })),
-  mode: z.enum(["handle", "following"] as const),
+  mode: z.enum(["handle", "following", "list"] as const),
 });
 export type UsernamesInputData = z.infer<typeof schema>;
 
