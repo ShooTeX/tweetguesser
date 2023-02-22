@@ -32,12 +32,15 @@ export const UsernamesInput = ({
     handleSubmit,
     reset,
     formState: { errors },
+    watch,
   } = useForm<UsernamesInputData>({
     resolver: zodResolver(schema),
     mode: "onSubmit",
     delayError: 100,
     defaultValues: { mode: "handle" },
   });
+
+  const mode = watch("mode");
 
   const clearAndSubmit = (data: UsernamesInputData) => {
     onSubmit(data);
@@ -62,7 +65,11 @@ export const UsernamesInput = ({
         <div className="relative">
           <label className="input-group">
             <span>
-              <AtSign size={16} className={clsx(loading && "animate-spin")} />
+              {mode === "list" ? (
+                "lists/"
+              ) : (
+                <AtSign size={16} className={clsx(loading && "animate-spin")} />
+              )}
             </span>
             <input
               {...register("handle")}
