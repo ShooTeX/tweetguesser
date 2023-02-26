@@ -22,6 +22,7 @@ const Home: NextPage = () => {
 
   const [usernames, setUsernames] = useAtom(usernamesAtom);
   const [getFollowing, setGetFollowing] = useState<string>();
+  const [getListMembers, setGetListMembers] = useState<string>();
   const [invalidUsernames, setInvalidUsernames] = useState<string[]>([]);
 
   const { data, error, isFetching, refetch } = api.twitter.getTweets.useQuery(
@@ -42,6 +43,23 @@ const Home: NextPage = () => {
         enabled: !!getFollowing,
       }
     );
+
+  const { data: listMembers, isFetching: isListMembersFetching } =
+    api.twitter.getListMembers.useQuery(
+      { id: getListMembers || "" },
+      {
+        refetchOnWindowFocus: false,
+        refetchOnMount: false,
+        enabled: !!getListMembers,
+      }
+    );
+
+  if (getListMembers && listMembers?.length) {
+    const truncListMembers = [...listMembers];
+    truncListMembers.length = clamp(truncListMembers.length, { max: 20 });
+    setGetListMembers(undefined);
+    setUsernames(truncListMembers);
+  }
 
   if (getFollowing && following?.length && !equals(usernames, following)) {
     const randomFollowing = [...arrayShuffle(following)];
@@ -79,17 +97,22 @@ const Home: NextPage = () => {
     }
   };
 
-  const handleUsernamesInput = ({ handle, mode }: UsernamesInputData) => {
+  const handleUsernamesInput = ({ input, mode }: UsernamesInputData) => {
     if (mode === "following") {
-      setGetFollowing(handle);
+      setGetFollowing(input);
       return;
     }
 
-    if (usernames.includes(handle.toLowerCase())) {
+    if (mode === "list") {
+      setGetListMembers(input);
       return;
     }
 
-    setUsernames((usernames) => [...usernames, handle.toLowerCase()]);
+    if (usernames.includes(input.toLowerCase())) {
+      return;
+    }
+
+    setUsernames((usernames) => [...usernames, input.toLowerCase()]);
   };
 
   const handleUsernameClick = (input: string) => {
@@ -106,7 +129,7 @@ const Home: NextPage = () => {
           <div className="card bg-base-100 shrink-0 shadow-xl">
             <div className="card-body min-w-[30rem]" ref={animationParent}>
               <UsernamesInput
-                loading={isFollowingFetching}
+                loading={isFollowingFetching || isListMembersFetching}
                 disabled={usernames.length >= 20}
                 onSubmit={(data) => {
                   handleUsernamesInput(data);
@@ -175,6 +198,7 @@ const Home: NextPage = () => {
                 <>
                   <div className="divider">Or try a list</div>
                   <div
+                    onClick={() => setGetListMembers("1629851852270448645")}
                     className={clsx(
                       "card card-compact card-bordered",
                       "border-primary text-neutral-content bg-neutral w-full",
@@ -182,32 +206,8 @@ const Home: NextPage = () => {
                     )}
                   >
                     <div className="card-body">
-                      <h2 className="card-title">Tech-Nerds</h2>
-                      <p>If a dog chews shoes whose shoes does he choose?</p>
-                    </div>
-                  </div>
-                  <div
-                    className={clsx(
-                      "card card-compact card-bordered",
-                      "border-primary text-neutral-content bg-neutral w-full",
-                      "cursor-pointer transition-all ease-in-out hover:shadow-xl"
-                    )}
-                  >
-                    <div className="card-body">
-                      <h2 className="card-title">Tech-Nerds</h2>
-                      <p>If a dog chews shoes whose shoes does he choose?</p>
-                    </div>
-                  </div>
-                  <div
-                    className={clsx(
-                      "card card-compact card-bordered",
-                      "border-primary text-neutral-content bg-neutral w-full",
-                      "cursor-pointer transition-all ease-in-out hover:shadow-xl"
-                    )}
-                  >
-                    <div className="card-body">
-                      <h2 className="card-title">Tech-Nerds</h2>
-                      <p>If a dog chews shoes whose shoes does he choose?</p>
+                      <h2 className="card-title">TechNerds</h2>
+                      <p>Just a bunch of nerds...</p>
                     </div>
                   </div>
                 </>

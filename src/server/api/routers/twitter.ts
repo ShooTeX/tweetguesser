@@ -17,6 +17,10 @@ const getRandomFollowingInputSchema = z.object({
   username: z.string().min(1),
 });
 
+const getListMembersInputSchema = z.object({
+  id: z.string(),
+});
+
 type GetTweetsResponse = {
   id: string;
   text: string;
@@ -29,6 +33,29 @@ type GetTweetsResponse = {
 }[];
 
 export const twitterRouter = createTRPCRouter({
+  getListMembers: publicProcedure
+    .input(getListMembersInputSchema)
+    .query(async ({ ctx, input: { id } }) => {
+      const list = await ctx.twitter.users.listGetMembers(id, {
+        "user.fields": ["username"],
+        max_results: 20,
+      });
+      if (list.errors?.length) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: list.errors.at(0)?.title,
+        });
+      }
+
+      if (!list.data?.length) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "No users were returned",
+        });
+      }
+
+      return list.data.map((user) => user.username.toLowerCase());
+    }),
   getRandomFollowing: publicProcedure
     .input(getRandomFollowingInputSchema)
     .query(async ({ ctx, input: { username } }) => {

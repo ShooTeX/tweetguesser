@@ -2,17 +2,28 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import isAlphanumeric from "validator/lib/isAlphanumeric";
+import isNumeric from "validator/lib/isNumeric";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { AtSign } from "lucide-react";
 import clsx from "clsx";
 
-const schema = z.object({
-  handle: z
-    .string()
-    .max(15)
-    .refine((value) => isAlphanumeric(value, undefined, { ignore: "_" })),
-  mode: z.enum(["handle", "following", "list"] as const),
-});
+const modeSchema = z.enum(["handle", "following", "list"] as const);
+
+const schema = z
+  .object({
+    input: z
+      .string()
+      .refine((value) => isAlphanumeric(value, undefined, { ignore: "_" })),
+    mode: modeSchema,
+  })
+  .refine(
+    (value) =>
+      value.mode === "list"
+        ? isNumeric(value.input, { no_symbols: true })
+        : value.input.length <= 15,
+    { message: "Invalid input", path: ["input"] }
+  );
+
 export type UsernamesInputData = z.infer<typeof schema>;
 
 type UsernamesInputProperties = {
@@ -38,6 +49,7 @@ export const UsernamesInput = ({
     mode: "onSubmit",
     delayError: 100,
     defaultValues: { mode: "handle" },
+    shouldUnregister: true,
   });
 
   const mode = watch("mode");
@@ -50,7 +62,7 @@ export const UsernamesInput = ({
   return (
     <form onSubmit={handleSubmit(clearAndSubmit)}>
       <div className="btn-group">
-        {schema.shape.mode.options.map((mode) => (
+        {modeSchema.options.map((mode) => (
           <input
             key={mode}
             type="radio"
@@ -72,7 +84,7 @@ export const UsernamesInput = ({
               )}
             </span>
             <input
-              {...register("handle")}
+              {...register("input")}
               type="text"
               disabled={disabled || loading}
               autoFocus
@@ -83,10 +95,10 @@ export const UsernamesInput = ({
             <kbd className="kbd">⏎</kbd>
           </div>
         </div>
-        {!!errors.handle && (
+        {!!errors.input && (
           <label className="label shrink-0">
             <span className="label-text-alt text-error">
-              {errors.handle.message}
+              {errors.input.message}
             </span>
           </label>
         )}
