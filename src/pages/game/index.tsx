@@ -31,7 +31,7 @@ const Game: NextPage = () => {
     }
   );
 
-  if (router.isReady && (error || data?.invalidUsernames?.length)) {
+  if (router.isReady && (error || data?.invalidUsers?.length)) {
     void router.replace("/");
   }
 
