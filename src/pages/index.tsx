@@ -132,6 +132,10 @@ const Home: NextPage = () => {
     );
   };
 
+  const resetEmptyUsernames = () => {
+    setInvalidUsers((users) => users.filter((user) => user.reason !== "empty"));
+  };
+
   return (
     <>
       <div className="hero bg-base-200 min-h-screen ">
@@ -148,7 +152,7 @@ const Home: NextPage = () => {
               />
               {!!usernames?.length && (
                 <div
-                  className="flex max-w-sm grow-0 flex-wrap gap-1"
+                  className="flex w-0 min-w-full flex-wrap gap-1"
                   ref={animationParent}
                 >
                   {usernames.map((username) => (
@@ -199,7 +203,7 @@ const Home: NextPage = () => {
                     <div>
                       <AlertCircle />
                       <span>
-                        One of the usernames doesn&apos;t have tweets.
+                        One or more usernames don&apos;t have tweets
                         <br />
                         Try tweaking the settings or remove the username
                       </span>
@@ -209,7 +213,7 @@ const Home: NextPage = () => {
               {usernames.length > 1 ? (
                 <>
                   <div className="divider">Settings</div>
-                  <Settings />
+                  <Settings onEndTimeChange={() => resetEmptyUsernames()} />
                   <div className="form-control mt-6">
                     <button
                       className={clsx([

@@ -2,7 +2,15 @@ import { useAtom } from "jotai";
 import { gameConfigAtom, type EndTime, endTimeSchema } from "../atoms/game";
 import { type ChangeEventHandler } from "react";
 
-export const Settings = () => {
+type SettingsProperties = {
+  onEndTimeChange?: () => void;
+  onEndlessChange?: () => void;
+};
+
+export const Settings = ({
+  onEndTimeChange,
+  onEndlessChange,
+}: SettingsProperties) => {
   const [config, setConfig] = useAtom(gameConfigAtom);
 
   const handleEndTimeChange: ChangeEventHandler<HTMLInputElement> = (event) => {
@@ -10,6 +18,8 @@ export const Settings = () => {
       ...config,
       endTime: event.target.value as EndTime,
     }));
+
+    onEndTimeChange && onEndTimeChange();
   };
 
   const handleEndlessChange: ChangeEventHandler<HTMLInputElement> = (event) => {
@@ -17,6 +27,8 @@ export const Settings = () => {
       ...config,
       endless: event.target.checked,
     }));
+
+    onEndlessChange && onEndlessChange();
   };
 
   return (
