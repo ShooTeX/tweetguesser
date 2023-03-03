@@ -81,18 +81,21 @@ const Home: NextPage = () => {
   }
 
   const usernamesAreValid = usernames.every(
-    (username) => !invalidUsers.some(({ handle }) => handle === username)
+    (username) =>
+      !invalidUsers.some(({ handle }) => handle.toLowerCase() === username)
   );
 
   const usernamesIncludeForbidden = usernames.some((username) =>
     invalidUsers.some(
-      ({ handle, reason }) => handle === username && reason === "forbidden"
+      ({ handle, reason }) =>
+        handle.toLowerCase() === username && reason === "forbidden"
     )
   );
 
   const usernamesIncludeEmpty = usernames.some((username) =>
     invalidUsers.some(
-      ({ handle, reason }) => handle === username && reason === "empty"
+      ({ handle, reason }) =>
+        handle.toLowerCase() === username && reason === "empty"
     )
   );
 
