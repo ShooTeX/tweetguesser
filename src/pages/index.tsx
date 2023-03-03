@@ -5,7 +5,7 @@ import { useRouter } from "next/router";
 import { Logo } from "../components/logo";
 import type { UsernamesInputData } from "../components/usernames-input";
 import { UsernamesInput } from "../components/usernames-input";
-import { Bomb, Heart, XCircle } from "lucide-react";
+import { AlertCircle, Bomb, Heart, XCircle } from "lucide-react";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { gameConfigAtom, usernamesAtom } from "../atoms/game";
 import { useAtom, useAtomValue } from "jotai";
@@ -14,6 +14,7 @@ import { getEndTime } from "../utils/get-end-time";
 import clsx from "clsx";
 import { clamp, equals } from "remeda";
 import arrayShuffle from "array-shuffle";
+import type { InvalidUser } from "../server/api/routers/twitter/procedures/get-tweets";
 
 const Home: NextPage = () => {
   const router = useRouter();
@@ -23,7 +24,7 @@ const Home: NextPage = () => {
   const [usernames, setUsernames] = useAtom(usernamesAtom);
   const [getFollowing, setGetFollowing] = useState<string>();
   const [getListMembers, setGetListMembers] = useState<string>();
-  const [invalidUsernames, setInvalidUsernames] = useState<string[]>([]);
+  const [invalidUsers, setInvalidUsers] = useState<InvalidUser[]>([]);
 
   const { data, error, isFetching, refetch } = api.twitter.getTweets.useQuery(
     { usernames: usernames, endTime: getEndTime(endTime) },
@@ -68,31 +69,41 @@ const Home: NextPage = () => {
     setUsernames(randomFollowing);
   }
 
-  if (data?.invalidUsernames?.length) {
-    const newInvalidUsernames = data.invalidUsernames.filter(
-      (username) => !invalidUsernames.includes(username)
+  if (data?.invalidUsers?.length) {
+    const newInvalidUsers = data.invalidUsers.filter(
+      (user) =>
+        !invalidUsers.some((cachedUser) => user.handle === cachedUser.handle)
     );
 
-    if (newInvalidUsernames.length > 0) {
-      setInvalidUsernames((usernames) => [
-        ...usernames,
-        ...newInvalidUsernames,
-      ]);
+    if (newInvalidUsers.length > 0) {
+      setInvalidUsers((users) => [...users, ...newInvalidUsers]);
     }
   }
 
   const usernamesAreValid = usernames.every(
-    (username) => !invalidUsernames.includes(username)
+    (username) => !invalidUsers.some(({ handle }) => handle === username)
+  );
+
+  const usernamesIncludeForbidden = usernames.some((username) =>
+    invalidUsers.some(
+      ({ handle, reason }) => handle === username && reason === "forbidden"
+    )
+  );
+
+  const usernamesIncludeEmpty = usernames.some((username) =>
+    invalidUsers.some(
+      ({ handle, reason }) => handle === username && reason === "empty"
+    )
   );
 
   const handlePlay = async () => {
-    if (!data?.invalidUsernames?.length && data?.tweets.length) {
+    if (!data?.invalidUsers?.length && data?.tweets.length) {
       void router.push("/game");
     }
 
     const { data: refetchData } = await refetch();
 
-    if (!refetchData?.invalidUsernames?.length && refetchData?.tweets.length) {
+    if (!refetchData?.invalidUsers?.length && refetchData?.tweets.length) {
       void router.push("/game");
     }
   };
@@ -142,9 +153,19 @@ const Home: NextPage = () => {
                 >
                   {usernames.map((username) => (
                     <div
-                      className={`badge cursor-pointer ${
-                        invalidUsernames.includes(username) ? "badge-error" : ""
-                      }`}
+                      className={clsx(
+                        "badge cursor-pointer",
+                        invalidUsers.some(
+                          ({ handle, reason }) =>
+                            handle.toLowerCase() === username &&
+                            reason === "forbidden"
+                        ) && "badge-error",
+                        invalidUsers.some(
+                          ({ handle, reason }) =>
+                            handle.toLowerCase() === username &&
+                            reason === "empty"
+                        ) && "badge-warning"
+                      )}
                       key={username}
                       onClick={() => handleUsernameClick(username)}
                     >
@@ -160,7 +181,7 @@ const Home: NextPage = () => {
                 </div>
               )}
               {!!error ||
-                (!usernamesAreValid && (
+                (usernamesIncludeForbidden && (
                   <div className="alert alert-error mt-4 shadow-lg">
                     <div>
                       <XCircle></XCircle>
@@ -168,6 +189,19 @@ const Home: NextPage = () => {
                         {error
                           ? "An unknown error occured"
                           : "One or more usernames are invalid"}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              {!!error ||
+                (usernamesIncludeEmpty && (
+                  <div className="alert alert-warning mt-4 shadow-lg">
+                    <div>
+                      <AlertCircle />
+                      <span>
+                        One of the usernames doesn&apos;t have tweets.
+                        <br />
+                        Try tweaking the settings or remove the username
                       </span>
                     </div>
                   </div>

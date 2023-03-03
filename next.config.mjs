@@ -28,6 +28,12 @@ const config = {
         port: "",
         pathname: "/media/**",
       },
+      {
+        protocol: "https",
+        hostname: "abs.twimg.com",
+        port: "",
+        pathname: "/sticky/default_profile_images/**",
+      },
     ],
   },
 };
