@@ -7,7 +7,6 @@ import { z } from "zod";
  */
 export const serverSchema = z.object({
   TWITTER_TOKEN: z.string(),
-  DATABASE_URL: z.string().url(),
   NODE_ENV: z.enum(["development", "test", "production"]),
 });
 
@@ -19,7 +18,6 @@ export const serverSchema = z.object({
 // eslint-disable-next-line unicorn/prevent-abbreviations
 export const serverEnv = {
   TWITTER_TOKEN: process.env.TWITTER_TOKEN,
-  DATABASE_URL: process.env.DATABASE_URL,
   NODE_ENV: process.env.NODE_ENV,
 };
 
