@@ -4,9 +4,9 @@
   "description": "",
   "main": "src/index.ts",
   "scripts": {
-    "dev": "pnpx tsx watch .",
-    "lint": "pnpx eslint .",
-    "build": "pnpx esbuild . --bundle --minify --platform=node --outfile=dist/main.js"
+    "dev": "npx tsx watch .",
+    "lint": "npx eslint .",
+    "build": "npx esbuild . --bundle --minify --platform=node --outfile=dist/main.js --target=node16"
   },
   "keywords": [],
   "author": "",
