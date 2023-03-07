@@ -18,7 +18,6 @@
  */
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 
-import { prisma } from "../database";
 import { env as environment } from "../../env/server.mjs";
 import { Client } from "twitter-api-sdk";
 
@@ -36,7 +35,6 @@ type CreateContextOptions = Record<string, never>;
 const createInnerTRPCContext = (_options: CreateContextOptions) => {
   return {
     twitter: new Client(environment.TWITTER_TOKEN),
-    prisma,
   };
 };
 
