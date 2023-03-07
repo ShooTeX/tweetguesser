@@ -6,6 +6,17 @@
         "^build"
       ],
       "outputs": [
+        ".dist/**"
+      ],
+      "env": [
+        "PORT"
+      ]
+    },
+    "build#web": {
+      "dependsOn": [
+        "^build"
+      ],
+      "outputs": [
         ".next/**"
       ],
       "env": [
