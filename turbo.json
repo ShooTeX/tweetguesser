@@ -11,8 +11,7 @@
       "env": [
         "TWITTER_TOKEN",
         "PORT",
-        "NODE_ENV",
-        "VERCEL_URL"
+        "NODE_ENV"
       ]
     },
     "lint": {},
