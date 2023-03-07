@@ -12,7 +12,7 @@
         "PORT"
       ]
     },
-    "build#web": {
+    "web#build": {
       "dependsOn": [
         "^build"
       ],
