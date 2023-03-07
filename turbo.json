@@ -9,7 +9,7 @@
         "dist/**"
       ],
       "env": [
-        "PORT"
+        "NODE_ENV"
       ]
     },
     "web#build": {
@@ -21,7 +21,6 @@
       ],
       "env": [
         "TWITTER_TOKEN",
-        "PORT",
         "NODE_ENV"
       ]
     },
