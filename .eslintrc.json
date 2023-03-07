@@ -7,7 +7,8 @@
       "error",
       {
         "allowList": [
-          "^VERCEL_URL$"
+          "^VERCEL_URL$",
+          "^PORT$"
         ]
       }
     ]
