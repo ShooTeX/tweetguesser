@@ -25,7 +25,6 @@ try {
   await server.listen({
     port: await getPort({ port: [PORT, 3000, 3001, 3002] }),
   });
-  console.info("Server started");
 } catch (error) {
   server.log.error(error);
   process.exit(1);
