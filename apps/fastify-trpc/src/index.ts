@@ -10,7 +10,7 @@ import { PORT } from "./environment";
 
 const server = fastify({
   maxParamLength: 5000,
-  logger: process.env.NODE_ENV !== "production",
+  logger: true,
 });
 
 void server.register(ws);
