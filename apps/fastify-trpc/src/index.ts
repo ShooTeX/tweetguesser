@@ -21,11 +21,14 @@ void server.register(fastifyTRPCPlugin, {
   useWSS: true,
 });
 
-try {
-  await server.listen({
-    port: await getPort({ port: [PORT, 3000, 3001, 3002] }),
-  });
-} catch (error) {
-  server.log.error(error);
-  process.exit(1);
-}
+// eslint-disable-next-line unicorn/prefer-top-level-await
+void (async () => {
+  try {
+    await server.listen({
+      port: await getPort({ port: [PORT, 3000, 3001, 3002] }),
+    });
+  } catch (error) {
+    server.log.error(error);
+    process.exit(1);
+  }
+})();
