@@ -270,7 +270,7 @@ const Home: NextPage = () => {
                         </div>
                       </div>
                     ))}
-                  {usernames.length === 0 && (
+                  {usernames.length === 0 ? (
                     <>
                       <div className="divider">Or try a list</div>
                       <div
@@ -287,9 +287,12 @@ const Home: NextPage = () => {
                         </div>
                       </div>
                     </>
+                  ) : (
+                    <>
+                      <div className="divider">Settings</div>
+                      <Settings onEndTimeChange={() => resetEmptyUsernames()} />
+                    </>
                   )}
-                  <div className="divider">Settings</div>
-                  <Settings onEndTimeChange={() => resetEmptyUsernames()} />
                 </>
               )}
               {gameMode === "tweets" && (
