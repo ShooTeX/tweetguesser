@@ -10,13 +10,20 @@ const endTime = [
 
 export const endTimeSchema = z.enum(endTime);
 
+const gameModes = ["handles", "tweets"] as const;
+
 export type EndTime = z.infer<typeof endTimeSchema>;
+
+export const gameModeSchema = z.enum(gameModes);
+
+export type GameMode = z.input<typeof gameModeSchema>;
 
 export type GameConfig = {
   timeLimit: number;
   similarityThreshold: number;
   endless: boolean;
   endTime: EndTime;
+  gameMode: GameMode;
 };
 
 export const gameConfigAtom = atomWithStorage<GameConfig>("game-config", {
@@ -24,6 +31,9 @@ export const gameConfigAtom = atomWithStorage<GameConfig>("game-config", {
   similarityThreshold: 0.8,
   endless: false,
   endTime: "today",
+  gameMode: "handles",
 });
 
 export const usernamesAtom = atomWithStorage<string[]>("usernames", []);
+
+export const tweetIdsAtom = atomWithStorage<string[]>("tweet-ids", []);

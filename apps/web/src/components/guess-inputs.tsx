@@ -7,7 +7,7 @@ import {
 } from "react";
 import type { KeyboardEventHandler } from "react";
 import { findBestMatch } from "string-similarity";
-import { gameConfigAtom, usernamesAtom } from "../atoms/game";
+import { gameConfigAtom } from "../atoms/game";
 import { useAtomValue } from "jotai";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import clsx from "clsx";
@@ -18,6 +18,7 @@ type GuessInputProperties = {
   onSkip: () => void;
   possibleAnswers: string[];
   disabled?: boolean;
+  usernames: string[];
 };
 
 type InputState = "default" | "error" | "correct";
@@ -28,10 +29,10 @@ export const GuessInput = ({
   possibleAnswers,
   disabled,
   onSkip,
+  usernames,
 }: GuessInputProperties) => {
   const [animationParent] = useAutoAnimate();
   const config = useAtomValue(gameConfigAtom);
-  const usernames = useAtomValue(usernamesAtom);
   const [inputState, setInputState] = useState<InputState>("default");
   const [input, setInput] = useState("");
   const [previousInput, setPreviousInput] = useState<string>();
