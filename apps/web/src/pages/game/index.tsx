@@ -21,7 +21,7 @@ const Game: NextPage = () => {
   const usernames = useAtomValue(usernamesAtom);
   const { endless, endTime } = useAtomValue(gameConfigAtom);
 
-  const { data, error } = api.twitter.getTweets.useQuery(
+  const { data, error } = api.twitter.getTweetsByUsernames.useQuery(
     { usernames, endTime: getEndTime(endTime) },
     {
       refetchOnWindowFocus: false,
