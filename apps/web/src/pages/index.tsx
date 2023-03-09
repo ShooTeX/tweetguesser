@@ -14,7 +14,7 @@ import { getEndTime } from "../utils/get-end-time";
 import clsx from "clsx";
 import { clamp, equals } from "remeda";
 import arrayShuffle from "array-shuffle";
-import type { InvalidUser } from "../server/api/routers/twitter/procedures/get-tweets";
+import type { InvalidUser } from "../server/api/routers/twitter/procedures/get-tweets-by-username";
 
 const Home: NextPage = () => {
   const router = useRouter();
@@ -26,14 +26,15 @@ const Home: NextPage = () => {
   const [getListMembers, setGetListMembers] = useState<string>();
   const [invalidUsers, setInvalidUsers] = useState<InvalidUser[]>([]);
 
-  const { data, error, isFetching, refetch } = api.twitter.getTweets.useQuery(
-    { usernames: usernames, endTime: getEndTime(endTime) },
-    {
-      refetchOnWindowFocus: false,
-      refetchOnMount: false,
-      enabled: false,
-    }
-  );
+  const { data, error, isFetching, refetch } =
+    api.twitter.getTweetsByUsernames.useQuery(
+      { usernames: usernames, endTime: getEndTime(endTime) },
+      {
+        refetchOnWindowFocus: false,
+        refetchOnMount: false,
+        enabled: false,
+      }
+    );
 
   const { data: following, isFetching: isFollowingFetching } =
     api.twitter.getRandomFollowing.useQuery(
