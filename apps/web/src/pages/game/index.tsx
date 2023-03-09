@@ -10,7 +10,7 @@ import { Logo } from "../../components/logo";
 import { Timer } from "../../components/timer";
 import { Modal } from "../../components/modal";
 import { useAtomValue } from "jotai";
-import { gameConfigAtom, usernamesAtom } from "../../atoms/game";
+import { gameConfigAtom, tweetIdsAtom, usernamesAtom } from "../../atoms/game";
 import { Heart, Twitter } from "lucide-react";
 import { getEndTime } from "../../utils/get-end-time";
 import arrayShuffle from "array-shuffle";
@@ -18,26 +18,57 @@ import Link from "next/link";
 
 const Game: NextPage = () => {
   const router = useRouter();
-  const usernames = useAtomValue(usernamesAtom);
-  const { endless, endTime } = useAtomValue(gameConfigAtom);
+  const usernamesStorage = useAtomValue(usernamesAtom);
+  const tweetIds = useAtomValue(tweetIdsAtom);
+  const { endless, endTime, gameMode } = useAtomValue(gameConfigAtom);
 
   const { data, error } = api.twitter.getTweetsByUsernames.useQuery(
-    { usernames, endTime: getEndTime(endTime) },
+    { usernames: usernamesStorage, endTime: getEndTime(endTime) },
     {
       refetchOnWindowFocus: false,
       refetchOnMount: false,
       retry: false,
-      enabled: usernames.length > 0,
+      enabled: usernamesStorage.length > 0 && gameMode === "handles",
     }
   );
 
-  if (router.isReady && (error || data?.invalidUsers?.length)) {
+  const { data: getSpecifiedTweetsData, error: getSpecifiedTweetsError } =
+    api.twitter.getTweets.useQuery(
+      { ids: tweetIds },
+      {
+        retry: false,
+        refetchOnWindowFocus: false,
+        refetchOnMount: false,
+        enabled: tweetIds.length > 0 && gameMode === "tweets",
+      }
+    );
+
+  if (
+    router.isReady &&
+    (error || getSpecifiedTweetsError || data?.invalidUsers?.length)
+  ) {
     void router.replace("/");
   }
 
+  const usernames =
+    gameMode === "handles"
+      ? usernamesStorage
+      : gameMode === "tweets"
+      ? getSpecifiedTweetsData?.usernames.map((username) =>
+          username.toLowerCase()
+        )
+      : undefined;
+
+  const rawTweets =
+    gameMode === "handles"
+      ? data?.tweets
+      : gameMode === "tweets"
+      ? getSpecifiedTweetsData?.tweets
+      : undefined;
+
   const tweets = useMemo(
-    () => (data?.tweets.length ? arrayShuffle(data.tweets) : undefined),
-    [data?.tweets]
+    () => (rawTweets?.length ? arrayShuffle(rawTweets) : undefined),
+    [rawTweets]
   );
 
   const [currentRound, setCurrentRound] = useState(0);
@@ -113,7 +144,11 @@ const Game: NextPage = () => {
                 href={`https://twitter.com/intent/tweet?text=${encodeURI(
                   `I just got ${score} points in TweetGuesser 🥳
 
-Guessing tweets from ${usernames.map((username) => `@${username}`).join(" ")}
+Guessing tweets from ${
+                    usernames
+                      ? usernames.map((username) => `@${username}`).join(" ")
+                      : ""
+                  }
 
 `
                 )}&url=https://www.tweetguesser.com&via=tweetguesser&hashtags=tweetguesser,tweetguessr`}
@@ -204,6 +239,7 @@ Guessing tweets from ${usernames.map((username) => `@${username}`).join(" ")}
           <div className="flex w-full items-center">
             <div className="mr-4 flex-1">
               <GuessInput
+                usernames={usernames || []}
                 onSkip={() => endRound(true)}
                 onCorrect={() => endRound()}
                 onIncorrect={() => setTries(tries + 1)}
