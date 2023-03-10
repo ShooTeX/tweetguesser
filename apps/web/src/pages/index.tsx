@@ -4,8 +4,6 @@ import { api } from "../utils/api";
 import { useRouter } from "next/router";
 import { Logo } from "../components/logo";
 import type { UsernamesInputData } from "../components/usernames-input";
-import { UsernamesInput } from "../components/usernames-input";
-import { AlertCircle, Bomb, Heart, XCircle } from "lucide-react";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import {
   gameConfigAtom,
@@ -14,12 +12,29 @@ import {
   usernamesAtom,
 } from "../atoms/game";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
-import { Settings } from "../components/settings";
 import { getEndTime } from "../utils/get-end-time";
-import clsx from "clsx";
 import { clamp, equals } from "remeda";
 import arrayShuffle from "array-shuffle";
 import type { InvalidUser } from "../server/api/routers/twitter/procedures/get-tweets-by-username";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuItem,
+} from "../components/ui/dropdown-menu";
+import { AtSign, ChevronsUpDown, Heart, List, Menu, Users } from "lucide-react";
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+} from "../components/ui/tabs";
+import { Separator } from "../components/ui/separator";
+import { Collapsible, CollapsibleTrigger } from "../components/ui/collapsible";
 
 const Home: NextPage = () => {
   const router = useRouter();
@@ -172,192 +187,106 @@ const Home: NextPage = () => {
 
   return (
     <>
-      <div className="hero bg-base-200 min-h-screen ">
-        <div className="hero-content flex-col gap-0">
+      <div className="flex h-screen">
+        <div className="m-auto flex flex-col gap-4">
           <Logo />
-          <div className="tabs mt-4 w-full capitalize">
-            {gameModeSchema.options.map((mode) => (
-              <a
-                className={clsx(
-                  "tab tab-lifted tab-border-none",
-                  mode === gameMode && "tab-active"
-                )}
-                key={mode}
-                onClick={() =>
-                  setGameConfig((config) => ({ ...config, gameMode: mode }))
-                }
-              >
-                {mode}
-                {mode === "tweets" && (
-                  <span className="badge badge-sm ml-1">beta</span>
-                )}
-              </a>
-            ))}
-          </div>
-          <div
-            className={clsx(
-              "card bg-base-100 shrink-0 shadow-xl",
-              gameModeSchema.options[0] === gameMode && "rounded-tl-none"
-            )}
+          <Tabs
+            defaultValue={gameModeSchema.enum.handles}
+            className="w-[425px]"
           >
-            <div className="card-body min-w-[30rem]" ref={animationParent}>
-              {gameMode === "handles" && (
-                <>
-                  <UsernamesInput
-                    loading={isFollowingFetching || isListMembersFetching}
-                    disabled={usernames.length >= 20}
-                    onSubmit={(data) => {
-                      handleUsernamesInput(data);
-                    }}
-                  />
-                  {!!usernames?.length && (
-                    <div
-                      className="flex w-0 min-w-full flex-wrap gap-1"
-                      ref={animationParent}
-                    >
-                      {usernames.map((username) => (
-                        <div
-                          className={clsx(
-                            "badge cursor-pointer",
-                            invalidUsers.some(
-                              ({ handle, reason }) =>
-                                handle.toLowerCase() === username &&
-                                reason === "forbidden"
-                            ) && "badge-error",
-                            invalidUsers.some(
-                              ({ handle, reason }) =>
-                                handle.toLowerCase() === username &&
-                                reason === "empty"
-                            ) && "badge-warning"
-                          )}
-                          key={username}
-                          onClick={() => handleUsernameClick(username)}
-                        >
-                          {username}
-                        </div>
-                      ))}
-                      <button
-                        className="badge badge-outline badge-error cursor-pointer"
-                        onClick={() => setUsernames([])}
-                      >
-                        <Bomb size={14} className="mr-1" /> remove all
-                      </button>
-                    </div>
-                  )}
-                  {!!error ||
-                    (usernamesIncludeForbidden && (
-                      <div className="alert alert-error mt-4 shadow-lg">
-                        <div>
-                          <XCircle></XCircle>
-                          <span>
-                            {error
-                              ? "An unknown error occured"
-                              : "One or more usernames are invalid"}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                  {!!error ||
-                    (usernamesIncludeEmpty && (
-                      <div className="alert alert-warning mt-4 shadow-lg">
-                        <div>
-                          <AlertCircle />
-                          <span>
-                            One or more usernames don&apos;t have tweets
-                            <br />
-                            Try tweaking the settings or remove the username
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                  {usernames.length === 0 ? (
-                    <>
-                      <div className="divider">Or try a list</div>
-                      <div
-                        onClick={() => setGetListMembers("1629851852270448645")}
-                        className={clsx(
-                          "card card-compact card-bordered",
-                          "border-primary text-neutral-content bg-neutral w-full",
-                          "cursor-pointer transition-all ease-in-out hover:shadow-xl"
-                        )}
-                      >
-                        <div className="card-body">
-                          <h2 className="card-title">TechNerds</h2>
-                          <p>Just a bunch of nerds...</p>
-                        </div>
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                      <div className="divider">Settings</div>
-                      <Settings onEndTimeChange={() => resetEmptyUsernames()} />
-                    </>
-                  )}
-                </>
-              )}
-              {gameMode === "tweets" && (
-                <>
-                  <div className="form-control">
-                    <textarea
-                      className="textarea textarea-primary"
-                      value={tweetIds.join("\n")}
-                      onChange={(event) =>
-                        setTweetIds(
-                          event.target.value
-                            .split("\n")
-                            .map((value) => value.trim())
-                        )
-                      }
-                    />
-                    <label className="label">
-                      <span className="label-text-alt">
-                        Tweet ids seperated by linebreak
-                      </span>
-                    </label>
+            <TabsList>
+              {gameModeSchema.options.map((mode) => (
+                <TabsTrigger value={mode} key={mode} className="capitalize">
+                  {mode}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+            <TabsContent value={gameModeSchema.enum.handles}>
+              <p className="text-sm text-slate-500 dark:text-slate-200">
+                Choose the users whose tweets you want to guess
+              </p>
+              <Separator className="my-4" />
+              <div className="flex w-full items-center space-x-2">
+                <div className="flex w-full">
+                  <div className="flex w-10 rounded-l-md bg-pink-700">
+                    <AtSign className="m-auto h-4 w-4" />
                   </div>
-                  {getSpecifiedTweetsError && (
-                    <div className="alert alert-error mt-4 shadow-lg">
-                      <div>
-                        <XCircle></XCircle>
-                        <span>Something went wrong :(</span>
-                      </div>
-                    </div>
-                  )}
-                </>
-              )}
-              <div className="form-control mt-6">
-                <button
-                  className={clsx([
-                    "btn-primary btn-lg btn",
-                    (isFetching || getSpecifiedTweetsFetching) && "loading",
-                  ])}
-                  disabled={
-                    (gameMode === "handles" &&
-                      (!usernames ||
-                        usernames.length < 2 ||
-                        !usernamesAreValid ||
-                        isFetching)) ||
-                    (gameMode === "tweets" &&
-                      (tweetIds.length < 2 || getSpecifiedTweetsFetching))
-                  }
-                  onClick={handlePlay}
-                >
-                  Play
-                </button>
+                  <Input
+                    type="email"
+                    placeholder="Handle"
+                    className="w-full rounded-l-none dark:border-pink-700"
+                    autoFocus
+                  />
+                </div>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button className="w-10 shrink-0 rounded-full p-0 dark:bg-pink-700 dark:text-white dark:hover:bg-pink-900">
+                      <Menu className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuLabel>Fetch from ...</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem>
+                      <Users className="mr-2 h-4 w-4" />
+                      Following
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <List className="mr-2 h-4 w-4" />
+                      List
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
-            </div>
-          </div>
-          <span className="mt-4 text-sm">
-            <Heart className="inline" /> built by{" "}
-            <a
-              href="https://twitter.com/imshootex"
-              target="_blank"
-              rel="noreferrer"
-              className="link-hover link-info link font-bold"
+              <Collapsible className="mt-8 space-y-2">
+                <div className="flex items-center justify-between space-x-4">
+                  <h4 className="text-sm font-semibold">
+                    Or try one of these lists
+                  </h4>
+                  <CollapsibleTrigger asChild>
+                    <Button variant="ghost" size="sm" className="w-9 p-0">
+                      <ChevronsUpDown className="h-4 w-4" />
+                      <span className="sr-only">Toggle</span>
+                    </Button>
+                  </CollapsibleTrigger>
+                </div>
+                <div className="cursor-pointer rounded-md border-pink-600 bg-gradient-to-br from-transparent to-pink-600 px-4 py-3 hover:to-pink-900">
+                  <div className="text-lg font-semibold text-slate-900 dark:text-slate-50">
+                    Technerds
+                  </div>
+                  <p className="text-sm text-slate-500 dark:text-pink-200">
+                    Just a bunch of nerds...
+                  </p>
+                </div>
+              </Collapsible>
+            </TabsContent>
+            <TabsContent value={gameModeSchema.enum.tweets}>
+              <p className="text-sm text-slate-500 dark:text-slate-400">
+                Change your password here. After saving, you&apos;ll be logged
+                out.
+              </p>
+            </TabsContent>
+          </Tabs>
+          <div className="flex flex-col items-center space-y-4">
+            <Button
+              size={"lg"}
+              className="w-full font-bold uppercase dark:bg-pink-600 dark:text-white"
+              onClick={handlePlay}
             >
-              @imShooTeX
-            </a>
-          </span>
+              Play
+            </Button>
+            <span className="mt-4 text-sm text-slate-500 dark:text-slate-400">
+              <Heart className="inline" /> built by{" "}
+              <a
+                className="text-slate-900 underline-offset-4 hover:underline dark:text-slate-50"
+                href="https://twitter.com/imshootex"
+                target="_blank"
+                rel="noreferrer"
+              >
+                @imShooTeX
+              </a>
+            </span>
+          </div>
         </div>
       </div>
     </>

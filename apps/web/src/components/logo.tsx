@@ -1,8 +1,6 @@
 export const Logo = () => (
-  <h1 className="bg-gradient-to-r from-[#fad0c4] to-[#ffd1ff] bg-clip-text text-4xl font-medium text-transparent">
+  <h1 className="text-4xl font-medium text-pink-600">
     TWEET
-    <span className="bg-gradient-to-r from-[#fad0c4] to-[#ffd1ff] bg-clip-text font-extrabold text-transparent">
-      GUESSER
-    </span>
+    <span className="font-extrabold text-pink-500">GUESSER</span>
   </h1>
 );

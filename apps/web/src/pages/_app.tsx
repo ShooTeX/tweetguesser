@@ -7,6 +7,7 @@ import { Provider } from "jotai";
 import { Analytics } from "@vercel/analytics/react";
 import Head from "next/head";
 import { Inter, Noto_Sans_Mono } from "@next/font/google";
+import { ThemeProvider } from "next-themes";
 
 const inter = Inter({ subsets: ["latin"], display: "swap" });
 const notoSansMono = Noto_Sans_Mono({ subsets: ["latin"], display: "swap" });
@@ -54,8 +55,10 @@ const MyApp: AppType = ({ Component, pageProps }) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Provider>
-        <Component {...pageProps} />
-        <Analytics />
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+          <Component {...pageProps} />
+          <Analytics />
+        </ThemeProvider>
       </Provider>
     </>
   );
