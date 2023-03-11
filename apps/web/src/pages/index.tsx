@@ -18,9 +18,15 @@ import { clamp, equals } from "remeda";
 import arrayShuffle from "array-shuffle";
 import type { InvalidUser } from "../server/api/routers/twitter/procedures/get-tweets-by-username";
 import { HandleInput } from "../components/handle-input";
+import { HandleList } from "../components/handle-list";
 
 const HandleTab = () => {
-  return <HandleInput />;
+  return (
+    <div>
+      <HandleInput />
+      <HandleList />
+    </div>
+  );
 };
 
 const Home: NextPage = () => {
@@ -173,7 +179,7 @@ const Home: NextPage = () => {
 
   return (
     <>
-      <div className="hero bg-base-200 min-h-screen ">
+      <div className="hero bg-base-200 min-h-screen">
         <div className="hero-content flex-col gap-0">
           <Logo />
           <div className="tabs mt-4 w-full capitalize">
@@ -197,7 +203,7 @@ const Home: NextPage = () => {
           </div>
           <div
             className={clsx(
-              "card bg-base-100 shrink-0 shadow-xl",
+              "card bg-base-100 w-[425px] shrink-0 shadow-xl",
               gameModeSchema.options[0] === gameMode && "rounded-tl-none"
             )}
           >
