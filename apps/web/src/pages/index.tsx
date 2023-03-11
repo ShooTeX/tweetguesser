@@ -4,8 +4,7 @@ import { api } from "../utils/api";
 import { useRouter } from "next/router";
 import { Logo } from "../components/logo";
 import type { UsernamesInputData } from "../components/usernames-input";
-import { UsernamesInput } from "../components/usernames-input";
-import { AlertCircle, Bomb, Heart, XCircle } from "lucide-react";
+import { AtSign, Heart, XCircle } from "lucide-react";
 import {
   gameConfigAtom,
   gameModeSchema,
@@ -13,12 +12,90 @@ import {
   usernamesAtom,
 } from "../atoms/game";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
-import { Settings } from "../components/settings";
 import { getEndTime } from "../utils/get-end-time";
 import clsx from "clsx";
 import { clamp, equals } from "remeda";
 import arrayShuffle from "array-shuffle";
 import type { InvalidUser } from "../server/api/routers/twitter/procedures/get-tweets-by-username";
+import { z } from "zod";
+import isAlphanumeric from "validator/lib/isAlphanumeric";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { AnimatePresence, motion } from "framer-motion";
+
+const HandleTab = () => {
+  const updateUsernames = useSetAtom(usernamesAtom);
+  const handleSchema = z.object({
+    handle: z
+      .string()
+      .refine((value) => isAlphanumeric(value, undefined, { ignore: "_" })),
+  });
+
+  type HandleData = z.infer<typeof handleSchema>;
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<HandleData>({
+    resolver: zodResolver(handleSchema),
+    mode: "onSubmit",
+    delayError: 100,
+    shouldUnregister: true,
+  });
+
+  const onSubmit = (data: HandleData) => {
+    updateUsernames((usernames) => [...usernames, data.handle]);
+    console.log(data);
+    reset();
+  };
+
+  return (
+    <form className="form-control w-full" onSubmit={handleSubmit(onSubmit)}>
+      <div className={clsx("relative", errors.handle && "animate-wiggle")}>
+        <label className="input-group">
+          <span>
+            <AtSign size={16} />
+          </span>
+          <input
+            type="text"
+            autoFocus
+            className="input-bordered input-primary input flex-1 shrink-0"
+            {...register("handle")}
+          />
+        </label>
+        <div className="absolute inset-y-0 right-4 flex flex-col justify-center">
+          <kbd className="kbd">⏎</kbd>
+        </div>
+      </div>
+      <AnimatePresence>
+        {errors.handle && (
+          <motion.label
+            key="error"
+            initial={{
+              height: 0,
+              opacity: 0,
+            }}
+            animate={{
+              height: "auto",
+              opacity: 1,
+            }}
+            exit={{
+              height: 0,
+              opacity: 0,
+            }}
+            transition={{ ease: "easeInOut" }}
+          >
+            <span className="label-text-alt text-error">
+              {errors.handle.message}
+            </span>
+          </motion.label>
+        )}
+      </AnimatePresence>
+    </form>
+  );
+};
 
 const Home: NextPage = () => {
   const router = useRouter();
@@ -198,98 +275,8 @@ const Home: NextPage = () => {
               gameModeSchema.options[0] === gameMode && "rounded-tl-none"
             )}
           >
-            <div className="card-body min-w-[30rem]">
-              {gameMode === "handles" && (
-                <>
-                  <UsernamesInput
-                    loading={isFollowingFetching || isListMembersFetching}
-                    disabled={usernames.length >= 20}
-                    onSubmit={(data) => {
-                      handleUsernamesInput(data);
-                    }}
-                  />
-                  {!!usernames?.length && (
-                    <div className="flex w-0 min-w-full flex-wrap gap-1">
-                      {usernames.map((username) => (
-                        <div
-                          className={clsx(
-                            "badge cursor-pointer",
-                            invalidUsers.some(
-                              ({ handle, reason }) =>
-                                handle.toLowerCase() === username &&
-                                reason === "forbidden"
-                            ) && "badge-error",
-                            invalidUsers.some(
-                              ({ handle, reason }) =>
-                                handle.toLowerCase() === username &&
-                                reason === "empty"
-                            ) && "badge-warning"
-                          )}
-                          key={username}
-                          onClick={() => handleUsernameClick(username)}
-                        >
-                          {username}
-                        </div>
-                      ))}
-                      <button
-                        className="badge badge-outline badge-error cursor-pointer"
-                        onClick={() => setUsernames([])}
-                      >
-                        <Bomb size={14} className="mr-1" /> remove all
-                      </button>
-                    </div>
-                  )}
-                  {!!error ||
-                    (usernamesIncludeForbidden && (
-                      <div className="alert alert-error mt-4 shadow-lg">
-                        <div>
-                          <XCircle></XCircle>
-                          <span>
-                            {error
-                              ? "An unknown error occured"
-                              : "One or more usernames are invalid"}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                  {!!error ||
-                    (usernamesIncludeEmpty && (
-                      <div className="alert alert-warning mt-4 shadow-lg">
-                        <div>
-                          <AlertCircle />
-                          <span>
-                            One or more usernames don&apos;t have tweets
-                            <br />
-                            Try tweaking the settings or remove the username
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                  {usernames.length === 0 ? (
-                    <>
-                      <div className="divider">Or try a list</div>
-                      <div
-                        onClick={() => setGetListMembers("1629851852270448645")}
-                        className={clsx(
-                          "card card-compact card-bordered",
-                          "border-primary text-neutral-content bg-neutral w-full",
-                          "cursor-pointer transition-all ease-in-out hover:shadow-xl"
-                        )}
-                      >
-                        <div className="card-body">
-                          <h2 className="card-title">TechNerds</h2>
-                          <p>Just a bunch of nerds...</p>
-                        </div>
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                      <div className="divider">Settings</div>
-                      <Settings onEndTimeChange={() => resetEmptyUsernames()} />
-                    </>
-                  )}
-                </>
-              )}
+            <div className="card-body">
+              {gameMode === "handles" && <HandleTab />}
               {gameMode === "tweets" && (
                 <>
                   <div className="form-control">
