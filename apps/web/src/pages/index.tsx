@@ -71,7 +71,7 @@ const HandleTab = () => {
       </div>
       <AnimatePresence>
         {errors.handle && (
-          <motion.label
+          <motion.div
             key="error"
             initial={{
               height: 0,
@@ -87,10 +87,12 @@ const HandleTab = () => {
             }}
             transition={{ ease: "easeInOut" }}
           >
-            <span className="label-text-alt text-error">
-              {errors.handle.message}
-            </span>
-          </motion.label>
+            <label className="label">
+              <span className="label-text-alt text-error">
+                {errors.handle.message}
+              </span>
+            </label>
+          </motion.div>
         )}
       </AnimatePresence>
     </form>
