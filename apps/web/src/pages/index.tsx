@@ -6,7 +6,6 @@ import { Logo } from "../components/logo";
 import type { UsernamesInputData } from "../components/usernames-input";
 import { UsernamesInput } from "../components/usernames-input";
 import { AlertCircle, Bomb, Heart, XCircle } from "lucide-react";
-import { useAutoAnimate } from "@formkit/auto-animate/react";
 import {
   gameConfigAtom,
   gameModeSchema,
@@ -23,7 +22,6 @@ import type { InvalidUser } from "../server/api/routers/twitter/procedures/get-t
 
 const Home: NextPage = () => {
   const router = useRouter();
-  const [animationParent] = useAutoAnimate();
   const { endTime, gameMode } = useAtomValue(gameConfigAtom);
   const setGameConfig = useSetAtom(gameConfigAtom);
 
@@ -200,7 +198,7 @@ const Home: NextPage = () => {
               gameModeSchema.options[0] === gameMode && "rounded-tl-none"
             )}
           >
-            <div className="card-body min-w-[30rem]" ref={animationParent}>
+            <div className="card-body min-w-[30rem]">
               {gameMode === "handles" && (
                 <>
                   <UsernamesInput
@@ -211,10 +209,7 @@ const Home: NextPage = () => {
                     }}
                   />
                   {!!usernames?.length && (
-                    <div
-                      className="flex w-0 min-w-full flex-wrap gap-1"
-                      ref={animationParent}
-                    >
+                    <div className="flex w-0 min-w-full flex-wrap gap-1">
                       {usernames.map((username) => (
                         <div
                           className={clsx(
