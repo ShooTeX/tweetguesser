@@ -24,6 +24,7 @@
     "clsx": "^1.2.1",
     "daisyui": "^2.49.0",
     "date-fns": "^2.29.3",
+    "framer-motion": "^10.2.4",
     "html-react-parser": "^3.0.8",
     "immer": "^9.0.19",
     "jotai": "^2.0.0",
