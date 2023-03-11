@@ -47,7 +47,6 @@ const HandleTab = () => {
 
   const onSubmit = (data: HandleData) => {
     updateUsernames((usernames) => [...usernames, data.handle]);
-    console.log(data);
     reset();
   };
 
@@ -69,32 +68,32 @@ const HandleTab = () => {
           <kbd className="kbd">⏎</kbd>
         </div>
       </div>
-      <AnimatePresence>
-        {errors.handle && (
-          <motion.div
-            key="error"
-            initial={{
-              height: 0,
-              opacity: 0,
-            }}
-            animate={{
-              height: "auto",
-              opacity: 1,
-            }}
-            exit={{
-              height: 0,
-              opacity: 0,
-            }}
-            transition={{ ease: "easeInOut" }}
-          >
-            <label className="label">
-              <span className="label-text-alt text-error">
-                {errors.handle.message}
-              </span>
-            </label>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <label className="label">
+        <AnimatePresence>
+          {errors.handle && (
+            <motion.span
+              className="label-text-alt text-error"
+              initial={{
+                y: -20,
+                height: 0,
+                opacity: 0,
+              }}
+              animate={{
+                y: 0,
+                height: "auto",
+                opacity: 1,
+              }}
+              exit={{
+                y: -10,
+                height: 0,
+                opacity: 0,
+              }}
+            >
+              {errors.handle.message}
+            </motion.span>
+          )}
+        </AnimatePresence>
+      </label>
     </form>
   );
 };
