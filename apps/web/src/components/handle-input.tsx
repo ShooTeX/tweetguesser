@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import clsx from "clsx";
 import { AnimatePresence, motion } from "framer-motion";
-import { useSetAtom } from "jotai";
+import { useAtom } from "jotai";
 import { AtSign } from "lucide-react";
 import { useForm } from "react-hook-form";
 import isAlphanumeric from "validator/lib/isAlphanumeric";
@@ -9,11 +9,18 @@ import { z } from "zod";
 import { usernamesAtom } from "../atoms/game";
 
 export const HandleInput = () => {
-  const updateUsernames = useSetAtom(usernamesAtom);
+  const [usernames, updateUsernames] = useAtom(usernamesAtom);
   const handleSchema = z.object({
     handle: z
       .string()
-      .refine((value) => isAlphanumeric(value, undefined, { ignore: "_" })),
+      .transform((value) => value.trim())
+      .refine(
+        (value) =>
+          value === "" || isAlphanumeric(value, undefined, { ignore: "_" })
+      )
+      .refine((handle) => !usernames.includes(handle), {
+        message: "Already added",
+      }),
   });
 
   type HandleData = z.infer<typeof handleSchema>;
@@ -31,7 +38,11 @@ export const HandleInput = () => {
   });
 
   const onSubmit = (data: HandleData) => {
-    updateUsernames((usernames) => [...usernames, data.handle]);
+    if (data.handle === "") {
+      return;
+    }
+    const inputUsername = data.handle.toLowerCase();
+    updateUsernames((usernames) => [...usernames, inputUsername]);
     reset();
   };
   return (
@@ -42,6 +53,7 @@ export const HandleInput = () => {
             <AtSign size={16} />
           </span>
           <input
+            autoComplete="off"
             type="text"
             autoFocus
             className="input-bordered input-primary input flex-1 shrink-0"
