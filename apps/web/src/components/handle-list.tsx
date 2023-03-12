@@ -32,6 +32,10 @@ export const HandleList = () => {
               y: -20,
               opacity: 0,
             }}
+            whileHover={{
+              scale: 1.05,
+            }}
+            whileTap={{ scale: 0.95 }}
           >
             {username}
           </motion.span>
@@ -55,6 +59,10 @@ export const HandleList = () => {
               y: -20,
               opacity: 0,
             }}
+            whileHover={{
+              scale: 1.05,
+            }}
+            whileTap={{ scale: 0.95 }}
           >
             <Bomb className="mr-1 h-3 w-3" />
             remove all
