@@ -27,10 +27,7 @@ const badgeAnimations: HTMLMotionProps<"span"> = {
 
 export const HandleList = () => {
   const [usernames, updateUsernames] = useAtom(usernamesAtom);
-  const cachedInvalidUsernames = useAtomValue(invalidUsernamesAtom);
-  const invalidUsernames = usernames.filter((username) =>
-    cachedInvalidUsernames.includes(username)
-  );
+  const invalidUsernames = useAtomValue(invalidUsernamesAtom);
   const validUsernames = usernames.filter(
     (username) => !invalidUsernames.includes(username)
   );

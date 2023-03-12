@@ -3,11 +3,12 @@ import { useState } from "react";
 import { api } from "../utils/api";
 import { useRouter } from "next/router";
 import { Logo } from "../components/logo";
-import { Heart } from "lucide-react";
+import { AlertCircle, Heart } from "lucide-react";
 import {
   addInvalidUsernamesAtom,
   gameConfigAtom,
   gameModeSchema,
+  invalidUsernamesAtom,
   tweetIdsAtom,
   usernamesAtom,
 } from "../atoms/game";
@@ -17,12 +18,32 @@ import clsx from "clsx";
 import type { InvalidUser } from "../server/api/routers/twitter/procedures/get-tweets-by-username";
 import { HandleInput } from "../components/handle-input";
 import { HandleList } from "../components/handle-list";
+import { AnimatePresence, motion } from "framer-motion";
 
 const HandleTab = () => {
+  const invalidUsernames = useAtomValue(invalidUsernamesAtom);
+
   return (
     <div>
       <HandleInput />
       <HandleList />
+      <AnimatePresence>
+        {invalidUsernames.length > 0 && (
+          <motion.div
+            className="flex overflow-hidden"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+          >
+            <motion.div className="alert alert-error mt-4">
+              <AlertCircle className="shrink-0" />
+              <span>
+                One or more handles were invalid, please remove them and retry
+              </span>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

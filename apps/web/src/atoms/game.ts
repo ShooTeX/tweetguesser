@@ -39,27 +39,34 @@ export const usernamesAtom = atomWithStorage<string[]>("usernames", []);
 
 export const tweetIdsAtom = atomWithStorage<string[]>("tweet-ids", []);
 
-const invalidUsernamesBaseAtom = atom<string[]>([]);
+const cachedInvalidUsernamesBaseAtom = atom<string[]>([]);
 
-export const invalidUsernamesAtom = atom((get) =>
-  get(invalidUsernamesBaseAtom)
+export const invalidUsernamesAtom = atom((get) => {
+  const cachedInvalidUsernames = get(cachedInvalidUsernamesBaseAtom);
+  const usernames = get(usernamesAtom);
+
+  return cachedInvalidUsernames.filter((username) =>
+    usernames.includes(username)
+  );
+});
+
+export const cachedInvalidUsernamesAtom = atom((get) =>
+  get(cachedInvalidUsernamesBaseAtom)
 );
 
 export const addInvalidUsernamesAtom = atom(
   undefined,
   (get, set, input: string[]) => {
-    const invalidUsernames = get(invalidUsernamesBaseAtom);
-    const newInvalidUsernames = input.filter(
-      (username) => !invalidUsernames.includes(username)
-    );
-
-    console.log(invalidUsernames, newInvalidUsernames);
+    const invalidUsernames = get(cachedInvalidUsernamesBaseAtom);
+    const newInvalidUsernames = input
+      .map((value) => value.toLowerCase())
+      .filter((username) => !invalidUsernames.includes(username));
 
     if (newInvalidUsernames.length === 0) {
       return;
     }
 
-    set(invalidUsernamesBaseAtom, [
+    set(cachedInvalidUsernamesBaseAtom, [
       ...invalidUsernames,
       ...newInvalidUsernames,
     ]);
