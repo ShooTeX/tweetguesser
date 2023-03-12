@@ -1,7 +1,28 @@
+import type { HTMLMotionProps } from "framer-motion";
 import { AnimatePresence, motion } from "framer-motion";
 import { useAtom } from "jotai";
 import { Bomb } from "lucide-react";
 import { usernamesAtom } from "../atoms/game";
+
+const badgeAnimations: HTMLMotionProps<"span"> = {
+  initial: {
+    x: 20,
+    opacity: 0,
+  },
+  animate: {
+    x: 0,
+    opacity: 1,
+    transition: { type: "spring" },
+  },
+  exit: {
+    y: -20,
+    opacity: 0,
+  },
+  whileHover: {
+    scale: 1.05,
+  },
+  whileTap: { scale: 0.95 },
+};
 
 export const HandleList = () => {
   const [usernames, updateUsernames] = useAtom(usernamesAtom);
@@ -19,23 +40,7 @@ export const HandleList = () => {
             key={username}
             className="badge cursor-pointer transition-none"
             onClick={() => handleClick(username)}
-            initial={{
-              x: 20,
-              opacity: 0,
-            }}
-            animate={{
-              x: 0,
-              opacity: 1,
-              transition: { type: "spring" },
-            }}
-            exit={{
-              y: -20,
-              opacity: 0,
-            }}
-            whileHover={{
-              scale: 1.05,
-            }}
-            whileTap={{ scale: 0.95 }}
+            {...badgeAnimations}
           >
             {username}
           </motion.span>
@@ -46,23 +51,7 @@ export const HandleList = () => {
             key="remove-all"
             onClick={() => updateUsernames([])}
             className="badge badge-outline badge-error cursor-pointer transition-none"
-            initial={{
-              x: 20,
-              opacity: 0,
-            }}
-            animate={{
-              x: 0,
-              opacity: 1,
-              transition: { type: "spring" },
-            }}
-            exit={{
-              y: -20,
-              opacity: 0,
-            }}
-            whileHover={{
-              scale: 1.05,
-            }}
-            whileTap={{ scale: 0.95 }}
+            {...badgeAnimations}
           >
             <Bomb className="mr-1 h-3 w-3" />
             remove all
