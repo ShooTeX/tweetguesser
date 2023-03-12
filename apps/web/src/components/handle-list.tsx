@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useAtom } from "jotai";
+import { Bomb } from "lucide-react";
 import { usernamesAtom } from "../atoms/game";
 
 export const HandleList = () => {
@@ -23,7 +24,6 @@ export const HandleList = () => {
               opacity: 0,
             }}
             animate={{
-              y: 0,
               x: 0,
               opacity: 1,
               transition: { type: "spring" },
@@ -36,6 +36,30 @@ export const HandleList = () => {
             {username}
           </motion.span>
         ))}
+        {usernames.length > 1 && (
+          <motion.span
+            layout
+            key="remove-all"
+            onClick={() => updateUsernames([])}
+            className="badge badge-outline badge-error cursor-pointer transition-none"
+            initial={{
+              x: 20,
+              opacity: 0,
+            }}
+            animate={{
+              x: 0,
+              opacity: 1,
+              transition: { type: "spring" },
+            }}
+            exit={{
+              y: -20,
+              opacity: 0,
+            }}
+          >
+            <Bomb className="mr-1 h-3 w-3" />
+            remove all
+          </motion.span>
+        )}
       </AnimatePresence>
     </div>
   );
