@@ -6,11 +6,11 @@ import { AtSign } from "lucide-react";
 import { useForm } from "react-hook-form";
 import isAlphanumeric from "validator/lib/isAlphanumeric";
 import { z } from "zod";
-import { invalidUsernamesAtom, usernamesAtom } from "../atoms/game";
+import { cachedInvalidUsernamesAtom, usernamesAtom } from "../atoms/game";
 
 export const HandleInput = () => {
   const [usernames, updateUsernames] = useAtom(usernamesAtom);
-  const invalidUsernames = useAtomValue(invalidUsernamesAtom);
+  const invalidUsernames = useAtomValue(cachedInvalidUsernamesAtom);
   const handleSchema = z.object({
     handle: z
       .string()
