@@ -1,15 +1,16 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import clsx from "clsx";
 import { AnimatePresence, motion } from "framer-motion";
-import { useAtom } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import { AtSign } from "lucide-react";
 import { useForm } from "react-hook-form";
 import isAlphanumeric from "validator/lib/isAlphanumeric";
 import { z } from "zod";
-import { usernamesAtom } from "../atoms/game";
+import { invalidUsernamesAtom, usernamesAtom } from "../atoms/game";
 
 export const HandleInput = () => {
   const [usernames, updateUsernames] = useAtom(usernamesAtom);
+  const invalidUsernames = useAtomValue(invalidUsernamesAtom);
   const handleSchema = z.object({
     handle: z
       .string()
@@ -20,6 +21,9 @@ export const HandleInput = () => {
       )
       .refine((handle) => !usernames.includes(handle), {
         message: "Already added",
+      })
+      .refine((value) => !invalidUsernames.includes(value), {
+        message: "This handle was invalid",
       }),
   });
 
