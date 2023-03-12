@@ -3,9 +3,9 @@ import { useState } from "react";
 import { api } from "../utils/api";
 import { useRouter } from "next/router";
 import { Logo } from "../components/logo";
-import type { UsernamesInputData } from "../components/usernames-input";
-import { Heart, XCircle } from "lucide-react";
+import { Heart } from "lucide-react";
 import {
+  addInvalidUsernamesAtom,
   gameConfigAtom,
   gameModeSchema,
   tweetIdsAtom,
@@ -14,8 +14,6 @@ import {
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { getEndTime } from "../utils/get-end-time";
 import clsx from "clsx";
-import { clamp, equals } from "remeda";
-import arrayShuffle from "array-shuffle";
 import type { InvalidUser } from "../server/api/routers/twitter/procedures/get-tweets-by-username";
 import { HandleInput } from "../components/handle-input";
 import { HandleList } from "../components/handle-list";
@@ -32,100 +30,45 @@ const HandleTab = () => {
 const Home: NextPage = () => {
   const router = useRouter();
   const { endTime, gameMode } = useAtomValue(gameConfigAtom);
+  const usernames = useAtomValue(usernamesAtom);
+  const addInvalidUsernames = useSetAtom(addInvalidUsernamesAtom);
   const setGameConfig = useSetAtom(gameConfigAtom);
 
-  const [usernames, setUsernames] = useAtom(usernamesAtom);
   const [tweetIds, setTweetIds] = useAtom(tweetIdsAtom);
-  const [getFollowing, setGetFollowing] = useState<string>();
-  const [getListMembers, setGetListMembers] = useState<string>();
-  const [invalidUsers, setInvalidUsers] = useState<InvalidUser[]>([]);
+  const [invalidUsernames, setInvalidUsers] = useState<InvalidUser[]>([]);
 
-  const { data, error, isFetching, refetch } =
+  const { data, isFetching, refetch } =
     api.twitter.getTweetsByUsernames.useQuery(
       { usernames: usernames, endTime: getEndTime(endTime) },
       {
         refetchOnWindowFocus: false,
         refetchOnMount: false,
         enabled: false,
+        onSuccess: (data) => {
+          if (data?.invalidUsers?.length) {
+            addInvalidUsernames(data.invalidUsers.map((user) => user.handle));
+          }
+        },
       }
     );
 
-  const { data: following, isFetching: isFollowingFetching } =
-    api.twitter.getRandomFollowing.useQuery(
-      { username: getFollowing || "" },
-      {
-        refetchOnWindowFocus: false,
-        refetchOnMount: false,
-        enabled: !!getFollowing,
-      }
-    );
-
-  const { data: listMembers, isFetching: isListMembersFetching } =
-    api.twitter.getListMembers.useQuery(
-      { id: getListMembers || "" },
-      {
-        refetchOnWindowFocus: false,
-        refetchOnMount: false,
-        enabled: !!getListMembers,
-      }
-    );
-
-  const {
-    isFetching: getSpecifiedTweetsFetching,
-    refetch: fetchSpecifiedTweets,
-    error: getSpecifiedTweetsError,
-  } = api.twitter.getTweets.useQuery(
-    { ids: tweetIds },
-    {
-      retry: false,
-      refetchOnWindowFocus: false,
-      refetchOnMount: false,
-      enabled: false,
-    }
-  );
-
-  if (getListMembers && listMembers?.length) {
-    const truncListMembers = [...listMembers];
-    truncListMembers.length = clamp(truncListMembers.length, { max: 20 });
-    setGetListMembers(undefined);
-    setUsernames(truncListMembers);
-  }
-
-  if (getFollowing && following?.length && !equals(usernames, following)) {
-    const randomFollowing = [...arrayShuffle(following)];
-    randomFollowing.length = clamp(randomFollowing.length, { max: 20 });
-    setGetFollowing(undefined);
-    setUsernames(randomFollowing);
-  }
-
-  if (data?.invalidUsers?.length) {
-    const newInvalidUsers = data.invalidUsers.filter(
-      (user) =>
-        !invalidUsers.some((cachedUser) => user.handle === cachedUser.handle)
-    );
-
-    if (newInvalidUsers.length > 0) {
-      setInvalidUsers((users) => [...users, ...newInvalidUsers]);
-    }
-  }
+  // const {
+  //   isFetching: getSpecifiedTweetsFetching,
+  //   refetch: fetchSpecifiedTweets,
+  //   error: getSpecifiedTweetsError,
+  // } = api.twitter.getTweets.useQuery(
+  //   { ids: tweetIds },
+  //   {
+  //     retry: false,
+  //     refetchOnWindowFocus: false,
+  //     refetchOnMount: false,
+  //     enabled: false,
+  //   }
+  // );
 
   const usernamesAreValid = usernames.every(
     (username) =>
-      !invalidUsers.some(({ handle }) => handle.toLowerCase() === username)
-  );
-
-  const usernamesIncludeForbidden = usernames.some((username) =>
-    invalidUsers.some(
-      ({ handle, reason }) =>
-        handle.toLowerCase() === username && reason === "forbidden"
-    )
-  );
-
-  const usernamesIncludeEmpty = usernames.some((username) =>
-    invalidUsers.some(
-      ({ handle, reason }) =>
-        handle.toLowerCase() === username && reason === "empty"
-    )
+      !invalidUsernames.some(({ handle }) => handle.toLowerCase() === username)
   );
 
   const handlePlay = async () => {
@@ -140,41 +83,13 @@ const Home: NextPage = () => {
         void router.push("/game");
       }
     }
-    if (gameMode === "tweets") {
-      const { data } = await fetchSpecifiedTweets();
-
-      if (data?.tweets && data.tweets.length > 0) {
-        void router.push("/game");
-      }
-    }
-  };
-
-  const handleUsernamesInput = ({ input, mode }: UsernamesInputData) => {
-    if (mode === "following") {
-      setGetFollowing(input);
-      return;
-    }
-
-    if (mode === "list") {
-      setGetListMembers(input);
-      return;
-    }
-
-    if (usernames.includes(input.toLowerCase())) {
-      return;
-    }
-
-    setUsernames((usernames) => [...usernames, input.toLowerCase()]);
-  };
-
-  const handleUsernameClick = (input: string) => {
-    setUsernames((usernames) =>
-      usernames.filter((username) => username !== input)
-    );
-  };
-
-  const resetEmptyUsernames = () => {
-    setInvalidUsers((users) => users.filter((user) => user.reason !== "empty"));
+    // if (gameMode === "tweets") {
+    //   const { data } = await fetchSpecifiedTweets();
+    //
+    //   if (data?.tweets && data.tweets.length > 0) {
+    //     void router.push("/game");
+    //   }
+    // }
   };
 
   return (
@@ -229,30 +144,28 @@ const Home: NextPage = () => {
                       </span>
                     </label>
                   </div>
-                  {getSpecifiedTweetsError && (
-                    <div className="alert alert-error mt-4 shadow-lg">
-                      <div>
-                        <XCircle></XCircle>
-                        <span>Something went wrong :(</span>
-                      </div>
-                    </div>
-                  )}
+                  {/* {getSpecifiedTweetsError && ( */}
+                  {/*   <div className="alert alert-error mt-4 shadow-lg"> */}
+                  {/*     <div> */}
+                  {/*       <XCircle></XCircle> */}
+                  {/*       <span>Something went wrong :(</span> */}
+                  {/*     </div> */}
+                  {/*   </div> */}
+                  {/* )} */}
                 </>
               )}
               <div className="form-control mt-6">
                 <button
                   className={clsx([
                     "btn-primary btn-lg btn",
-                    (isFetching || getSpecifiedTweetsFetching) && "loading",
+                    isFetching && "loading",
                   ])}
                   disabled={
-                    (gameMode === "handles" &&
-                      (!usernames ||
-                        usernames.length < 2 ||
-                        !usernamesAreValid ||
-                        isFetching)) ||
-                    (gameMode === "tweets" &&
-                      (tweetIds.length < 2 || getSpecifiedTweetsFetching))
+                    gameMode === "handles" &&
+                    (!usernames ||
+                      usernames.length < 2 ||
+                      !usernamesAreValid ||
+                      isFetching)
                   }
                   onClick={handlePlay}
                 >

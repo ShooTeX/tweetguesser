@@ -1,3 +1,4 @@
+import { atom } from "jotai";
 import { atomWithStorage } from "jotai/utils";
 import { z } from "zod";
 
@@ -37,3 +38,30 @@ export const gameConfigAtom = atomWithStorage<GameConfig>("game-config", {
 export const usernamesAtom = atomWithStorage<string[]>("usernames", []);
 
 export const tweetIdsAtom = atomWithStorage<string[]>("tweet-ids", []);
+
+const invalidUsernamesBaseAtom = atom<string[]>([]);
+
+export const invalidUsernamesAtom = atom((get) =>
+  get(invalidUsernamesBaseAtom)
+);
+
+export const addInvalidUsernamesAtom = atom(
+  undefined,
+  (get, set, input: string[]) => {
+    const invalidUsernames = get(invalidUsernamesBaseAtom);
+    const newInvalidUsernames = input.filter(
+      (username) => !invalidUsernames.includes(username)
+    );
+
+    console.log(invalidUsernames, newInvalidUsernames);
+
+    if (newInvalidUsernames.length === 0) {
+      return;
+    }
+
+    set(invalidUsernamesBaseAtom, [
+      ...invalidUsernames,
+      ...newInvalidUsernames,
+    ]);
+  }
+);
