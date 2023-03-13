@@ -3,7 +3,16 @@ import { useState } from "react";
 import { api } from "../utils/api";
 import { useRouter } from "next/router";
 import { Logo } from "../components/logo";
-import { AlertCircle, Heart } from "lucide-react";
+import {
+  AlertCircle,
+  AtSign,
+  Heart,
+  List,
+  Loader2,
+  Menu,
+  Users,
+  XCircle,
+} from "lucide-react";
 import {
   addInvalidUsernamesAtom,
   gameConfigAtom,
@@ -16,35 +25,210 @@ import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { getEndTime } from "../utils/get-end-time";
 import clsx from "clsx";
 import type { InvalidUser } from "../server/api/routers/twitter/procedures/get-tweets-by-username";
-import { HandleInput } from "../components/handle-input";
+import { basicHandleSchema, HandleInput } from "../components/handle-input";
 import { HandleList } from "../components/handle-list";
 import { AnimatePresence, motion } from "framer-motion";
+import { Modal } from "../components/modal";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+
+const addFromFollowingSchema = z.object({
+  handle: basicHandleSchema,
+});
+
+type AddFromFollowingData = z.infer<typeof addFromFollowingSchema>;
+
+const AddFromFollowingModal = ({
+  onSuccess,
+  onBackdropClick,
+}: {
+  onSuccess: () => void;
+  onBackdropClick: () => void;
+}) => {
+  const updateUsernames = useSetAtom(usernamesAtom);
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm<AddFromFollowingData>({
+    resolver: zodResolver(addFromFollowingSchema),
+    mode: "onSubmit",
+    delayError: 100,
+    shouldUnregister: true,
+  });
+  const username = watch("handle");
+  const {
+    refetch: fetch,
+    isFetching,
+    isError,
+  } = api.twitter.getRandomFollowing.useQuery(
+    { username },
+    {
+      retry: false,
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+      enabled: false,
+      onSuccess: (data) => {
+        if (data.length === 0) {
+          return;
+        }
+
+        updateUsernames(data);
+        onSuccess();
+      },
+    }
+  );
+
+  const onSubmit = (data: AddFromFollowingData) => {
+    if (!data.handle) {
+      return;
+    }
+    void fetch();
+  };
+
+  return (
+    <div className="modal modal-open modal-bottom sm:modal-middle">
+      <div
+        className="absolute inset-0 backdrop-blur"
+        onClick={onBackdropClick}
+      ></div>
+      <div className="modal-box">
+        <div className="flex gap-2">
+          <Users />
+          <h3 className="text-lg font-bold">Add from following</h3>
+        </div>
+        <form
+          className="form-control w-full py-4"
+          onSubmit={handleSubmit(onSubmit)}
+        >
+          <div className={clsx("relative", errors.handle && "animate-wiggle")}>
+            <label className="input-group">
+              <span>
+                <AtSign size={16} />
+              </span>
+              <input
+                autoComplete="off"
+                disabled={isFetching}
+                type="text"
+                autoFocus
+                className="input-bordered input-primary input flex-1 shrink-0"
+                {...register("handle")}
+              />
+            </label>
+            <AnimatePresence initial={false}>
+              <motion.div
+                key={isFetching ? "fetching" : isError ? "error" : "kbd"}
+                className="absolute inset-y-0 right-4 flex flex-col justify-center"
+                initial={{ y: 10, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: -10, opacity: 0 }}
+                transition={{ type: "spring" }}
+              >
+                {isFetching ? (
+                  <Loader2 className="text-secondary shrink-0 animate-spin" />
+                ) : isError ? (
+                  <XCircle className="text-error shrink-0" />
+                ) : (
+                  <kbd className="kbd">⏎</kbd>
+                )}
+              </motion.div>
+            </AnimatePresence>
+          </div>
+          <AnimatePresence>
+            {errors.handle && (
+              <motion.div
+                initial={{
+                  y: -20,
+                  height: 0,
+                  opacity: 0,
+                }}
+                animate={{
+                  y: 0,
+                  height: "auto",
+                  opacity: 1,
+                }}
+                exit={{
+                  y: -10,
+                  height: 0,
+                  opacity: 0,
+                }}
+              >
+                <label className="label">
+                  <span className="label-text-alt text-error">
+                    {errors.handle.message}
+                  </span>
+                </label>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </form>
+      </div>
+    </div>
+  );
+};
 
 const HandleTab = () => {
   const invalidUsernames = useAtomValue(invalidUsernamesAtom);
+  const [isFromFollowingOpen, setIsFromFollowingOpen] = useState(false);
 
   return (
-    <div>
-      <HandleInput />
-      <HandleList />
-      <AnimatePresence>
-        {invalidUsernames.length > 0 && (
-          <motion.div
-            className="flex overflow-hidden"
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-          >
-            <motion.div className="alert alert-error mt-4">
-              <AlertCircle className="shrink-0" />
-              <span>
-                One or more handles were invalid, please remove them and retry
-              </span>
+    <>
+      <Modal show={isFromFollowingOpen}>
+        <AddFromFollowingModal
+          onSuccess={() => setIsFromFollowingOpen(false)}
+          onBackdropClick={() => setIsFromFollowingOpen(false)}
+        />
+      </Modal>
+      <div>
+        <div className="flex">
+          <HandleInput />
+          <div className="dropdown dropdown-right">
+            <label tabIndex={0} className="btn btn-square ml-1">
+              <Menu />
+            </label>
+            <ul
+              tabIndex={0}
+              className="dropdown-content menu bg-base-300 rounded-box w-52 p-2 shadow"
+            >
+              <li className="px-2 text-sm">Add from...</li>
+              <div className="divider m-0" />
+              <li>
+                <a onClick={() => setIsFromFollowingOpen(true)}>
+                  <Users className="shrink-0" />
+                  Following
+                </a>
+              </li>
+              <li>
+                <a>
+                  <List className="shrink-0" />
+                  List
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <HandleList className="mt-4" />
+        <AnimatePresence>
+          {invalidUsernames.length > 0 && (
+            <motion.div
+              className="flex overflow-hidden"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+            >
+              <motion.div className="alert alert-error mt-4">
+                <AlertCircle className="shrink-0" />
+                <span>
+                  One or more handles were invalid, please remove them and retry
+                </span>
+              </motion.div>
             </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
+          )}
+        </AnimatePresence>
+      </div>
+    </>
   );
 };
 
