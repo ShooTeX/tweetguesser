@@ -11,6 +11,7 @@ import { cachedInvalidUsernamesAtom, usernamesAtom } from "../atoms/game";
 export const basicHandleSchema = z
   .string()
   .transform((value) => value.trim())
+  .pipe(z.string().max(15))
   .refine(
     (value) => value === "" || isAlphanumeric(value, undefined, { ignore: "_" })
   );

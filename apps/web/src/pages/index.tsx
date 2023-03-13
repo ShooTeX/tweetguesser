@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 import { Logo } from "../components/logo";
 import {
   AlertCircle,
+  AlertTriangle,
   AtSign,
   Heart,
   List,
@@ -164,6 +165,10 @@ const AddFromFollowingModal = ({
             )}
           </AnimatePresence>
         </form>
+        <div className="flex justify-center gap-1">
+          <AlertTriangle className="text-warning" />
+          <span>Your previous handles will be deleted</span>
+        </div>
       </div>
     </div>
   );
