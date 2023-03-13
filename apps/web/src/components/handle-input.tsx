@@ -68,32 +68,33 @@ export const HandleInput = () => {
           <kbd className="kbd">⏎</kbd>
         </div>
       </div>
-      <label className="label">
-        <AnimatePresence>
-          {errors.handle && (
-            <motion.span
-              className="label-text-alt text-error"
-              initial={{
-                y: -20,
-                height: 0,
-                opacity: 0,
-              }}
-              animate={{
-                y: 0,
-                height: "auto",
-                opacity: 1,
-              }}
-              exit={{
-                y: -10,
-                height: 0,
-                opacity: 0,
-              }}
-            >
-              {errors.handle.message}
-            </motion.span>
-          )}
-        </AnimatePresence>
-      </label>
+      <AnimatePresence>
+        {errors.handle && (
+          <motion.div
+            initial={{
+              y: -20,
+              height: 0,
+              opacity: 0,
+            }}
+            animate={{
+              y: 0,
+              height: "auto",
+              opacity: 1,
+            }}
+            exit={{
+              y: -10,
+              height: 0,
+              opacity: 0,
+            }}
+          >
+            <label className="label">
+              <span className="label-text-alt text-error">
+                {errors.handle.message}
+              </span>
+            </label>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </form>
   );
 };
