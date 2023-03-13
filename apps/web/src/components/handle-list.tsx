@@ -2,6 +2,7 @@ import type { HTMLMotionProps } from "framer-motion";
 import { AnimatePresence, motion } from "framer-motion";
 import { useAtom, useAtomValue } from "jotai";
 import { Bomb } from "lucide-react";
+import useMeasure from "react-use-measure";
 import { invalidUsernamesAtom, usernamesAtom } from "../atoms/game";
 import { cn } from "../utils/cn";
 
@@ -27,6 +28,7 @@ const badgeAnimations: HTMLMotionProps<"span"> = {
 };
 
 export const HandleList = ({ className }: { className?: string }) => {
+  const [reference, { height: watchHeight }] = useMeasure();
   const [usernames, updateUsernames] = useAtom(usernamesAtom);
   const invalidUsernames = useAtomValue(invalidUsernamesAtom);
   const validUsernames = usernames.filter(
@@ -37,40 +39,45 @@ export const HandleList = ({ className }: { className?: string }) => {
   };
 
   return (
-    <div className={cn("flex flex-row flex-wrap gap-1", className)}>
-      <AnimatePresence mode="popLayout">
-        {invalidUsernames.map((username) => (
-          <motion.span
-            key={username}
-            className="badge badge-error cursor-pointer transition-none"
-            onClick={() => handleClick(username)}
-            {...badgeAnimations}
-          >
-            {username}
-          </motion.span>
-        ))}
-        {validUsernames.map((username) => (
-          <motion.span
-            key={username}
-            className="badge cursor-pointer transition-none"
-            onClick={() => handleClick(username)}
-            {...badgeAnimations}
-          >
-            {username}
-          </motion.span>
-        ))}
-        {usernames.length > 1 && (
-          <motion.span
-            key="remove-all"
-            onClick={() => updateUsernames([])}
-            className="badge badge-outline badge-error cursor-pointer transition-none"
-            {...badgeAnimations}
-          >
-            <Bomb className="mr-1 h-3 w-3" />
-            remove all
-          </motion.span>
-        )}
-      </AnimatePresence>
-    </div>
+    <motion.div animate={{ height: watchHeight }}>
+      <div
+        ref={reference}
+        className={cn("flex flex-row flex-wrap gap-1", className)}
+      >
+        <AnimatePresence mode="popLayout">
+          {invalidUsernames.map((username) => (
+            <motion.span
+              key={username}
+              className="badge badge-error cursor-pointer transition-none"
+              onClick={() => handleClick(username)}
+              {...badgeAnimations}
+            >
+              {username}
+            </motion.span>
+          ))}
+          {validUsernames.map((username) => (
+            <motion.span
+              key={username}
+              className="badge cursor-pointer transition-none"
+              onClick={() => handleClick(username)}
+              {...badgeAnimations}
+            >
+              {username}
+            </motion.span>
+          ))}
+          {usernames.length > 1 && (
+            <motion.span
+              key="remove-all"
+              onClick={() => updateUsernames([])}
+              className="badge badge-outline badge-error cursor-pointer transition-none"
+              {...badgeAnimations}
+            >
+              <Bomb className="mr-1 h-3 w-3" />
+              remove all
+            </motion.span>
+          )}
+        </AnimatePresence>
+      </div>
+    </motion.div>
   );
 };
