@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useAtom, useAtomValue } from "jotai";
 import { Bomb } from "lucide-react";
 import { invalidUsernamesAtom, usernamesAtom } from "../atoms/game";
+import { cn } from "../utils/cn";
 
 const badgeAnimations: HTMLMotionProps<"span"> = {
   layout: true,
@@ -25,7 +26,7 @@ const badgeAnimations: HTMLMotionProps<"span"> = {
   whileTap: { scale: 0.95 },
 };
 
-export const HandleList = () => {
+export const HandleList = ({ className }: { className?: string }) => {
   const [usernames, updateUsernames] = useAtom(usernamesAtom);
   const invalidUsernames = useAtomValue(invalidUsernamesAtom);
   const validUsernames = usernames.filter(
@@ -38,7 +39,7 @@ export const HandleList = () => {
   };
 
   return (
-    <div className="flex flex-row flex-wrap gap-1">
+    <div className={cn("flex flex-row flex-wrap gap-1", className)}>
       <AnimatePresence mode="popLayout">
         {invalidUsernames.map((username) => (
           <motion.span
