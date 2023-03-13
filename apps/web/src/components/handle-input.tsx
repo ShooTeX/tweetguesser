@@ -8,18 +8,19 @@ import isAlphanumeric from "validator/lib/isAlphanumeric";
 import { z } from "zod";
 import { cachedInvalidUsernamesAtom, usernamesAtom } from "../atoms/game";
 
+export const basicHandleSchema = z
+  .string()
+  .transform((value) => value.trim())
+  .refine(
+    (value) => value === "" || isAlphanumeric(value, undefined, { ignore: "_" })
+  );
+
 export const HandleInput = () => {
   const [usernames, updateUsernames] = useAtom(usernamesAtom);
   const invalidUsernames = useAtomValue(cachedInvalidUsernamesAtom);
   const handleSchema = z.object({
-    handle: z
-      .string()
-      .transform((value) => value.trim())
-      .refine(
-        (value) =>
-          value === "" || isAlphanumeric(value, undefined, { ignore: "_" })
-      )
-      .refine((handle) => !usernames.includes(handle), {
+    handle: basicHandleSchema
+      .refine((handle) => !usernames.includes(handle.toLowerCase()), {
         message: "Already added",
       })
       .refine((value) => !invalidUsernames.includes(value), {
@@ -46,7 +47,7 @@ export const HandleInput = () => {
       return;
     }
     const inputUsername = data.handle.toLowerCase();
-    updateUsernames((usernames) => [...usernames, inputUsername]);
+    updateUsernames([...usernames, inputUsername]);
     reset();
   };
   return (
@@ -57,6 +58,7 @@ export const HandleInput = () => {
             <AtSign size={16} />
           </span>
           <input
+            disabled={usernames.length >= 20}
             autoComplete="off"
             type="text"
             autoFocus

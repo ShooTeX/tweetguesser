@@ -1,5 +1,6 @@
 import { atom } from "jotai";
 import { atomWithStorage } from "jotai/utils";
+import { splitAt } from "remeda";
 import { z } from "zod";
 
 const endTime = [
@@ -35,7 +36,16 @@ export const gameConfigAtom = atomWithStorage<GameConfig>("game-config", {
   gameMode: "handles",
 });
 
-export const usernamesAtom = atomWithStorage<string[]>("usernames", []);
+export const usernamesBaseAtom = atomWithStorage<string[]>("usernames", []);
+
+export const usernamesAtom = atom(
+  (get) => get(usernamesBaseAtom),
+  (_get, set, newValue: string[]) =>
+    set(
+      usernamesBaseAtom,
+      splitAt(newValue, 20)[0].map((value) => value.toLowerCase())
+    )
+);
 
 export const tweetIdsAtom = atomWithStorage<string[]>("tweet-ids", []);
 

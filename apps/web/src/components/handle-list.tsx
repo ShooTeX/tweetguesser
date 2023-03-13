@@ -33,9 +33,7 @@ export const HandleList = ({ className }: { className?: string }) => {
     (username) => !invalidUsernames.includes(username)
   );
   const handleClick = (input: string) => {
-    updateUsernames((usernames) =>
-      usernames.filter((username) => username !== input)
-    );
+    updateUsernames(usernames.filter((username) => username !== input));
   };
 
   return (
