@@ -2,20 +2,23 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import clsx from "clsx";
 import { AnimatePresence, motion } from "framer-motion";
 import { useSetAtom } from "jotai";
-import { Users, AtSign, Loader2, XCircle, AlertTriangle } from "lucide-react";
+import { Users, Loader2, XCircle, AlertTriangle, List } from "lucide-react";
 import { useForm } from "react-hook-form";
+import isNumeric from "validator/lib/isNumeric";
 import { z } from "zod";
 import { usernamesAtom } from "../atoms/game";
 import { api } from "../utils/api";
-import { basicHandleSchema } from "./handle-input";
 
-const addFromFollowingSchema = z.object({
-  handle: basicHandleSchema,
+const addFromListSchema = z.object({
+  listId: z
+    .string()
+    .refine((value) => value === "" || isNumeric(value, { no_symbols: true })),
 });
 
-type AddFromFollowingData = z.infer<typeof addFromFollowingSchema>;
+type AddFromListData = z.infer<typeof addFromListSchema>;
 
-export const AddFromFollowingModal = ({
+// INFO: duplicate of "AddFromFollowing", too lazy to make it reusable :)
+export const AddFromListModal = ({
   onSuccess,
   onBackdropClick,
 }: {
@@ -28,19 +31,19 @@ export const AddFromFollowingModal = ({
     handleSubmit,
     watch,
     formState: { errors },
-  } = useForm<AddFromFollowingData>({
-    resolver: zodResolver(addFromFollowingSchema),
+  } = useForm<AddFromListData>({
+    resolver: zodResolver(addFromListSchema),
     mode: "onSubmit",
     delayError: 100,
     shouldUnregister: true,
   });
-  const username = watch("handle");
+  const listId = watch("listId");
   const {
     refetch: fetch,
     isFetching,
     isError,
-  } = api.twitter.getRandomFollowing.useQuery(
-    { username },
+  } = api.twitter.getListMembers.useQuery(
+    { id: listId },
     {
       retry: false,
       refetchOnWindowFocus: false,
@@ -57,8 +60,8 @@ export const AddFromFollowingModal = ({
     }
   );
 
-  const onSubmit = (data: AddFromFollowingData) => {
-    if (!data.handle) {
+  const onSubmit = (data: AddFromListData) => {
+    if (!data.listId) {
       return;
     }
     void fetch();
@@ -73,7 +76,7 @@ export const AddFromFollowingModal = ({
       <div className="modal-box">
         <div className="flex gap-2">
           <Users />
-          <h3 className="text-lg font-bold">Add from following</h3>
+          <h3 className="text-lg font-bold">Add from list</h3>
         </div>
         <form
           className="form-control w-full py-4"
@@ -82,20 +85,21 @@ export const AddFromFollowingModal = ({
           <div
             className={clsx(
               "relative",
-              (errors.handle || isError) && "animate-wiggle"
+              (errors.listId || isError) && "animate-wiggle"
             )}
           >
             <label className="input-group">
               <span>
-                <AtSign size={16} />
+                <List size={16} />
               </span>
               <input
                 autoComplete="off"
                 disabled={isFetching}
                 type="text"
                 autoFocus
+                placeholder="1629851852270448645"
                 className="input-bordered input-primary input flex-1 shrink-0"
-                {...register("handle")}
+                {...register("listId")}
               />
             </label>
             <AnimatePresence initial={false}>
@@ -118,7 +122,7 @@ export const AddFromFollowingModal = ({
             </AnimatePresence>
           </div>
           <AnimatePresence>
-            {errors.handle && (
+            {errors.listId && (
               <motion.div
                 initial={{
                   y: -20,
@@ -138,7 +142,7 @@ export const AddFromFollowingModal = ({
               >
                 <label className="label">
                   <span className="label-text-alt text-error">
-                    {errors.handle.message}
+                    {errors.listId.message}
                   </span>
                 </label>
               </motion.div>

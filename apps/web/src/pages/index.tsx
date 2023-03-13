@@ -14,6 +14,7 @@ import {
   usernamesAtom,
 } from "../atoms/game";
 import { AddFromFollowingModal } from "../components/add-from-following";
+import { AddFromListModal } from "../components/add-from-list";
 import { HandleInput } from "../components/handle-input";
 import { HandleList } from "../components/handle-list";
 import { Logo } from "../components/logo";
@@ -25,6 +26,7 @@ import { getEndTime } from "../utils/get-end-time";
 const HandleTab = () => {
   const invalidUsernames = useAtomValue(invalidUsernamesAtom);
   const [isFromFollowingOpen, setIsFromFollowingOpen] = useState(false);
+  const [isFromListOpen, setIsFromListOpen] = useState(false);
 
   return (
     <>
@@ -32,6 +34,12 @@ const HandleTab = () => {
         <AddFromFollowingModal
           onSuccess={() => setIsFromFollowingOpen(false)}
           onBackdropClick={() => setIsFromFollowingOpen(false)}
+        />
+      </Modal>
+      <Modal show={isFromListOpen}>
+        <AddFromListModal
+          onSuccess={() => setIsFromListOpen(false)}
+          onBackdropClick={() => setIsFromListOpen(false)}
         />
       </Modal>
       <div>
@@ -54,7 +62,7 @@ const HandleTab = () => {
                 </a>
               </li>
               <li>
-                <a>
+                <a onClick={() => setIsFromListOpen(true)}>
                   <List className="shrink-0" />
                   List
                 </a>
