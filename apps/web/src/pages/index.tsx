@@ -191,6 +191,7 @@ const Home: NextPage = () => {
       {
         enabled: false,
         onSuccess: (data) => {
+          // FIXME: This is bad...
           if (data?.invalidUsers?.length) {
             const forbidden = data.invalidUsers
               .filter((user) => user.reason === "forbidden")
@@ -228,19 +229,6 @@ const Home: NextPage = () => {
 
   const handlePlay = async () => {
     if (gameMode === "handles") {
-      if (data?.invalidUsers?.length) {
-        const forbidden = data.invalidUsers
-          .filter((user) => user.reason === "forbidden")
-          .map((user) => user.handle);
-
-        const empty = data.invalidUsers
-          .filter((user) => user.reason === "empty")
-          .map((user) => user.handle);
-
-        addInvalidUsernames(forbidden);
-        setEmptyUsernames(empty);
-      }
-
       if (!data?.invalidUsers?.length && data?.tweets.length) {
         void router.push("/game");
       }
