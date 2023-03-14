@@ -13,7 +13,9 @@ export const Settings = ({
 }: SettingsProperties) => {
   const [config, setConfig] = useAtom(gameConfigAtom);
 
-  const handleEndTimeChange: ChangeEventHandler<HTMLInputElement> = (event) => {
+  const handleEndTimeChange: ChangeEventHandler<HTMLSelectElement> = (
+    event
+  ) => {
     setConfig((config) => ({
       ...config,
       endTime: event.target.value as EndTime,
@@ -37,19 +39,21 @@ export const Settings = ({
         <label className="label">
           <span className="label-text">Tweets starting from</span>
         </label>
-        <div className="btn-group">
+        <select
+          className="select select-bordered w-full"
+          onChange={handleEndTimeChange}
+          value={config.endTime}
+        >
           {endTimeSchema.options.map((endTime) => (
-            <input
+            <option
               key={endTime}
-              type="radio"
               value={endTime}
               data-title={endTime.replaceAll("_", " ")}
-              className="btn"
-              checked={config.endTime === endTime}
-              onChange={handleEndTimeChange}
-            />
+            >
+              {endTime.replaceAll("_", " ")}
+            </option>
           ))}
-        </div>
+        </select>
       </div>
       <div className="form-control w-full max-w-[13rem]">
         <label className="label cursor-pointer">
