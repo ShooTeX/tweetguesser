@@ -33,9 +33,7 @@ const HandleTab = () => {
   const [isFromFollowingOpen, setIsFromFollowingOpen] = useState(false);
   const [isFromListOpen, setIsFromListOpen] = useState(false);
   const [listId, setListId] = useState<string>();
-  const [bottomReference, { height: bottomHeight }] = useMeasure({
-    debounce: 100,
-  });
+  const [bottomReference, { height: bottomHeight }] = useMeasure();
 
   const { isFetching: isListFetching } = api.twitter.getListMembers.useQuery(
     { id: listId || "" },
