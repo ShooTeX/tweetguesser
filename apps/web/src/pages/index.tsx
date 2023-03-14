@@ -22,11 +22,36 @@ import { Modal } from "../components/modal";
 import type { InvalidUser } from "../server/api/routers/twitter/procedures/get-tweets-by-username";
 import { api } from "../utils/api";
 import { getEndTime } from "../utils/get-end-time";
+import { Settings } from "../components/settings";
+import useMeasure from "react-use-measure";
 
 const HandleTab = () => {
   const invalidUsernames = useAtomValue(invalidUsernamesAtom);
+  const [usernames, updateUsernames] = useAtom(usernamesAtom);
   const [isFromFollowingOpen, setIsFromFollowingOpen] = useState(false);
   const [isFromListOpen, setIsFromListOpen] = useState(false);
+  const [listId, setListId] = useState<string>();
+  const [bottomReference, { height: bottomHeight }] = useMeasure({
+    debounce: 100,
+  });
+
+  const { isFetching: isListFetching } = api.twitter.getListMembers.useQuery(
+    { id: listId || "" },
+    {
+      enabled: !!listId,
+      onSuccess: (data) => {
+        updateUsernames(data);
+        setListId(undefined);
+      },
+      onError: () => {
+        setListId(undefined);
+      },
+    }
+  );
+
+  const getListMembers = (id: string) => {
+    setListId(id);
+  };
 
   return (
     <>
@@ -44,7 +69,7 @@ const HandleTab = () => {
       </Modal>
       <div>
         <div className="flex">
-          <HandleInput />
+          <HandleInput disabled={isListFetching} />
           <div className="dropdown dropdown-right">
             <label tabIndex={0} className="btn btn-square ml-1">
               <Menu />
@@ -70,7 +95,9 @@ const HandleTab = () => {
             </ul>
           </div>
         </div>
-        <HandleList className="mt-4" />
+        <div className="mt-4">
+          <HandleList />
+        </div>
         <AnimatePresence>
           {invalidUsernames.length > 0 && (
             <motion.div
@@ -88,6 +115,42 @@ const HandleTab = () => {
             </motion.div>
           )}
         </AnimatePresence>
+        <motion.div
+          animate={{
+            height: bottomHeight,
+          }}
+        >
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div
+              key={usernames.length === 0 ? "list" : "settings"}
+              ref={bottomReference}
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -50 }}
+              transition={{ type: "just" }}
+            >
+              {usernames.length === 0 ? (
+                <>
+                  <div className="divider">Try a list</div>
+                  <div
+                    className="card card-compact bg-neutral cursor-pointer"
+                    onClick={() => getListMembers("1629851852270448645")}
+                  >
+                    <div className="card-body gap-0">
+                      <h2 className="card-title">TechNerds</h2>
+                      <p>Just a bunch of nerds...</p>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="divider">Settings</div>
+                  <Settings />
+                </>
+              )}
+            </motion.div>
+          </AnimatePresence>
+        </motion.div>
       </div>
     </>
   );
