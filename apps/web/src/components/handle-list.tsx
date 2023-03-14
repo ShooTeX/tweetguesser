@@ -3,7 +3,11 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useAtom, useAtomValue } from "jotai";
 import { Bomb } from "lucide-react";
 import useMeasure from "react-use-measure";
-import { invalidUsernamesAtom, usernamesAtom } from "../atoms/game";
+import {
+  emptyUsernamesAtom,
+  invalidUsernamesAtom,
+  usernamesAtom,
+} from "../atoms/game";
 import { cn } from "../utils/cn";
 
 const badgeAnimations: HTMLMotionProps<"span"> = {
@@ -31,8 +35,10 @@ export const HandleList = ({ className }: { className?: string }) => {
   const [reference, { height: watchHeight }] = useMeasure();
   const [usernames, updateUsernames] = useAtom(usernamesAtom);
   const invalidUsernames = useAtomValue(invalidUsernamesAtom);
+  const emptyUsernames = useAtomValue(emptyUsernamesAtom);
   const validUsernames = usernames.filter(
-    (username) => !invalidUsernames.includes(username)
+    (username) =>
+      !invalidUsernames.includes(username) && !emptyUsernames.includes(username)
   );
   const handleClick = (input: string) => {
     updateUsernames(usernames.filter((username) => username !== input));
@@ -49,6 +55,16 @@ export const HandleList = ({ className }: { className?: string }) => {
             <motion.span
               key={username}
               className="badge badge-error cursor-pointer transition-none"
+              onClick={() => handleClick(username)}
+              {...badgeAnimations}
+            >
+              {username}
+            </motion.span>
+          ))}
+          {emptyUsernames.map((username) => (
+            <motion.span
+              key={username}
+              className="badge badge-warning cursor-pointer transition-none"
               onClick={() => handleClick(username)}
               {...badgeAnimations}
             >

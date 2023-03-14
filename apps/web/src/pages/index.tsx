@@ -7,6 +7,7 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import {
   addInvalidUsernamesAtom,
+  emptyUsernamesAtom,
   gameConfigAtom,
   gameModeSchema,
   invalidUsernamesAtom,
@@ -27,6 +28,7 @@ import useMeasure from "react-use-measure";
 
 const HandleTab = () => {
   const invalidUsernames = useAtomValue(invalidUsernamesAtom);
+  const [emptyUsernames, setEmptyUsernames] = useAtom(emptyUsernamesAtom);
   const [usernames, updateUsernames] = useAtom(usernamesAtom);
   const [isFromFollowingOpen, setIsFromFollowingOpen] = useState(false);
   const [isFromListOpen, setIsFromListOpen] = useState(false);
@@ -106,12 +108,28 @@ const HandleTab = () => {
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
             >
-              <motion.div className="alert alert-error mt-4">
+              <div className="alert alert-error mt-4 text-sm">
                 <AlertCircle className="shrink-0" />
                 <span>
                   One or more handles were invalid, please remove them and retry
                 </span>
-              </motion.div>
+              </div>
+            </motion.div>
+          )}
+          {emptyUsernames.length > 0 && (
+            <motion.div
+              className="flex overflow-hidden"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+            >
+              <div className="alert alert-warning mt-4 text-sm">
+                <AlertCircle className="shrink-0" />
+                <span>
+                  One or more usernames don&apos;t have tweets. Try tweaking the
+                  settings or remove the username(s)
+                </span>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
@@ -145,7 +163,7 @@ const HandleTab = () => {
               ) : (
                 <>
                   <div className="divider">Settings</div>
-                  <Settings />
+                  <Settings onEndTimeChange={() => setEmptyUsernames([])} />
                 </>
               )}
             </motion.div>
@@ -161,21 +179,29 @@ const Home: NextPage = () => {
   const { endTime, gameMode } = useAtomValue(gameConfigAtom);
   const usernames = useAtomValue(usernamesAtom);
   const addInvalidUsernames = useSetAtom(addInvalidUsernamesAtom);
+  const setEmptyUsernames = useSetAtom(emptyUsernamesAtom);
   const setGameConfig = useSetAtom(gameConfigAtom);
 
   const [tweetIds, setTweetIds] = useAtom(tweetIdsAtom);
-  const [invalidUsernames, setInvalidUsers] = useState<InvalidUser[]>([]);
+  const [invalidUsernames] = useState<InvalidUser[]>([]);
 
   const { data, isFetching, refetch } =
     api.twitter.getTweetsByUsernames.useQuery(
       { usernames: usernames, endTime: getEndTime(endTime) },
       {
-        refetchOnWindowFocus: false,
-        refetchOnMount: false,
         enabled: false,
         onSuccess: (data) => {
           if (data?.invalidUsers?.length) {
-            addInvalidUsernames(data.invalidUsers.map((user) => user.handle));
+            const forbidden = data.invalidUsers
+              .filter((user) => user.reason === "forbidden")
+              .map((user) => user.handle);
+
+            const empty = data.invalidUsers
+              .filter((user) => user.reason === "empty")
+              .map((user) => user.handle);
+
+            addInvalidUsernames(forbidden);
+            setEmptyUsernames(empty);
           }
         },
       }
@@ -202,6 +228,19 @@ const Home: NextPage = () => {
 
   const handlePlay = async () => {
     if (gameMode === "handles") {
+      if (data?.invalidUsers?.length) {
+        const forbidden = data.invalidUsers
+          .filter((user) => user.reason === "forbidden")
+          .map((user) => user.handle);
+
+        const empty = data.invalidUsers
+          .filter((user) => user.reason === "empty")
+          .map((user) => user.handle);
+
+        addInvalidUsernames(forbidden);
+        setEmptyUsernames(empty);
+      }
+
       if (!data?.invalidUsers?.length && data?.tweets.length) {
         void router.push("/game");
       }

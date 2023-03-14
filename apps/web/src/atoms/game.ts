@@ -82,3 +82,19 @@ export const addInvalidUsernamesAtom = atom(
     ]);
   }
 );
+
+const emptyUsernamesBaseAtom = atom<string[]>([]);
+
+export const emptyUsernamesAtom = atom(
+  (get) => {
+    const empty = get(emptyUsernamesBaseAtom);
+    const usernames = get(usernamesAtom);
+
+    return empty.filter((username) => usernames.includes(username));
+  },
+  (_get, set, input: string[]) =>
+    set(
+      emptyUsernamesBaseAtom,
+      input.map((username) => username.toLowerCase())
+    )
+);
