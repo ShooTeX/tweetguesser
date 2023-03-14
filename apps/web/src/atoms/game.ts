@@ -36,7 +36,7 @@ export const gameConfigAtom = atomWithStorage<GameConfig>("game-config", {
   gameMode: "handles",
 });
 
-export const usernamesBaseAtom = atomWithStorage<string[]>("usernames", []);
+const usernamesBaseAtom = atomWithStorage<string[]>("usernames", []);
 
 export const usernamesAtom = atom(
   (get) => get(usernamesBaseAtom),

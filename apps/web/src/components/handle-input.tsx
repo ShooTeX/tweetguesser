@@ -16,7 +16,7 @@ export const basicHandleSchema = z
     (value) => value === "" || isAlphanumeric(value, undefined, { ignore: "_" })
   );
 
-export const HandleInput = () => {
+export const HandleInput = ({ disabled }: { disabled?: boolean }) => {
   const [usernames, updateUsernames] = useAtom(usernamesAtom);
   const invalidUsernames = useAtomValue(cachedInvalidUsernamesAtom);
   const handleSchema = z.object({
@@ -59,7 +59,7 @@ export const HandleInput = () => {
             <AtSign size={16} />
           </span>
           <input
-            disabled={usernames.length >= 20}
+            disabled={disabled || usernames.length >= 20}
             autoComplete="off"
             type="text"
             autoFocus
