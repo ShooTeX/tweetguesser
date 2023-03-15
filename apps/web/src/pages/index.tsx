@@ -231,12 +231,32 @@ const HandleTab = () => {
 };
 
 const TweetsTab = () => {
+  const router = useRouter();
   const [tweetIds, setTweetIds] = useAtom(tweetIdsAtom);
+
+  const { data, isFetching, isError, refetch } = api.twitter.getTweets.useQuery(
+    { ids: tweetIds || [] },
+    { enabled: false }
+  );
+
+  const handlePlay = async () => {
+    if (data?.tweets.length) {
+      void router.push("/game");
+    }
+
+    const { data: refetchData, isError } = await refetch();
+
+    if (isError || !refetchData?.tweets.length) {
+      return;
+    }
+    void router.push("/game");
+  };
 
   return (
     <>
       <div className="form-control">
         <textarea
+          rows={7}
           className="textarea textarea-primary"
           value={tweetIds.join("\n")}
           onChange={(event) =>
@@ -251,14 +271,27 @@ const TweetsTab = () => {
           </span>
         </label>
       </div>
-      {/* {getSpecifiedTweetsError && ( */}
-      {/*   <div className="alert alert-error mt-4 shadow-lg"> */}
-      {/*     <div> */}
-      {/*       <XCircle></XCircle> */}
-      {/*       <span>Something went wrong :(</span> */}
-      {/*     </div> */}
-      {/*   </div> */}
-      {/* )} */}
+      {isError && (
+        <motion.div
+          className="flex overflow-hidden"
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: "auto" }}
+          exit={{ opacity: 0, height: 0 }}
+        >
+          <div className="alert alert-error mt-4 justify-start text-sm">
+            <AlertCircle className="shrink-0" />
+            <span>Something went wrong :(</span>
+          </div>
+        </motion.div>
+      )}
+
+      <button
+        className={clsx(["btn-primary btn-lg btn", isFetching && "loading"])}
+        disabled={isError || isFetching}
+        onClick={handlePlay}
+      >
+        Play
+      </button>
     </>
   );
 };
@@ -266,8 +299,6 @@ const TweetsTab = () => {
 const Home: NextPage = () => {
   const { gameMode } = useAtomValue(gameConfigAtom);
   const setGameConfig = useSetAtom(gameConfigAtom);
-
-  const [tweetIds, setTweetIds] = useAtom(tweetIdsAtom);
 
   return (
     <>
@@ -301,54 +332,7 @@ const Home: NextPage = () => {
           >
             <div className="card-body">
               {gameMode === "handles" && <HandleTab />}
-              {gameMode === "tweets" && (
-                <>
-                  <div className="form-control">
-                    <textarea
-                      className="textarea textarea-primary"
-                      value={tweetIds.join("\n")}
-                      onChange={(event) =>
-                        setTweetIds(
-                          event.target.value
-                            .split("\n")
-                            .map((value) => value.trim())
-                        )
-                      }
-                    />
-                    <label className="label">
-                      <span className="label-text-alt">
-                        Tweet ids seperated by linebreak
-                      </span>
-                    </label>
-                  </div>
-                  {/* {getSpecifiedTweetsError && ( */}
-                  {/*   <div className="alert alert-error mt-4 shadow-lg"> */}
-                  {/*     <div> */}
-                  {/*       <XCircle></XCircle> */}
-                  {/*       <span>Something went wrong :(</span> */}
-                  {/*     </div> */}
-                  {/*   </div> */}
-                  {/* )} */}
-                </>
-              )}
-              {/* <div className="form-control mt-6"> */}
-              {/*   <button */}
-              {/*     className={clsx([ */}
-              {/*       "btn-primary btn-lg btn", */}
-              {/*       isFetching && "loading", */}
-              {/*     ])} */}
-              {/*     disabled={ */}
-              {/*       gameMode === "handles" && */}
-              {/*       (!usernames || */}
-              {/*         usernames.length < 2 || */}
-              {/*         !usernamesAreValid || */}
-              {/*         isFetching) */}
-              {/*     } */}
-              {/*     onClick={handlePlay} */}
-              {/*   > */}
-              {/*     Play */}
-              {/*   </button> */}
-              {/* </div> */}
+              {gameMode === "tweets" && <TweetsTab />}
             </div>
           </div>
           <span className="mt-4 text-sm">
