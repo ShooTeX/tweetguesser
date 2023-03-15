@@ -9,17 +9,18 @@ import type { Round } from "../../types/round";
 import { Logo } from "../../components/logo";
 import { Timer } from "../../components/timer";
 import { Modal } from "../../components/modal";
-import { useAtomValue } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import { gameConfigAtom, tweetIdsAtom, usernamesAtom } from "../../atoms/game";
-import { Heart, Twitter } from "lucide-react";
+import { Heart, Star, Twitter } from "lucide-react";
 import { getEndTime } from "../../utils/get-end-time";
 import arrayShuffle from "array-shuffle";
 import Link from "next/link";
+import clsx from "clsx";
 
 const Game: NextPage = () => {
   const router = useRouter();
   const usernamesStorage = useAtomValue(usernamesAtom);
-  const tweetIds = useAtomValue(tweetIdsAtom);
+  const [tweetIds, setTweetIds] = useAtom(tweetIdsAtom);
   const { endless, endTime, gameMode } = useAtomValue(gameConfigAtom);
 
   const { data, error } = api.twitter.getTweetsByUsernames.useQuery(
@@ -104,6 +105,24 @@ const Game: NextPage = () => {
   };
 
   const score = history.reduce((previous, round) => previous + round.score, 0);
+
+  const handleStarClick = () => {
+    if (!currentTweet) {
+      return;
+    }
+
+    if (tweetIds.includes(currentTweet.id)) {
+      setTweetIds((ids) => ids.filter((id) => id !== currentTweet.id));
+      return;
+    }
+
+    setTweetIds((ids) => {
+      if (ids.length === 1 && ids[0] === "") {
+        return [currentTweet.id];
+      }
+      return [...ids, currentTweet?.id];
+    });
+  };
 
   return (
     <>
@@ -250,9 +269,30 @@ Guessing tweets from ${
                 key={currentTweet?.id}
               />
             </div>
+            {gameMode !== "tweets" && (
+              <button
+                type="button"
+                disabled={!currentTweet}
+                className={clsx(
+                  "btn-square btn mr-2",
+                  currentTweet &&
+                    tweetIds.includes(currentTweet.id) &&
+                    "btn-secondary"
+                )}
+                onClick={handleStarClick}
+              >
+                <Star
+                  className={clsx(
+                    currentTweet &&
+                      tweetIds.includes(currentTweet.id) &&
+                      "fill-secondary-content"
+                  )}
+                />
+              </button>
+            )}
             <button
               type="button"
-              className="btn-error btn text-error-content"
+              className="btn-error btn btn-outline"
               onClick={() => setShowGiveUp(true)}
               disabled={!currentTweet || reveal}
             >
