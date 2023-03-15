@@ -3,12 +3,14 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useAtom, useAtomValue } from "jotai";
 import { Bomb } from "lucide-react";
 import useMeasure from "react-use-measure";
-import {
-  emptyUsernamesAtom,
-  invalidUsernamesAtom,
-  usernamesAtom,
-} from "../atoms/game";
+import { usernamesAtom } from "../atoms/game";
+import { currentForbiddenUsernamesAtom } from "../atoms/invalid-usernames";
 import { cn } from "../utils/cn";
+
+type HandleListProperties = {
+  className?: string;
+  emptyUsernames?: string[];
+};
 
 const badgeAnimations: HTMLMotionProps<"span"> = {
   layout: true,
@@ -31,14 +33,17 @@ const badgeAnimations: HTMLMotionProps<"span"> = {
   whileTap: { scale: 0.95 },
 };
 
-export const HandleList = ({ className }: { className?: string }) => {
+export const HandleList = ({
+  className,
+  emptyUsernames,
+}: HandleListProperties) => {
   const [reference, { height: watchHeight }] = useMeasure();
   const [usernames, updateUsernames] = useAtom(usernamesAtom);
-  const invalidUsernames = useAtomValue(invalidUsernamesAtom);
-  const emptyUsernames = useAtomValue(emptyUsernamesAtom);
+  const forbiddenUsernames = useAtomValue(currentForbiddenUsernamesAtom);
   const validUsernames = usernames.filter(
     (username) =>
-      !invalidUsernames.includes(username) && !emptyUsernames.includes(username)
+      !forbiddenUsernames.includes(username) &&
+      !emptyUsernames?.includes(username)
   );
   const handleClick = (input: string) => {
     updateUsernames(usernames.filter((username) => username !== input));
@@ -51,7 +56,7 @@ export const HandleList = ({ className }: { className?: string }) => {
         className={cn("flex flex-row flex-wrap gap-1", className)}
       >
         <AnimatePresence mode="popLayout">
-          {invalidUsernames.map((username) => (
+          {forbiddenUsernames.map((username) => (
             <motion.span
               key={username}
               className="badge badge-error cursor-pointer transition-none"
@@ -61,7 +66,7 @@ export const HandleList = ({ className }: { className?: string }) => {
               {username}
             </motion.span>
           ))}
-          {emptyUsernames.map((username) => (
+          {emptyUsernames?.map((username) => (
             <motion.span
               key={username}
               className="badge badge-warning cursor-pointer transition-none"

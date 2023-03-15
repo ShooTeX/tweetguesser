@@ -6,7 +6,12 @@ import { AtSign } from "lucide-react";
 import { useForm } from "react-hook-form";
 import isAlphanumeric from "validator/lib/isAlphanumeric";
 import { z } from "zod";
-import { cachedInvalidUsernamesAtom, usernamesAtom } from "../atoms/game";
+import { usernamesAtom } from "../atoms/game";
+import { cachedForbiddenUsernamesAtom } from "../atoms/invalid-usernames";
+
+type HandleInputProperties = {
+  disabled?: boolean;
+};
 
 export const basicHandleSchema = z
   .string()
@@ -16,15 +21,15 @@ export const basicHandleSchema = z
     (value) => value === "" || isAlphanumeric(value, undefined, { ignore: "_" })
   );
 
-export const HandleInput = ({ disabled }: { disabled?: boolean }) => {
+export const HandleInput = ({ disabled }: HandleInputProperties) => {
   const [usernames, updateUsernames] = useAtom(usernamesAtom);
-  const invalidUsernames = useAtomValue(cachedInvalidUsernamesAtom);
+  const cachedForbiddenUsernames = useAtomValue(cachedForbiddenUsernamesAtom);
   const handleSchema = z.object({
     handle: basicHandleSchema
       .refine((handle) => !usernames.includes(handle.toLowerCase()), {
         message: "Already added",
       })
-      .refine((value) => !invalidUsernames.includes(value), {
+      .refine((value) => !cachedForbiddenUsernames.includes(value), {
         message: "This handle was invalid",
       }),
   });
