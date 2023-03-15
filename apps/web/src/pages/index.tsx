@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import { AnimatePresence, motion } from "framer-motion";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
-import { AlertCircle, Heart, List, Menu, Users } from "lucide-react";
+import { AlertCircle, Heart, List, ListPlus, Menu, Users } from "lucide-react";
 import { type NextPage } from "next";
 import { useRouter } from "next/router";
 import { useState } from "react";
@@ -27,6 +27,8 @@ import {
   currentEmptyUsernamesAtom,
   currentForbiddenUsernamesAtom,
 } from "../atoms/invalid-usernames";
+import { TweetsLists } from "../components/tweets-lists";
+import { tweetsListsAtom } from "../atoms/tweets-lists";
 
 const HandleTab = () => {
   const router = useRouter();
@@ -233,6 +235,7 @@ const HandleTab = () => {
 const TweetsTab = () => {
   const router = useRouter();
   const [tweetIds, setTweetIds] = useAtom(tweetIdsAtom);
+  const tweetsLists = useAtomValue(tweetsListsAtom);
 
   const { data, isFetching, isError, refetch } = api.twitter.getTweets.useQuery(
     { ids: tweetIds || [] },
@@ -271,6 +274,7 @@ const TweetsTab = () => {
           </span>
         </label>
       </div>
+      {tweetsLists.length > 0 && <TweetsLists />}
       <AnimatePresence>
         {isError && (
           <motion.div
@@ -287,13 +291,24 @@ const TweetsTab = () => {
         )}
       </AnimatePresence>
 
-      <button
-        className={clsx(["btn-primary btn-lg btn", isFetching && "loading"])}
-        disabled={isError || isFetching || tweetIds.length < 2}
-        onClick={handlePlay}
-      >
-        Play
-      </button>
+      <div className="mt-6 flex items-center gap-2">
+        <button
+          className={clsx([
+            "btn-primary btn-lg btn flex-1",
+            isFetching && "loading",
+          ])}
+          disabled={isError || isFetching || tweetIds.length < 2}
+          onClick={handlePlay}
+        >
+          Play
+        </button>
+        <button
+          className="btn-square btn btn-lg"
+          disabled={isError || isFetching || tweetIds.length < 2}
+        >
+          <ListPlus />
+        </button>
+      </div>
     </>
   );
 };
