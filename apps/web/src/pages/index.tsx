@@ -22,7 +22,9 @@ import { getEndTime } from "../utils/get-end-time";
 import { Settings } from "../components/settings";
 import useMeasure from "react-use-measure";
 import {
+  addEmptyUsernamesCacheAtom,
   addForbiddenUsernamesCacheAtom,
+  currentEmptyUsernamesAtom,
   currentForbiddenUsernamesAtom,
 } from "../atoms/invalid-usernames";
 
@@ -30,7 +32,9 @@ const HandleTab = () => {
   const router = useRouter();
   const { endTime } = useAtomValue(gameConfigAtom);
   const addForbiddenUsernames = useSetAtom(addForbiddenUsernamesCacheAtom);
+  const addEmptyUsernames = useSetAtom(addEmptyUsernamesCacheAtom);
   const forbiddenUsernames = useAtomValue(currentForbiddenUsernamesAtom);
+  const emptyUsernames = useAtomValue(currentEmptyUsernamesAtom);
   const [usernames, updateUsernames] = useAtom(usernamesAtom);
   const [isFromFollowingOpen, setIsFromFollowingOpen] = useState(false);
   const [isFromListOpen, setIsFromListOpen] = useState(false);
@@ -81,9 +85,12 @@ const HandleTab = () => {
 
     const { data: refetchData } = await refetch();
 
-    if (refetchData?.forbidden?.length || refetchData?.empty?.length) {
-      refetchData.forbidden?.length &&
-        addForbiddenUsernames(refetchData.forbidden);
+    if (refetchData?.forbidden?.length) {
+      addForbiddenUsernames(refetchData.forbidden);
+      return;
+    }
+    if (refetchData?.empty?.length) {
+      addEmptyUsernames(refetchData.empty);
       return;
     }
     void router.push("/game");
@@ -132,7 +139,7 @@ const HandleTab = () => {
           </div>
         </div>
         <div className="mt-4">
-          <HandleList emptyUsernames={data?.empty} />
+          <HandleList />
         </div>
         <AnimatePresence>
           {forbiddenUsernames.length > 0 && (
@@ -150,7 +157,7 @@ const HandleTab = () => {
               </div>
             </motion.div>
           )}
-          {data?.empty?.length && (
+          {emptyUsernames.length > 0 && (
             <motion.div
               className="flex overflow-hidden"
               initial={{ opacity: 0, height: 0 }}
@@ -207,7 +214,13 @@ const HandleTab = () => {
       <div className="form-control mt-6">
         <button
           className={clsx(["btn-primary btn-lg btn", isFetching && "loading"])}
-          disabled={!usernames || usernames.length < 2 || isFetching}
+          disabled={
+            !usernames ||
+            usernames.length < 2 ||
+            isFetching ||
+            emptyUsernames.length > 0 ||
+            forbiddenUsernames.length > 0
+          }
           onClick={handlePlay}
         >
           Play

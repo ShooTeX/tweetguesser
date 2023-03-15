@@ -4,12 +4,14 @@ import { useAtom, useAtomValue } from "jotai";
 import { Bomb } from "lucide-react";
 import useMeasure from "react-use-measure";
 import { usernamesAtom } from "../atoms/game";
-import { currentForbiddenUsernamesAtom } from "../atoms/invalid-usernames";
+import {
+  currentEmptyUsernamesAtom,
+  currentForbiddenUsernamesAtom,
+} from "../atoms/invalid-usernames";
 import { cn } from "../utils/cn";
 
 type HandleListProperties = {
   className?: string;
-  emptyUsernames?: string[];
 };
 
 const badgeAnimations: HTMLMotionProps<"span"> = {
@@ -33,13 +35,11 @@ const badgeAnimations: HTMLMotionProps<"span"> = {
   whileTap: { scale: 0.95 },
 };
 
-export const HandleList = ({
-  className,
-  emptyUsernames,
-}: HandleListProperties) => {
+export const HandleList = ({ className }: HandleListProperties) => {
   const [reference, { height: watchHeight }] = useMeasure();
   const [usernames, updateUsernames] = useAtom(usernamesAtom);
   const forbiddenUsernames = useAtomValue(currentForbiddenUsernamesAtom);
+  const emptyUsernames = useAtomValue(currentEmptyUsernamesAtom);
   const validUsernames = usernames.filter(
     (username) =>
       !forbiddenUsernames.includes(username) &&
