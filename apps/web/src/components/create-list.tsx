@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AnimatePresence, motion } from "framer-motion";
-import { useAtomValue, useSetAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 import { ListPlus } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -20,7 +20,7 @@ export const CreateListModal = ({
   onSuccess: () => void;
   onCancel: () => void;
 }) => {
-  const tweetIds = useAtomValue(tweetIdsAtom);
+  const [tweetIds, setTweetIds] = useAtom(tweetIdsAtom);
   const createList = useSetAtom(createTweetsListAtom);
   const {
     register,
@@ -38,6 +38,7 @@ export const CreateListModal = ({
       return;
     }
     createList({ name: data.name, tweetIds });
+    setTweetIds([]);
     onSuccess();
   };
 
