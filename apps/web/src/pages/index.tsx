@@ -6,11 +6,8 @@ import { type NextPage } from "next";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import {
-  addInvalidUsernamesAtom,
-  emptyUsernamesAtom,
   gameConfigAtom,
   gameModeSchema,
-  invalidUsernamesAtom,
   tweetIdsAtom,
   usernamesAtom,
 } from "../atoms/game";
@@ -20,20 +17,44 @@ import { HandleInput } from "../components/handle-input";
 import { HandleList } from "../components/handle-list";
 import { Logo } from "../components/logo";
 import { Modal } from "../components/modal";
-import type { InvalidUser } from "../server/api/routers/twitter/procedures/get-tweets-by-username";
 import { api } from "../utils/api";
 import { getEndTime } from "../utils/get-end-time";
 import { Settings } from "../components/settings";
 import useMeasure from "react-use-measure";
+import {
+  addForbiddenUsernamesCacheAtom,
+  currentForbiddenUsernamesAtom,
+} from "../atoms/invalid-usernames";
 
 const HandleTab = () => {
-  const invalidUsernames = useAtomValue(invalidUsernamesAtom);
-  const [emptyUsernames, setEmptyUsernames] = useAtom(emptyUsernamesAtom);
+  const router = useRouter();
+  const { endTime } = useAtomValue(gameConfigAtom);
+  const addForbiddenUsernames = useSetAtom(addForbiddenUsernamesCacheAtom);
+  const forbiddenUsernames = useAtomValue(currentForbiddenUsernamesAtom);
   const [usernames, updateUsernames] = useAtom(usernamesAtom);
   const [isFromFollowingOpen, setIsFromFollowingOpen] = useState(false);
   const [isFromListOpen, setIsFromListOpen] = useState(false);
   const [listId, setListId] = useState<string>();
   const [bottomReference, { height: bottomHeight }] = useMeasure();
+
+  const { data, isFetching, refetch } =
+    api.twitter.getTweetsByUsernames.useQuery(
+      { usernames: usernames, endTime: getEndTime(endTime) },
+      {
+        enabled: false,
+        select: (data) => {
+          const forbidden = data.invalidUsers
+            ?.filter((user) => user.reason === "forbidden")
+            .map((user) => user.handle.toLowerCase());
+
+          const empty = data.invalidUsers
+            ?.filter((user) => user.reason === "empty")
+            .map((user) => user.handle.toLowerCase());
+
+          return { forbidden, empty, tweets: data.tweets };
+        },
+      }
+    );
 
   const { isFetching: isListFetching } = api.twitter.getListMembers.useQuery(
     { id: listId || "" },
@@ -51,6 +72,21 @@ const HandleTab = () => {
 
   const getListMembers = (id: string) => {
     setListId(id);
+  };
+
+  const handlePlay = async () => {
+    if (data && !data.forbidden?.length && !data.empty?.length) {
+      void router.push("/game");
+    }
+
+    const { data: refetchData } = await refetch();
+
+    if (refetchData?.forbidden?.length || refetchData?.empty?.length) {
+      refetchData.forbidden?.length &&
+        addForbiddenUsernames(refetchData.forbidden);
+      return;
+    }
+    void router.push("/game");
   };
 
   return (
@@ -96,10 +132,10 @@ const HandleTab = () => {
           </div>
         </div>
         <div className="mt-4">
-          <HandleList />
+          <HandleList emptyUsernames={data?.empty} />
         </div>
         <AnimatePresence>
-          {invalidUsernames.length > 0 && (
+          {forbiddenUsernames.length > 0 && (
             <motion.div
               className="flex overflow-hidden"
               initial={{ opacity: 0, height: 0 }}
@@ -114,7 +150,7 @@ const HandleTab = () => {
               </div>
             </motion.div>
           )}
-          {emptyUsernames.length > 0 && (
+          {data?.empty?.length && (
             <motion.div
               className="flex overflow-hidden"
               initial={{ opacity: 0, height: 0 }}
@@ -161,90 +197,64 @@ const HandleTab = () => {
               ) : (
                 <>
                   <div className="divider">Settings</div>
-                  <Settings onEndTimeChange={() => setEmptyUsernames([])} />
+                  <Settings />
                 </>
               )}
             </motion.div>
           </AnimatePresence>
         </motion.div>
       </div>
+      <div className="form-control mt-6">
+        <button
+          className={clsx(["btn-primary btn-lg btn", isFetching && "loading"])}
+          disabled={!usernames || usernames.length < 2 || isFetching}
+          onClick={handlePlay}
+        >
+          Play
+        </button>
+      </div>
+    </>
+  );
+};
+
+const TweetsTab = () => {
+  const [tweetIds, setTweetIds] = useAtom(tweetIdsAtom);
+
+  return (
+    <>
+      <div className="form-control">
+        <textarea
+          className="textarea textarea-primary"
+          value={tweetIds.join("\n")}
+          onChange={(event) =>
+            setTweetIds(
+              event.target.value.split("\n").map((value) => value.trim())
+            )
+          }
+        />
+        <label className="label">
+          <span className="label-text-alt">
+            Tweet ids seperated by linebreak
+          </span>
+        </label>
+      </div>
+      {/* {getSpecifiedTweetsError && ( */}
+      {/*   <div className="alert alert-error mt-4 shadow-lg"> */}
+      {/*     <div> */}
+      {/*       <XCircle></XCircle> */}
+      {/*       <span>Something went wrong :(</span> */}
+      {/*     </div> */}
+      {/*   </div> */}
+      {/* )} */}
     </>
   );
 };
 
 const Home: NextPage = () => {
-  const router = useRouter();
-  const { endTime, gameMode } = useAtomValue(gameConfigAtom);
-  const usernames = useAtomValue(usernamesAtom);
-  const addInvalidUsernames = useSetAtom(addInvalidUsernamesAtom);
-  const setEmptyUsernames = useSetAtom(emptyUsernamesAtom);
+  const { gameMode } = useAtomValue(gameConfigAtom);
   const setGameConfig = useSetAtom(gameConfigAtom);
 
   const [tweetIds, setTweetIds] = useAtom(tweetIdsAtom);
-  const [invalidUsernames] = useState<InvalidUser[]>([]);
-
-  const { data, isFetching, refetch } =
-    api.twitter.getTweetsByUsernames.useQuery(
-      { usernames: usernames, endTime: getEndTime(endTime) },
-      {
-        enabled: false,
-        onSuccess: (data) => {
-          // FIXME: This is bad...
-          if (data?.invalidUsers?.length) {
-            const forbidden = data.invalidUsers
-              .filter((user) => user.reason === "forbidden")
-              .map((user) => user.handle);
-
-            const empty = data.invalidUsers
-              .filter((user) => user.reason === "empty")
-              .map((user) => user.handle);
-
-            addInvalidUsernames(forbidden);
-            setEmptyUsernames(empty);
-          }
-        },
-      }
-    );
-
-  // const {
-  //   isFetching: getSpecifiedTweetsFetching,
-  //   refetch: fetchSpecifiedTweets,
-  //   error: getSpecifiedTweetsError,
-  // } = api.twitter.getTweets.useQuery(
-  //   { ids: tweetIds },
-  //   {
-  //     retry: false,
-  //     refetchOnWindowFocus: false,
-  //     refetchOnMount: false,
-  //     enabled: false,
-  //   }
-  // );
-
-  const usernamesAreValid = usernames.every(
-    (username) =>
-      !invalidUsernames.some(({ handle }) => handle.toLowerCase() === username)
-  );
-
-  const handlePlay = async () => {
-    if (gameMode === "handles") {
-      if (!data?.invalidUsers?.length && data?.tweets.length) {
-        void router.push("/game");
-      }
-
-      const { data: refetchData } = await refetch();
-
-      if (!refetchData?.invalidUsers?.length && refetchData?.tweets.length) {
-        void router.push("/game");
-      }
-    }
-    // if (gameMode === "tweets") {
-    //   const { data } = await fetchSpecifiedTweets();
-    //
-    //   if (data?.tweets && data.tweets.length > 0) {
-    //     void router.push("/game");
-    //   }
-    // }
-  };
 
   return (
     <>
@@ -308,24 +318,24 @@ const Home: NextPage = () => {
                   {/* )} */}
                 </>
               )}
-              <div className="form-control mt-6">
-                <button
-                  className={clsx([
-                    "btn-primary btn-lg btn",
-                    isFetching && "loading",
-                  ])}
-                  disabled={
-                    gameMode === "handles" &&
-                    (!usernames ||
-                      usernames.length < 2 ||
-                      !usernamesAreValid ||
-                      isFetching)
-                  }
-                  onClick={handlePlay}
-                >
-                  Play
-                </button>
-              </div>
+              {/* <div className="form-control mt-6"> */}
+              {/*   <button */}
+              {/*     className={clsx([ */}
+              {/*       "btn-primary btn-lg btn", */}
+              {/*       isFetching && "loading", */}
+              {/*     ])} */}
+              {/*     disabled={ */}
+              {/*       gameMode === "handles" && */}
+              {/*       (!usernames || */}
+              {/*         usernames.length < 2 || */}
+              {/*         !usernamesAreValid || */}
+              {/*         isFetching) */}
+              {/*     } */}
+              {/*     onClick={handlePlay} */}
+              {/*   > */}
+              {/*     Play */}
+              {/*   </button> */}
+              {/* </div> */}
             </div>
           </div>
           <span className="mt-4 text-sm">
