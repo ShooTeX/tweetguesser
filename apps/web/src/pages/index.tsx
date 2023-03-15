@@ -29,6 +29,7 @@ import {
 } from "../atoms/invalid-usernames";
 import { TweetsLists } from "../components/tweets-lists";
 import { tweetsListsAtom } from "../atoms/tweets-lists";
+import { CreateListModal } from "../components/create-list";
 
 const HandleTab = () => {
   const router = useRouter();
@@ -236,6 +237,7 @@ const TweetsTab = () => {
   const router = useRouter();
   const [tweetIds, setTweetIds] = useAtom(tweetIdsAtom);
   const tweetsLists = useAtomValue(tweetsListsAtom);
+  const [isCreateListOpen, setIsCreateListOpen] = useState(false);
 
   const { data, isFetching, isError, refetch } = api.twitter.getTweets.useQuery(
     { ids: tweetIds || [] },
@@ -257,6 +259,13 @@ const TweetsTab = () => {
 
   return (
     <>
+      <Modal show={isCreateListOpen}>
+        <CreateListModal
+          onSuccess={() => setIsCreateListOpen(false)}
+          onCancel={() => setIsCreateListOpen(false)}
+        />
+      </Modal>
+
       <div className="form-control">
         <textarea
           rows={7}
@@ -303,8 +312,9 @@ const TweetsTab = () => {
           Play
         </button>
         <button
-          className="btn-square btn btn-lg"
+          className="btn-square btn btn-lg btn-outline"
           disabled={isError || isFetching || tweetIds.length < 2}
+          onClick={() => setIsCreateListOpen(true)}
         >
           <ListPlus />
         </button>
