@@ -271,23 +271,25 @@ const TweetsTab = () => {
           </span>
         </label>
       </div>
-      {isError && (
-        <motion.div
-          className="flex overflow-hidden"
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: "auto" }}
-          exit={{ opacity: 0, height: 0 }}
-        >
-          <div className="alert alert-error mt-4 justify-start text-sm">
-            <AlertCircle className="shrink-0" />
-            <span>Something went wrong :(</span>
-          </div>
-        </motion.div>
-      )}
+      <AnimatePresence>
+        {isError && (
+          <motion.div
+            className="flex overflow-hidden"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+          >
+            <div className="alert alert-error mt-4 justify-start text-sm">
+              <AlertCircle className="shrink-0" />
+              <span>Something went wrong :(</span>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <button
         className={clsx(["btn-primary btn-lg btn", isFetching && "loading"])}
-        disabled={isError || isFetching}
+        disabled={isError || isFetching || tweetIds.length < 2}
         onClick={handlePlay}
       >
         Play
