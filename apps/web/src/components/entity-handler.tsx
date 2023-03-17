@@ -1,5 +1,7 @@
 import { type RouterOutputs } from "../utils/api";
 import parse from "html-react-parser";
+import { useAtomValue } from "jotai";
+import { gameConfigAtom } from "../atoms/game";
 
 type EntityHandlerProperties = {
   children: string;
@@ -9,6 +11,7 @@ export const EntityHandler = ({
   children,
   entities,
 }: EntityHandlerProperties) => {
+  const { hideUrls } = useAtomValue(gameConfigAtom);
   if (!entities) {
     return <>{children}</>;
   }
@@ -18,7 +21,7 @@ export const EntityHandler = ({
   entities.urls?.map((entity) => {
     formatted = formatted.replace(
       entity.url,
-      entity.display_url?.startsWith("pic")
+      entity.display_url?.startsWith("pic") || hideUrls
         ? ""
         : `<a className="link link-hover link-secondary" target="_blank" rel="noreferrer" href="${
             entity.url ?? ""

@@ -20,12 +20,14 @@ export const gameModeSchema = z.enum(gameModes);
 
 export type GameMode = z.input<typeof gameModeSchema>;
 
+// TODO: make this a schema
 export type GameConfig = {
   timeLimit: number;
   similarityThreshold: number;
   endless: boolean;
   endTime: EndTime;
   gameMode: GameMode;
+  hideUrls: boolean;
 };
 
 export const gameConfigAtom = atomWithStorage<GameConfig>("game-config", {
@@ -34,6 +36,7 @@ export const gameConfigAtom = atomWithStorage<GameConfig>("game-config", {
   endless: false,
   endTime: "today",
   gameMode: "handles",
+  hideUrls: false,
 });
 
 const usernamesBaseAtom = atomWithStorage<string[]>("usernames", []);
