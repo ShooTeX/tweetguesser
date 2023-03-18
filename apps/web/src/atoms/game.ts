@@ -32,7 +32,7 @@ export type GameConfig = {
 
 export const gameConfigAtom = atomWithStorage<GameConfig>("game-config", {
   timeLimit: 120_000,
-  similarityThreshold: 0.8,
+  similarityThreshold: 0.9,
   endless: false,
   endTime: "today",
   gameMode: "handles",
