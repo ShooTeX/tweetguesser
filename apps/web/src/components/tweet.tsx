@@ -1,4 +1,3 @@
-import { useAutoAnimate } from "@formkit/auto-animate/react";
 import clsx from "clsx";
 import { ImageOff } from "lucide-react";
 import Image from "next/image";
@@ -24,10 +23,8 @@ type TweetWrapperProperties = PropsWithChildren & {
 };
 
 const TweetWrapper = ({ isQuoteTweet, children }: TweetWrapperProperties) => {
-  const [animationParent] = useAutoAnimate();
   return (
     <div
-      ref={animationParent}
       className={clsx([
         "bg-neutral text-neutral-content rounded-xl border p-4 shadow-xl",
         isQuoteTweet

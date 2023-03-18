@@ -9,7 +9,6 @@ import type { KeyboardEventHandler } from "react";
 import { findBestMatch } from "string-similarity";
 import { gameConfigAtom } from "../atoms/game";
 import { useAtomValue } from "jotai";
-import { useAutoAnimate } from "@formkit/auto-animate/react";
 import clsx from "clsx";
 
 type GuessInputProperties = {
@@ -31,7 +30,6 @@ export const GuessInput = ({
   onSkip,
   usernames,
 }: GuessInputProperties) => {
-  const [animationParent] = useAutoAnimate();
   const config = useAtomValue(gameConfigAtom);
   const [inputState, setInputState] = useState<InputState>("default");
   const [input, setInput] = useState("");
@@ -158,10 +156,7 @@ export const GuessInput = ({
         !!suggestions?.length &&
         input.length > 1 &&
         showSuggestions && (
-          <ul
-            className="bg-neutral absolute bottom-full z-10 mb-2 max-h-52 w-full overflow-y-auto overflow-x-hidden rounded-md p-2"
-            ref={animationParent}
-          >
+          <ul className="bg-neutral absolute bottom-full z-10 mb-2 max-h-52 w-full overflow-y-auto overflow-x-hidden rounded-md p-2">
             {suggestions.reverse().map((suggestion, index) => (
               <li
                 className={clsx(
