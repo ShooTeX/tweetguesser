@@ -23,31 +23,27 @@ const Game: NextPage = () => {
   const [tweetIds, setTweetIds] = useAtom(tweetIdsAtom);
   const { endless, endTime, gameMode } = useAtomValue(gameConfigAtom);
 
-  const { data, error } = api.twitter.getTweetsByUsernames.useQuery(
+  const { data: handlesModeData } = api.twitter.getTweetsByUsernames.useQuery(
     { usernames: usernamesStorage, endTime: getEndTime(endTime) },
     {
-      refetchOnWindowFocus: false,
-      refetchOnMount: false,
-      retry: false,
-      enabled: usernamesStorage.length > 0 && gameMode === "handles",
+      enabled: false,
     }
   );
 
-  const { data: getSpecifiedTweetsData, error: getSpecifiedTweetsError } =
-    api.twitter.getTweets.useQuery(
-      { ids: tweetIds },
-      {
-        retry: false,
-        refetchOnWindowFocus: false,
-        refetchOnMount: false,
-        enabled: tweetIds.length > 0 && gameMode === "tweets",
-      }
-    );
+  const { data: tweetsModeData } = api.twitter.getTweets.useQuery(
+    { ids: tweetIds },
+    {
+      enabled: false,
+    }
+  );
 
-  if (
-    router.isReady &&
-    (error || getSpecifiedTweetsError || data?.invalidUsers?.length)
-  ) {
+  const data =
+    (gameMode === "handles" && handlesModeData) ||
+    (gameMode === "tweets" && tweetsModeData) ||
+    undefined;
+
+  // INFO: data should be in cache already
+  if (router.isReady && !data) {
     void router.replace("/");
   }
 
@@ -55,16 +51,14 @@ const Game: NextPage = () => {
     gameMode === "handles"
       ? usernamesStorage
       : gameMode === "tweets"
-      ? getSpecifiedTweetsData?.usernames.map((username) =>
-          username.toLowerCase()
-        )
+      ? tweetsModeData?.usernames.map((username) => username.toLowerCase())
       : undefined;
 
   const rawTweets =
     gameMode === "handles"
-      ? data?.tweets
+      ? handlesModeData?.tweets
       : gameMode === "tweets"
-      ? getSpecifiedTweetsData?.tweets
+      ? tweetsModeData?.tweets
       : undefined;
 
   const tweets = useMemo(
@@ -228,7 +222,7 @@ Guessing tweets from ${
           </span>
         </div>
         <div className="flex grow flex-col justify-center">
-          {!endless && !!data?.tweets.length && (
+          {!endless && !!handlesModeData?.tweets.length && (
             <Timer
               onTimesUp={() => {
                 setGameTimeout(true);
