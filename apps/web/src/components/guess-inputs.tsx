@@ -156,12 +156,12 @@ export const GuessInput = ({
         !!suggestions?.length &&
         input.length > 1 &&
         showSuggestions && (
-          <ul className="bg-neutral absolute bottom-full z-10 mb-2 max-h-52 w-full overflow-y-auto overflow-x-hidden rounded-md p-2">
-            {suggestions.reverse().map((suggestion, index) => (
+          <ul className="bg-neutral absolute bottom-full z-10 mb-2 flex max-h-52 w-full flex-col-reverse overflow-y-auto overflow-x-hidden rounded-md p-2">
+            {suggestions.map((suggestion, index) => (
               <li
                 className={clsx(
                   "hover:bg-primary-focus hover:text-primary-content cursor-pointer rounded p-2",
-                  suggestions.length - 1 - index === selectedSuggestion &&
+                  index === selectedSuggestion &&
                     "bg-primary text-primary-content"
                 )}
                 key={suggestion.target}
