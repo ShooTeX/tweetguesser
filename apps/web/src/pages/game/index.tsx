@@ -16,6 +16,7 @@ import { getEndTime } from "../../utils/get-end-time";
 import arrayShuffle from "array-shuffle";
 import Link from "next/link";
 import clsx from "clsx";
+import { AnimatePresence, motion } from "framer-motion";
 
 const Game: NextPage = () => {
   const router = useRouter();
@@ -223,21 +224,31 @@ Guessing tweets from ${
             />
           )}
           <div className="stack mt-4 transition-all ease-in-out">
-            {currentTweet ? (
-              <Tweet
-                images={currentTweet.images}
-                handle={currentTweet.username}
-                username={currentTweet.name}
-                avatar={currentTweet.profile_image_url}
-                hidden={!reveal}
-                entities={currentTweet.entities}
-                referencedTweet={currentTweet.referenced_tweet_id}
-              >
-                {currentTweet.text}
-              </Tweet>
-            ) : (
-              <TweetLoading />
-            )}
+            <AnimatePresence initial={false} mode="wait">
+              {currentTweet ? (
+                <motion.div
+                  key={currentTweet.id}
+                  initial={{ opacity: 0, x: 100 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -100 }}
+                  transition={{ type: "tween", ease: "easeInOut" }}
+                >
+                  <Tweet
+                    images={currentTweet.images}
+                    handle={currentTweet.username}
+                    username={currentTweet.name}
+                    avatar={currentTweet.profile_image_url}
+                    hidden={!reveal}
+                    entities={currentTweet.entities}
+                    referencedTweet={currentTweet.referenced_tweet_id}
+                  >
+                    {currentTweet.text}
+                  </Tweet>
+                </motion.div>
+              ) : (
+                <TweetLoading />
+              )}
+            </AnimatePresence>
           </div>
         </div>
         <div className="flex w-[598px] flex-col py-4">
