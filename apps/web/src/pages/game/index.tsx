@@ -48,22 +48,14 @@ const Game: NextPage = () => {
   }
 
   const usernames =
-    gameMode === "handles"
-      ? usernamesStorage
-      : gameMode === "tweets"
-      ? tweetsModeData?.usernames.map((username) => username.toLowerCase())
-      : undefined;
-
-  const rawTweets =
-    gameMode === "handles"
-      ? handlesModeData?.tweets
-      : gameMode === "tweets"
-      ? tweetsModeData?.tweets
-      : undefined;
+    (gameMode === "handles" && usernamesStorage) ||
+    (gameMode === "tweets" &&
+      tweetsModeData?.usernames.map((username) => username.toLowerCase())) ||
+    undefined;
 
   const tweets = useMemo(
-    () => (rawTweets?.length ? arrayShuffle(rawTweets) : undefined),
-    [rawTweets]
+    () => (data?.tweets?.length ? arrayShuffle(data.tweets) : undefined),
+    [data?.tweets]
   );
 
   const [currentRound, setCurrentRound] = useState(0);
