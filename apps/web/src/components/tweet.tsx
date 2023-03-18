@@ -96,27 +96,39 @@ export const Tweet = ({
       <p className="whitespace-pre-wrap" key={children}>
         <EntityHandler entities={entities}>{children}</EntityHandler>
       </p>
-      {referencedTweetData && !error && (
-        <div className="mt-4">
-          <Tweet
-            entities={referencedTweetData.data?.entities}
-            avatar={
-              referencedTweetData.includes?.users?.[0]?.profile_image_url ?? ""
-            }
-            username={referencedTweetData.includes?.users?.[0]?.name ?? ""}
-            handle={referencedTweetData.includes?.users?.[0]?.username ?? ""}
-            images={[]}
+      <AnimatePresence>
+        {referencedTweetData && !error && (
+          <motion.div
+            initial={{ height: 0 }}
+            animate={{ height: "auto" }}
             key={referencedTweetData.data?.id}
-            isQuoteTweet
-            hidden={
-              referencedTweetData.includes?.users?.[0]?.username === handle &&
-              hidden
-            }
+            className="overflow-hidden"
           >
-            {referencedTweetData.data?.text ?? ""}
-          </Tweet>
-        </div>
-      )}
+            <div className="mt-4">
+              <Tweet
+                entities={referencedTweetData.data?.entities}
+                avatar={
+                  referencedTweetData.includes?.users?.[0]?.profile_image_url ??
+                  ""
+                }
+                username={referencedTweetData.includes?.users?.[0]?.name ?? ""}
+                handle={
+                  referencedTweetData.includes?.users?.[0]?.username ?? ""
+                }
+                images={[]}
+                key={referencedTweetData.data?.id}
+                isQuoteTweet
+                hidden={
+                  referencedTweetData.includes?.users?.[0]?.username ===
+                    handle && hidden
+                }
+              >
+                {referencedTweetData.data?.text ?? ""}
+              </Tweet>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
       {images.length > 0 && <ImageGrid images={images} className="mt-4" />}
     </TweetWrapper>
   );
