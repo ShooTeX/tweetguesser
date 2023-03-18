@@ -1,4 +1,5 @@
 import clsx from "clsx";
+import { AnimatePresence, motion } from "framer-motion";
 import { ImageOff } from "lucide-react";
 import Image from "next/image";
 import type { PropsWithChildren } from "react";
@@ -56,30 +57,42 @@ export const Tweet = ({
   );
   return (
     <TweetWrapper isQuoteTweet={isQuoteTweet}>
-      {!hidden && (
-        <div className="flex items-center pb-4 ">
-          <div className="avatar">
-            <div className="bg-neutral w-12 rounded-full">
-              {avatar ? (
-                <Image
-                  src={avatar}
-                  alt={`${username}s avatar`}
-                  width="48"
-                  height="48"
-                />
-              ) : (
-                <div className="bg-secondary text-secondary-content flex h-full w-full items-center justify-center text-xl">
-                  <ImageOff />
+      <AnimatePresence initial={false}>
+        {!hidden && (
+          <motion.div
+            initial={{ height: 0, opacity: 0, x: 50 }}
+            animate={{
+              height: "auto",
+              opacity: 1,
+              x: 0,
+            }}
+            exit={{ height: 0, opacity: 0 }}
+          >
+            <div className="flex items-center pb-4">
+              <div className="avatar">
+                <div className="bg-neutral w-12 rounded-full">
+                  {avatar ? (
+                    <Image
+                      src={avatar}
+                      alt={`${username}s avatar`}
+                      width="48"
+                      height="48"
+                    />
+                  ) : (
+                    <div className="bg-secondary text-secondary-content flex h-full w-full items-center justify-center text-xl">
+                      <ImageOff />
+                    </div>
+                  )}
                 </div>
-              )}
+              </div>
+              <div className="ml-4 flex flex-col text-base">
+                <span className="font-bold">{username}</span>
+                <span className="text-secondary">@{handle}</span>
+              </div>
             </div>
-          </div>
-          <div className="ml-4 flex flex-col text-base">
-            <span className="font-bold">{username}</span>
-            <span className="text-secondary">@{handle}</span>
-          </div>
-        </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
       <p className="whitespace-pre-wrap" key={children}>
         <EntityHandler entities={entities}>{children}</EntityHandler>
       </p>
