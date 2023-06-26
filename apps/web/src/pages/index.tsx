@@ -1,7 +1,15 @@
 import clsx from "clsx";
 import { AnimatePresence, motion } from "framer-motion";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
-import { AlertCircle, Heart, List, ListPlus, Menu, Users } from "lucide-react";
+import {
+  AlertCircle,
+  Heart,
+  HeartCrack,
+  List,
+  ListPlus,
+  Menu,
+  Users,
+} from "lucide-react";
 import { type NextPage } from "next";
 import { useRouter } from "next/router";
 import { useState } from "react";
@@ -329,6 +337,15 @@ const Home: NextPage = () => {
 
   return (
     <>
+      <div className="toast toast-top toast-center z-10 w-96">
+        <div className="alert alert-error">
+          <HeartCrack className="shrink-0" />
+          <span className="text-center md:text-left">
+            Due to recent Twitter API changes, TweetGuesser is currently
+            unavailable.
+          </span>
+        </div>
+      </div>
       <div className="hero bg-base-200 min-h-screen">
         <div className="hero-content flex-col gap-0">
           <Logo />
